@@ -1,0 +1,41 @@
+{
+  "id": "delyra-0009",
+  "title": "La risa que abre Las palabras y las cosas",
+  "type": "work",
+  "categories": [
+    "bibliotecas-imposibles",
+    "psicopolitica"
+  ],
+  "tags": [
+    "foucault",
+    "borges",
+    "clasificacion",
+    "episteme"
+  ],
+  "content": "Michel Foucault abre Las palabras y las cosas, de 1966, contando que el libro nació de un texto de Borges: la clasificación de los animales atribuida a una enciclopedia china. Dice que al leerla se rió, y que esa risa desarmó sus hábitos de pensamiento. Lo que le inquieta no es lo absurdo de cada categoría, sino que no exista ningún lugar común donde puedan estar juntas. A partir de ahí el libro investiga cómo cada época fija, sin saberlo, las condiciones de lo que puede pensarse y ordenarse, lo que llama episteme. Un ensayo breve de un escritor argentino quedó así en el umbral de uno de los libros más discutidos de la filosofía francesa de su década.",
+  "question": "¿Qué lista te haría reír hoy porque delata un orden que das por natural?",
+  "sources": [
+    {
+      "label": "Foucault, Les mots et les choses, 1966",
+      "author": "Michel Foucault",
+      "work": "Les mots et les choses",
+      "year": 1966,
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 3,
+    "darkness": 2,
+    "fictionality": 2
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0004"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude a partir de las referencias de content/figures.json (Foucault). Autoría asignada por la afinidad de esa figura: revisar texto y autoría."
+}
