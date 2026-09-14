@@ -1,0 +1,41 @@
+{
+  "id": "delyra-0005",
+  "title": "El juego de la imitación",
+  "type": "experiment",
+  "categories": [
+    "maquinas-que-imaginan"
+  ],
+  "tags": [
+    "ia",
+    "conciencia",
+    "imitacion",
+    "turing"
+  ],
+  "content": "En 1950 Alan Turing publicó en la revista Mind un artículo que se pregunta si las máquinas pueden pensar y enseguida sustituye la pregunta por otra, porque la considera demasiado ambigua para discutirla. Propone un juego de salón: un interrogador conversa por escrito con dos jugadores ocultos y debe adivinar quién es quién. Primero lo plantea con un hombre y una mujer; después pregunta qué pasaría si una máquina ocupara uno de los puestos. Buena parte del artículo se dedica a contestar objeciones por adelantado, incluida la de que una máquina jamás podría sorprender a nadie. Turing lo llamó juego de la imitación. El nombre de test llegó después, y con él la costumbre de tratarlo como un examen.",
+  "question": "¿Qué parte de lo que llamas pensar se podría comprobar sin ver a quien piensa?",
+  "sources": [
+    {
+      "label": "Turing, «Computing Machinery and Intelligence», Mind, 1950",
+      "author": "Alan Turing",
+      "work": "Computing Machinery and Intelligence",
+      "year": 1950,
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 2,
+    "darkness": 1,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0001",
+    "delyra-0014"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude a partir de las referencias de content/figures.json (Turing). Autoría asignada por la afinidad de esa figura: revisar texto y autoría."
+}
