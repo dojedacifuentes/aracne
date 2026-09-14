@@ -1,10 +1,12 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Corpus } from '../../lib/content/corpus';
 import { buildDrift, type DriftStep } from '../../lib/drift/graph';
 import { catalogId, STATUS_LABEL, TYPE_LABEL } from '../../lib/labels';
 import type { Invocation } from '../../lib/oracle/invoke';
 import type { Entry } from '../../lib/schema';
+import { useFocusRing } from '../hooks/useFocusRing';
 import { bridgeText, dictumText, faultText, linkText, SHAPE_LABEL } from '../lib/copy';
 import { colors, fonts, space } from '../theme';
 import { Reveal } from './Reveal';
@@ -16,6 +18,8 @@ type Props = {
   reduceMotion: boolean;
   /** Pantalla estrecha: el dictamen baja un punto. */
   compact: boolean;
+  /** Abre el permalink de una entrada. Cada resultado tiene salida. */
+  onOpen: (id: string) => void;
 };
 
 const DRIFT_LENGTH = 4;
@@ -27,7 +31,7 @@ type CategoryName = (id: string) => string | undefined;
  * si hay más de una, lo que las une y lo que las separa. El dictamen es la
  * línea grande: sin comillas y sin atribuirse a nadie.
  */
-export function InvocationView({ invocation, corpus, seed, reduceMotion, compact }: Props) {
+export function InvocationView({ invocation, corpus, seed, reduceMotion, compact, onOpen }: Props) {
   const categoryName: CategoryName = (id) => corpus.categories.find((c) => c.id === id)?.name;
 
   if (!invocation) {
@@ -57,7 +61,7 @@ export function InvocationView({ invocation, corpus, seed, reduceMotion, compact
       {steps.map((step, index) => (
         <Reveal key={step.entry.id} index={index + 2} reduceMotion={reduceMotion}>
           {step.link ? <Text style={styles.link}>por {linkText(step.link, categoryName)}</Text> : null}
-          <EntryLine entry={step.entry} categoryName={categoryName} />
+          <EntryLine entry={step.entry} categoryName={categoryName} onOpen={onOpen} />
         </Reveal>
       ))}
 
@@ -85,21 +89,41 @@ export function InvocationView({ invocation, corpus, seed, reduceMotion, compact
   );
 }
 
-function EntryLine({ entry, categoryName }: { entry: Entry; categoryName: CategoryName }) {
+function EntryLine({
+  entry,
+  categoryName,
+  onOpen,
+}: {
+  entry: Entry;
+  categoryName: CategoryName;
+  onOpen: (id: string) => void;
+}) {
+  const { focusVisible, onFocus, onBlur } = useFocusRing();
+  const [hovered, setHovered] = useState(false);
   const unverified = entry.epistemicStatus === 'unverified';
   // CLAUDE.md: el estado epistémico siempre se ve cuando no es un hecho.
   const status = entry.epistemicStatus === 'fact' ? null : STATUS_LABEL[entry.epistemicStatus];
   const meta = [TYPE_LABEL[entry.type], ...entry.categories.map((id) => categoryName(id) ?? id)].join(' · ');
 
   return (
-    <View style={styles.entry}>
+    <Pressable
+      accessibilityRole="link"
+      accessibilityLabel={`${entry.title}. ${meta}`}
+      accessibilityHint="abre la entrada"
+      onPress={() => onOpen(entry.id)}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      style={[styles.entry, focusVisible && styles.focus]}
+    >
       <Text style={styles.catalog}>{catalogId(entry.id)}</Text>
-      <Text style={styles.title}>{entry.title}</Text>
+      <Text style={[styles.title, hovered && styles.titleHovered]}>{entry.title}</Text>
       <Text style={styles.meta}>
         {meta}
         {status ? <Text style={unverified && styles.unverified}> · {status}</Text> : null}
       </Text>
-    </View>
+    </Pressable>
   );
 }
 
@@ -128,7 +152,8 @@ const styles = StyleSheet.create({
     marginBottom: space.lg,
   },
   dictumCompact: { fontSize: 24, lineHeight: 31, marginBottom: space.md },
-  entry: { marginBottom: space.md },
+  entry: { marginBottom: space.md, outlineWidth: 0 },
+  focus: { outlineColor: colors.accent, outlineStyle: 'solid', outlineWidth: 1, outlineOffset: 4 },
   link: {
     fontFamily: fonts.mono,
     fontSize: 12,
@@ -150,6 +175,7 @@ const styles = StyleSheet.create({
     color: colors.text,
     marginTop: 2,
   },
+  titleHovered: { textDecorationLine: 'underline', textDecorationColor: colors.line },
   meta: {
     fontFamily: fonts.mono,
     fontSize: 12,

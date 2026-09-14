@@ -7,6 +7,7 @@ import { loadArchive } from '../../lib/content/loader';
 import { pressSeed } from '../../lib/oracle';
 import { pushHistory } from '../../lib/oracle/history';
 import { invoke } from '../../lib/oracle/invoke';
+import { EntryView } from '../components/EntryView';
 import { InvocationView } from '../components/InvocationView';
 import { LegButton } from '../components/LegButton';
 import { PurposeView } from '../components/PurposeView';
@@ -64,6 +65,11 @@ export function HomeScreen({ reduceMotion }: Props) {
     [route, invocationLegs, corpus.entries],
   );
 
+  const entry = useMemo(
+    () => (route.name === 'entry' ? (corpus.entries.find((e) => e.id === route.id) ?? null) : null),
+    [route, corpus.entries],
+  );
+
   // Una URL compartida trae sus patas: la araña cuelga igual que para quien la envió.
   const active = invocationLegs ?? selected;
   const spiderLegs = useMemo(
@@ -86,6 +92,13 @@ export function HomeScreen({ reduceMotion }: Props) {
     setHistory((current) => pushHistory(current, ids));
     void rememberEntries(ids);
   }, [active, legs, corpus.entries, history, navigate]);
+
+  const openEntry = useCallback(
+    (id: string) => {
+      navigate({ name: 'entry', id });
+    },
+    [navigate],
+  );
 
   const back = useCallback(() => {
     setSelected(active);
@@ -147,7 +160,14 @@ export function HomeScreen({ reduceMotion }: Props) {
         seed={route.seed}
         reduceMotion={reduceMotion}
         compact={portrait}
+        onOpen={openEntry}
       />
+    ) : route.name === 'entry' ? (
+      entry ? (
+        <EntryView key={entry.id} entry={entry} corpus={corpus} reduceMotion={reduceMotion} compact={portrait} />
+      ) : (
+        <Text style={styles.missing}>no hay ninguna entrada con ese identificador. vuelve y pulsa.</Text>
+      )
     ) : panel === 'proposito' ? (
       <PurposeView legs={legs} selected={selected} reduceMotion={reduceMotion} />
     ) : null;
@@ -156,6 +176,11 @@ export function HomeScreen({ reduceMotion }: Props) {
     route.name === 'invocation' ? (
       <View style={styles.buttons}>
         <TextButton label="otra" onPress={press} hint="otra invocación con las mismas patas" />
+        <TextButton label="volver" onPress={back} />
+      </View>
+    ) : route.name === 'entry' ? (
+      <View style={styles.buttons}>
+        <TextButton label="invocar" onPress={press} hint="una invocación nueva con las patas apoyadas" />
         <TextButton label="volver" onPress={back} />
       </View>
     ) : (
@@ -252,6 +277,12 @@ const styles = StyleSheet.create({
   },
 
   buttons: { flexDirection: 'row', gap: space.sm, marginTop: space.md },
+  missing: {
+    fontFamily: fonts.serif,
+    fontSize: 18,
+    lineHeight: 28,
+    color: colors.dim,
+  },
 
   name: {
     fontFamily: fonts.serif,

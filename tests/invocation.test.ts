@@ -94,4 +94,23 @@ describe('rutas', () => {
   it('sin patas no hay query', () => {
     expect(routeToUrl({ name: 'invocation', seed: 'k3x9q2ab', legs: [] })).toBe('/i/k3x9q2ab');
   });
+
+  it('/e/<id> es una entrada, con barra final o sin ella', () => {
+    expect(parseRoute('/e/delyra-0001', '')).toEqual({ name: 'entry', id: 'delyra-0001' });
+    expect(parseRoute('/e/delyra-0001/', '')).toEqual({ name: 'entry', id: 'delyra-0001' });
+    expect(routeToUrl({ name: 'entry', id: 'delyra-0001' })).toBe('/e/delyra-0001');
+  });
+
+  it('un identificador mal formado es la portada, no un error', () => {
+    for (const path of ['/e/', '/e/delyra-1', '/e/DELYRA-0001', '/e/delyra-0001/extra', '/e/<script>']) {
+      expect(parseRoute(path, '')).toEqual({ name: 'home' });
+    }
+  });
+
+  it('toda entrada del archivo tiene permalink, y el permalink la devuelve', () => {
+    for (const entry of corpus.entries) {
+      const route = parseRoute(routeToUrl({ name: 'entry', id: entry.id }), '');
+      expect(route).toEqual({ name: 'entry', id: entry.id });
+    }
+  });
 });

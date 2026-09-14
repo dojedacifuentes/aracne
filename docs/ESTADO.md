@@ -1,0 +1,73 @@
+# Estado
+
+Última actualización: 14 de septiembre de 2026. Para retomar en otra sesión:
+«lee docs/ESTADO.md».
+
+## Hecho
+
+| Fase | Qué | Commit |
+|---|---|---|
+| 0 | Andamio sobre la arquitectura del tarot; kit en su sitio; motores que faltaban reconstruidos; 17 entradas; `validate` imprime 17 entradas · 7 categorías visibles · 4 retraídas; CI | `7055e03` … `86c0d0b` |
+| 1 | La araña 3D como oráculo (`docs/ARANA-3D.md`) | `28e0a1d` |
+| 2 | Pulsar invoca; `/i/<semilla>?patas=…`; propósito; hilos de las patas; pruebas de la fase | `c498ba0` |
+| 3 | Vista de entrada, permalink `/e/<id>`, títulos cliqueables, Open Graph en build | pendiente de commit |
+
+En curso: una revisión adversarial de las fases 0–2.
+
+## Decisiones tomadas sin confirmación explícita
+
+1. **Arquitectura.** Expo del tarot en lugar del Next.js que pedía el kit: el
+   usuario pidió usar el tarot como arquitectura, y el tarot no es Next.js.
+2. **«La sección de conjeturas cámbiala por el propósito agorias».** Leído como
+   «el propósito de las categorías»: sin patas apoyadas, la sección explica qué
+   es el archivo; con patas, la descripción de cada una.
+3. **Nombre.** La aplicación se llama *aracne*, como el repositorio. Los
+   identificadores siguen el esquema del kit: `delyra-0001`, `DELYRA 0001`.
+4. **El oráculo es una araña.** Una huntsman 3D sustituye a la esfera, por
+   petición expresa. La física del Aleph se conserva entera.
+5. **Archivos del kit que no venían.** Reconstruidos: `rng`, `weighted` (con
+   pesos provisionales), `history`, `index`, `lib/content/`,
+   `scripts/validate.ts` y `content/contributors.json`.
+6. **Las 17 entradas.** Las redactó Claude a partir de las referencias de
+   `figures.json`, con fuentes comprobadas. La autoría sigue la afinidad de la
+   figura correspondiente; en las cuatro sin figura es provisional. Cada
+   entrada lo declara en `captureNote`.
+7. **Sin React Three Fiber.** three sin abstracción, como en el tarot.
+8. **satori en lugar de `@vercel/og`.** La fase 3 pedía `@vercel/og`, que no
+   arranca fuera del runtime de Vercel: su bundle hace un `require` dinámico
+   que Node rechaza, y la entrada CommonJS falla también. `scripts/og.mjs` usa
+   directamente satori —el motor que `@vercel/og` lleva dentro— y sharp, que ya
+   estaba instalado para los iconos. Misma imagen, una dependencia menos.
+
+## Problemas encontrados en el kit
+
+- `CategorySchema` no declara `leg` ni `glyph` y zod los descarta: se amplía en
+  `lib/content/corpus.ts` sin tocar `schema.ts`.
+- `lib/drift/graph.ts` no compilaba en modo estricto: corregido.
+- `validateCorpus` permite 180 palabras y CLAUDE.md pide 60–140: `validate`
+  avisa.
+- `invoke.ts` inserta ids de categoría y de tipo en los dictámenes, y
+  `faultBetween` usa los ids ingleses de tipo: la interfaz los lee como nombres.
+- El kit suponía que el tarot era Next.js y privado: es Expo y público.
+- `figures.json` daba a Searle por vivo: corregido a 1932–2025.
+- `scripts/og.mjs` estaba escrito pero huérfano: su dependencia no estaba
+  declarada y `npm run build` no lo llamaba. Conectado.
+- El contador del identificador de `EntryView` dependía de que
+  `requestAnimationFrame` disparase. Donde no dispara —pestaña de fondo, ahorro
+  de energía, una captura— la ficha mostraba `DELYRA 0000`, un número de
+  catálogo falso. Ahora se asienta con un plazo aunque no llegue un fotograma.
+
+## Pendiente
+
+- Fases 4 a 9 de `docs/PROMPTS.md`.
+- **El archivo está por debajo de su masa crítica.** Con 17 entradas, 60
+  pulsaciones devuelven cada entrada 5,6 veces de media y *Tlön* sale 14; cuatro
+  de las 17 llevan el tag `borges`. El grado medio del grafo es 4,9 vecinos de
+  16 posibles, pero solo 1,8 vínculos fuertes, y `delyra-0013` no tiene ninguno.
+  Ninguna funcionalidad arregla esto: hacen falta entradas.
+- Probar el rendimiento en un teléfono real y `prefers-reduced-motion` en un
+  navegador real.
+- Conectar el repositorio a Vercel y definir `SITE_URL` para las imágenes Open
+  Graph.
+- Iconos y splash: siguen siendo la luna del tarot.
+- Malla de la araña: 87 000 triángulos. Bajar más exige reproyectar la textura.
