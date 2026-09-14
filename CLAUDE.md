@@ -148,3 +148,8 @@ que el kit daba por escritos y no venían (`lib/oracle/rng.ts`, `weighted.ts`,
 `history.ts`, `index.ts`, `lib/content/`, `scripts/validate.ts`) se
 reconstruyeron en la fase 0; los pesos de `weighted.ts` son provisionales.
 Detalle en `docs/TAROT.md`.
+
+Desde la fase 1 el cuerpo que se pulsa no es una esfera: es una araña 3D que
+cuelga de su hilo (`ui/components/spider/`, razones en `docs/ARANA-3D.md`). La
+física de `lib/aleph/tension.ts` sigue mandando sobre su movimiento, y todo lo
+ajustable está en `spiderConfig.ts`.
