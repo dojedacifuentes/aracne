@@ -1,0 +1,39 @@
+{
+  "id": "delyra-0010",
+  "title": "En las montañas de la locura",
+  "type": "work",
+  "categories": [
+    "umbral-del-sueno",
+    "cuerpo-y-horror"
+  ],
+  "tags": [
+    "lovecraft",
+    "antartida",
+    "expedicion",
+    "locura"
+  ],
+  "content": "H. P. Lovecraft escribió en 1931 una novela corta narrada por un geólogo que intenta disuadir a una nueva expedición de viajar a la Antártida. Cuenta lo que encontró la suya: restos de seres muy anteriores a la humanidad, una ciudad de piedra al otro lado de una cordillera más alta que el Himalaya y, bajo ella, masas protoplasmáticas capaces de adoptar cualquier forma. La revista a la que la envió la rechazó, y apareció en 1936 en Astounding Stories, con cortes. El texto se apoya en los informes de las expediciones antárticas de su época. Su horror no está en lo monstruoso, sino en la escala: la humanidad como un episodio tardío en la historia de otros.",
+  "question": "¿Cambia algo saber que otros estuvieron aquí antes, si ya no queda nadie que lo recuerde?",
+  "sources": [
+    {
+      "label": "Lovecraft, «At the Mountains of Madness», Astounding Stories, 1936",
+      "author": "H. P. Lovecraft",
+      "work": "At the Mountains of Madness",
+      "year": 1936,
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "fiction",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 5,
+    "fictionality": 5
+  },
+  "sensitive": false,
+  "related": [],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude a partir de las referencias de content/figures.json (Lovecraft). Autoría asignada por la afinidad de esa figura: revisar texto y autoría."
+}
