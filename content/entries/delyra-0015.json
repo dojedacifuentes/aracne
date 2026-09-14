@@ -1,0 +1,44 @@
+{
+  "id": "delyra-0015",
+  "title": "Maman",
+  "type": "work",
+  "categories": [
+    "telaranas",
+    "cuerpo-y-horror",
+    "ciencia-y-arte"
+  ],
+  "tags": [
+    "bourgeois",
+    "arana",
+    "tejido",
+    "maternidad",
+    "escultura"
+  ],
+  "content": "Louise Bourgeois terminó en 1999 una araña de acero de más de nueve metros de altura, que se presentó al año siguiente en la Sala de Turbinas de la Tate Modern. Bajo el abdomen cuelga una bolsa con huevos de mármol. La tituló Maman y la dedicó a su madre, que restauraba tapices en el taller familiar. Bourgeois describía a las arañas como protectoras, pacientes y útiles, porque comen mosquitos y reparan lo que se rompe. De la escultura se fundieron después varias copias en bronce, que hoy están en ciudades de tres continentes. Está hecha para caminar por debajo de ella.",
+  "question": "¿Qué cambia en una figura que protege cuando su tamaño la vuelve amenazante?",
+  "sources": [
+    {
+      "label": "Louise Bourgeois, Maman, 1999",
+      "author": "Louise Bourgeois",
+      "work": "Maman",
+      "year": 1999,
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 4,
+    "fictionality": 2
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0016",
+    "delyra-0011"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude a partir de las referencias de content/figures.json (Bourgeois). Autoría asignada por la afinidad de esa figura: revisar texto y autoría."
+}
