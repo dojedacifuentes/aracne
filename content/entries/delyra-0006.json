@@ -1,0 +1,49 @@
+{
+  "id": "delyra-0006",
+  "title": "El panóptico",
+  "type": "concept",
+  "categories": [
+    "psicopolitica"
+  ],
+  "tags": [
+    "panoptico",
+    "vigilancia",
+    "foucault",
+    "bentham",
+    "arquitectura"
+  ],
+  "content": "Jeremy Bentham diseñó a finales del siglo XVIII un edificio circular con celdas en la periferia y una torre de vigilancia en el centro, dispuesto para que los internos pudieran ser observados en todo momento sin saber nunca si alguien los estaba mirando. Lo propuso para cárceles, pero también para fábricas, hospitales y escuelas. En 1975, en Vigilar y castigar, Michel Foucault convirtió ese diagrama en la figura de una época: un poder que ya no necesita castigar el cuerpo en público porque consigue que cada cual se vigile a sí mismo. La torre podía estar vacía. Bastaba con que desde las celdas no se pudiera comprobar.",
+  "question": "¿En qué lugares te comportas como si alguien mirara, sin haberlo comprobado nunca?",
+  "sources": [
+    {
+      "label": "Bentham, Panopticon; or, The Inspection-House, 1791",
+      "author": "Jeremy Bentham",
+      "work": "Panopticon; or, The Inspection-House",
+      "year": 1791,
+      "kind": "primary"
+    },
+    {
+      "label": "Foucault, Surveiller et punir, 1975",
+      "author": "Michel Foucault",
+      "work": "Surveiller et punir",
+      "year": 1975,
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "interpretation",
+  "scores": {
+    "strangeness": 3,
+    "darkness": 4,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0008",
+    "delyra-0007"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude a partir de las referencias de content/figures.json (Foucault). Autoría asignada por la afinidad de esa figura: revisar texto y autoría."
+}
