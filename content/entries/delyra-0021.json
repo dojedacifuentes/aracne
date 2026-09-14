@@ -1,0 +1,44 @@
+{
+  "id": "delyra-0021",
+  "title": "Borrar el enlace, no el hecho",
+  "type": "case",
+  "categories": [
+    "derecho-de-lo-imposible",
+    "psicopolitica"
+  ],
+  "tags": [
+    "buscador",
+    "dato-personal",
+    "enlace",
+    "olvido",
+    "jurisprudencia"
+  ],
+  "content": "En 1998 un periódico español publicó el anuncio de una subasta por deudas con el nombre de un abogado. La deuda quedó atrás; el anuncio siguió en internet y el buscador lo devolvía cada vez que alguien escribía ese nombre. En 2014 el Tribunal de Justicia de la Unión Europea resolvió que un buscador trata datos personales por cuenta propia, y que una persona puede pedir que se retiren los enlaces aunque la publicación original sea lícita y siga exactamente donde estaba. La sentencia separa dos cosas que solían ir juntas: que un hecho sea cierto y que un intermediario lo vuelva encontrable. Reorganizar hechos verdaderos produce algo nuevo, y ese algo puede impugnarse por separado.",
+  "question": "¿Puede un conjunto de datos ciertos componer algo que no lo sea?",
+  "sources": [
+    {
+      "label": "TJUE, Google Spain y Google, asunto C-131/12, 13 de mayo de 2014",
+      "author": "Tribunal de Justicia de la Unión Europea",
+      "work": "Google Spain SL y Google Inc. contra AEPD y Mario Costeja González",
+      "year": 2014,
+      "url": "https://eur-lex.europa.eu/legal-content/ES/TXT/?uri=CELEX:62012CJ0131",
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 3,
+    "darkness": 3,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0006",
+    "delyra-0017"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Redactada por Claude a partir del material aportado. Asunto, fecha y contenido de la sentencia comprobados por separado."
+}
