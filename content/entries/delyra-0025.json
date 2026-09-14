@@ -1,0 +1,51 @@
+{
+  "id": "delyra-0025",
+  "title": "El fragmento que llega por una sola puerta",
+  "type": "anomaly",
+  "categories": [
+    "telaranas",
+    "epistemologia-forense"
+  ],
+  "tags": [
+    "heraclito",
+    "arana",
+    "transmision",
+    "atribucion",
+    "fuente"
+  ],
+  "content": "A Heráclito se le atribuye una comparación: el alma está en el cuerpo como la araña en su tela, y cuando una mosca rompe un hilo acude deprisa, como si le doliera el corte. La imagen es hermosa y se cita mucho. El problema es la vía por la que llega. No la conserva ningún autor griego. Aparece en unas líneas de un comentario latino del siglo XII, atribuido a Hisdosus Scholasticus, sobre la traducción que Calcidio hizo del alma del mundo. Diels la recogió en 1906 en su colección de presocráticos con el número B67a, y desde entonces se lee como si fuera de Heráclito. Entre quien pudo decirla y quien la escribe median unos mil setecientos años y una sola fuente.",
+  "question": "¿Cuántas fuentes hace falta perder para que una cita deje de poder comprobarse?",
+  "sources": [
+    {
+      "label": "Diels, «Die Fragmente der Vorsokratiker», fragmento B67a, 1906",
+      "author": "Hermann Diels",
+      "work": "Die Fragmente der Vorsokratiker",
+      "year": 1906,
+      "kind": "reference"
+    },
+    {
+      "label": "Hisdosus Scholasticus, «De anima mundi Platonica», edición del comentario",
+      "author": "Hisdosus Scholasticus",
+      "work": "De anima mundi Platonica",
+      "url": "https://www.academia.edu/42382119/Hisdosus_Scholasticus_De_anima_mundi_Platonica_An_Edition",
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 2,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0020",
+    "delyra-0033",
+    "delyra-0035"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Comprobado: la comparación se conserva solo en el comentario del siglo XII de Hisdosus Scholasticus sobre Calcidio, y Diels la publicó como B67a en 1906. El material aportado afirmaba además que la literatura especializada discute expresamente su autenticidad; eso NO lo pude verificar y por eso no se afirma en la entrada."
+}
