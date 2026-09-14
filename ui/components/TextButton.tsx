@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { useFocusRing } from '../hooks/useFocusRing';
-import { colors, fonts, HIT_SIZE } from '../theme';
+import { colors, fonts, HIT_SIZE, text } from '../theme';
 
 type Props = {
   label: string;
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   focus: { outlineColor: colors.accent, outlineStyle: 'solid', outlineWidth: 1, outlineOffset: 2 },
   label: {
     fontFamily: fonts.serif,
-    fontSize: 17,
+    ...text.body,
     color: colors.text,
   },
 });

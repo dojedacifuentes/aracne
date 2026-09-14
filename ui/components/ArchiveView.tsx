@@ -6,7 +6,7 @@ import type { Corpus, LegState } from '../../lib/content/corpus';
 import { catalogId, STATUS_LABEL, TYPE_LABEL } from '../../lib/labels';
 import type { Entry, EntryType, EpistemicStatus } from '../../lib/schema';
 import { useFocusRing } from '../hooks/useFocusRing';
-import { colors, fonts, HIT_SIZE, space } from '../theme';
+import { colors, fonts, HIT_SIZE, space, text } from '../theme';
 
 type Props = {
   corpus: Corpus;
@@ -214,8 +214,7 @@ function Row({
 const styles = StyleSheet.create({
   section: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
     marginBottom: space.sm,
   },
@@ -226,7 +225,7 @@ const styles = StyleSheet.create({
     borderColor: colors.line,
     backgroundColor: colors.surface,
     fontFamily: fonts.serif,
-    fontSize: 17,
+    ...text.body,
     color: colors.text,
     outlineWidth: 0,
   },
@@ -234,8 +233,7 @@ const styles = StyleSheet.create({
   group: { marginTop: space.md },
   groupLabel: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
     marginBottom: space.xs,
   },
@@ -251,24 +249,21 @@ const styles = StyleSheet.create({
   chipOn: { borderColor: colors.text },
   chipText: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
   },
   chipTextOn: { color: colors.text },
 
   count: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
     marginTop: space.lg,
     paddingBottom: space.sm,
   },
   empty: {
     fontFamily: fonts.serif,
-    fontSize: 18,
-    lineHeight: 28,
+    ...text.body,
     color: colors.dim,
   },
 
@@ -282,22 +277,18 @@ const styles = StyleSheet.create({
   // El identificador es uno de los dos únicos usos del acento.
   catalog: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.accent,
   },
   title: {
     fontFamily: fonts.serif,
-    fontSize: 20,
-    lineHeight: 27,
+    ...text.lead,
     color: colors.text,
     marginTop: 2,
   },
   meta: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    lineHeight: 18,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
     marginTop: 2,
   },

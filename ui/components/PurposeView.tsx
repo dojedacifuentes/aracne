@@ -2,7 +2,7 @@ import { StyleSheet, Text, View } from 'react-native';
 
 import type { LegState } from '../../lib/content/corpus';
 import { textGlyph } from '../lib/glyph';
-import { colors, fonts, space } from '../theme';
+import { colors, fonts, space, text } from '../theme';
 import { Reveal } from './Reveal';
 
 type Props = {
@@ -66,29 +66,26 @@ export function PurposeView({ legs, selected, reduceMotion }: Props) {
 const styles = StyleSheet.create({
   label: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
     marginBottom: space.sm,
   },
   body: {
     fontFamily: fonts.serif,
-    fontSize: 18,
-    lineHeight: 29,
+    ...text.body,
     color: colors.text,
     marginBottom: space.sm,
   },
   leg: { marginBottom: space.md },
   name: {
     fontFamily: fonts.serif,
-    fontSize: 22,
+    ...text.lead,
     color: colors.text,
     marginBottom: space.xs,
   },
   meta: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
   },
 });

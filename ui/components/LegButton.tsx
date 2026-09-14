@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useFocusRing } from '../hooks/useFocusRing';
 import { textGlyph } from '../lib/glyph';
-import { colors, fonts, HIT_SIZE, space } from '../theme';
+import { colors, fonts, HIT_SIZE, space, text } from '../theme';
 
 type Props = {
   glyph: string;
@@ -92,21 +92,20 @@ const styles = StyleSheet.create({
   glyph: {
     width: 28,
     fontFamily: fonts.serif,
-    fontSize: 19,
+    ...text.body,
     color: colors.dim,
     textAlign: 'center',
   },
   name: {
     flex: 1,
     fontFamily: fonts.serif,
-    fontSize: 17,
+    ...text.body,
     color: colors.dim,
     marginLeft: space.xs,
   },
   meta: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
     marginLeft: space.sm,
   },

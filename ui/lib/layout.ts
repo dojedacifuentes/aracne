@@ -8,4 +8,4 @@ export function getLayoutMode(width: number, height: number): LayoutMode {
 }
 
 /** Ancho máximo del contenido en pantallas grandes. */
-export const MAX_CONTENT_WIDTH = 1100;
+export const MAX_CONTENT_WIDTH = 1280;

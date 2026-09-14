@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import type { Figure } from '../../lib/content/corpus';
 import type { RoomState } from '../../lib/museum/rooms';
 import { useFocusRing } from '../hooks/useFocusRing';
-import { colors, fonts, HIT_SIZE, space } from '../theme';
+import { colors, fonts, HIT_SIZE, space, text } from '../theme';
 import { Emblem } from './Emblem';
 import { Reveal } from './Reveal';
 
@@ -120,28 +120,24 @@ export function FigureRow({ figure, onPress }: { figure: Figure; onPress: () => 
 const styles = StyleSheet.create({
   section: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
     marginBottom: space.sm,
   },
   lead: {
     fontFamily: fonts.serif,
-    fontSize: 18,
-    lineHeight: 28,
+    ...text.body,
     color: colors.dim,
     marginBottom: space.lg,
   },
   title: {
     fontFamily: fonts.serif,
-    fontSize: 30,
-    lineHeight: 38,
+    ...text.display,
     color: colors.text,
   },
   criterionLarge: {
     fontFamily: fonts.serif,
-    fontSize: 18,
-    lineHeight: 28,
+    ...text.body,
     color: colors.dim,
     marginTop: space.sm,
     marginBottom: space.lg,
@@ -156,21 +152,18 @@ const styles = StyleSheet.create({
   },
   roomName: {
     fontFamily: fonts.serif,
-    fontSize: 22,
-    lineHeight: 29,
+    ...text.lead,
     color: colors.text,
   },
   criterion: {
     fontFamily: fonts.serif,
-    fontSize: 17,
-    lineHeight: 26,
+    ...text.body,
     color: colors.dim,
     marginTop: 2,
   },
   count: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
     marginTop: space.xs,
   },
@@ -187,15 +180,12 @@ const styles = StyleSheet.create({
   figureText: { flex: 1, marginLeft: space.md },
   figureName: {
     fontFamily: fonts.serif,
-    fontSize: 20,
-    lineHeight: 27,
+    ...text.lead,
     color: colors.text,
   },
   years: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    lineHeight: 18,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
     marginTop: 2,
   },

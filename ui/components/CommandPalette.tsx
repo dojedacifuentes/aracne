@@ -4,7 +4,7 @@ import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-
 import { fold, matchesQuery } from '../../lib/archive/filter';
 import type { Corpus, LegState } from '../../lib/content/corpus';
 import { catalogId } from '../../lib/labels';
-import { colors, fonts, HIT_SIZE, space } from '../theme';
+import { colors, fonts, HIT_SIZE, space, text } from '../theme';
 
 /** Lo que la paleta sabe hacer. La fase pide exactamente estas cuatro cosas. */
 export type Command =
@@ -154,7 +154,7 @@ const styles = StyleSheet.create({
     minHeight: HIT_SIZE + 8,
     paddingHorizontal: space.md,
     fontFamily: fonts.serif,
-    fontSize: 19,
+    ...text.body,
     color: colors.text,
     borderBottomWidth: StyleSheet.hairlineWidth * 2,
     borderBottomColor: colors.line,
@@ -175,20 +175,18 @@ const styles = StyleSheet.create({
   rowLabel: {
     flex: 1,
     fontFamily: fonts.serif,
-    fontSize: 17,
+    ...text.body,
     color: colors.text,
   },
   rowMeta: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
     marginLeft: space.sm,
   },
   empty: {
     fontFamily: fonts.serif,
-    fontSize: 17,
-    lineHeight: 26,
+    ...text.body,
     color: colors.dim,
     padding: space.md,
   },

@@ -6,7 +6,7 @@ import { catalogId, STATUS_LABEL, TYPE_LABEL } from '../../lib/labels';
 import { figuresOfEntry } from '../../lib/museum/rooms';
 import type { Entry } from '../../lib/schema';
 import { STATUS_BORDER, type StatusBorder } from '../lib/epistemic';
-import { colors, fonts, space } from '../theme';
+import { colors, fonts, space, text } from '../theme';
 import { Reveal } from './Reveal';
 
 type Props = {
@@ -185,22 +185,19 @@ const styles = StyleSheet.create({
   // El identificador es uno de los dos únicos usos del acento.
   catalog: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.accent,
   },
   title: {
     fontFamily: fonts.serif,
-    fontSize: 42,
-    lineHeight: 50,
+    ...text.hero,
     color: colors.text,
     marginTop: space.md,
   },
-  titleCompact: { fontSize: 30, lineHeight: 37 },
+  titleCompact: { ...text.display },
   sensitive: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
     marginTop: space.sm,
   },
@@ -219,18 +216,16 @@ const styles = StyleSheet.create({
   },
   body: {
     fontFamily: fonts.serif,
-    fontSize: 18,
-    lineHeight: 30,
+    ...text.body,
     color: colors.text,
   },
   question: {
     fontFamily: fonts.serif,
-    fontSize: 24,
-    lineHeight: 33,
+    ...text.title,
     color: colors.dim,
     marginTop: space.xl,
   },
-  questionCompact: { fontSize: 21, lineHeight: 29 },
+  questionCompact: { ...text.lead },
   meta: {
     marginTop: space.xl,
     paddingTop: space.md,
@@ -241,17 +236,13 @@ const styles = StyleSheet.create({
   metaLabel: {
     width: 108,
     fontFamily: fonts.mono,
-    fontSize: 12,
-    lineHeight: 18,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
   },
   metaValues: { flex: 1 },
   metaValue: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    lineHeight: 18,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.text,
   },
   link: { textDecorationLine: 'underline', textDecorationColor: colors.line },

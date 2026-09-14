@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Image, StyleSheet, Text, View } from 'react-native';
 
-import { colors, fonts } from '../theme';
+import { colors, fonts, text } from '../theme';
 
 type Props = {
   /** Id de la figura: el emblema vive en public/figures/<id>.svg. */
@@ -52,7 +52,7 @@ const styles = StyleSheet.create({
   },
   holeMark: {
     fontFamily: fonts.mono,
-    fontSize: 12,
+    ...text.data,
     color: colors.dim,
   },
 });

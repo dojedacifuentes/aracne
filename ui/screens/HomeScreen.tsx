@@ -12,10 +12,12 @@ import { invoke } from '../../lib/oracle/invoke';
 import { ArchiveView } from '../components/ArchiveView';
 import { RoomsView, RoomView } from '../components/CabinetView';
 import { CommandPalette, type Command } from '../components/CommandPalette';
+import { Context } from '../components/Context';
 import { EntryView } from '../components/EntryView';
 import { FigureView } from '../components/FigureView';
 import { InvocationView } from '../components/InvocationView';
 import { LegButton } from '../components/LegButton';
+import { Rail, type Place } from '../components/Rail';
 import { PurposeView } from '../components/PurposeView';
 import { Spider } from '../components/spider/Spider';
 import { TextButton } from '../components/TextButton';
@@ -23,7 +25,7 @@ import { useRoute } from '../hooks/useRoute';
 import { getLayoutMode, MAX_CONTENT_WIDTH } from '../lib/layout';
 import { ARCHIVE, CABINET, HOME } from '../lib/route';
 import { readHistory, rememberEntries } from '../lib/storedHistory';
-import { colors, fonts, space } from '../theme';
+import { colors, fonts, space, text } from '../theme';
 
 type Props = {
   reduceMotion: boolean;
@@ -158,6 +160,36 @@ export function HomeScreen({ reduceMotion }: Props) {
     [navigate],
   );
 
+  /** El sitio en el que se está, para marcarlo en el carril. */
+  const here: Place | null =
+    route.name === 'archive'
+      ? 'archivo'
+      : route.name === 'cabinet' || route.name === 'room' || route.name === 'figure'
+        ? 'gabinete'
+        : route.name === 'invocation'
+          ? 'invocar'
+          : panel === 'proposito'
+            ? 'propósito'
+            : null;
+
+  const go = useCallback(
+    (place: Place) => {
+      if (place === 'invocar') return press();
+      if (place === 'archivo') return navigate(ARCHIVE);
+      if (place === 'gabinete') return navigate(CABINET);
+      setPanel('proposito');
+      navigate(HOME);
+    },
+    [press, navigate],
+  );
+
+  /**
+   * La entrada que manda en la columna de contexto: la que se está leyendo, o
+   * la primera de la invocación. Sin ella, el contexto enseña por dónde has
+   * pasado.
+   */
+  const focus = entry ?? invocation?.entries[0] ?? null;
+
   const run = useCallback(
     (command: Command) => {
       setPalette(false);
@@ -196,6 +228,8 @@ export function HomeScreen({ reduceMotion }: Props) {
    * el texto y la araña se queda en una franja. En una invocación no, porque
    * ahí la araña es parte del resultado.
    */
+  // La columna de contexto pide sitio: por debajo de esto estorba más que ayuda.
+  const wide3 = width >= 1180;
   const isReading = route.name !== 'invocation' && route.name !== 'home';
   const panelShare = isReading ? 0.78 : 0.5;
 
@@ -344,22 +378,40 @@ export function HomeScreen({ reduceMotion }: Props) {
       </View>
     );
 
+  const rail = (
+    <Rail legs={legs} selected={selected} onToggle={toggle} onGo={go} here={here} />
+  );
+  const context = <Context corpus={corpus} entry={focus} history={history} onOpen={openEntry} />;
+
   if (!portrait) {
+    // Tres columnas: el anillo, lo que se lee y lo que hay al lado. La araña se
+    // queda arriba del centro —alta en la portada, en una franja mientras se
+    // lee— para que nunca deje de estar ni tape el texto.
     return (
       <SafeAreaView style={styles.root} edges={['bottom', 'left', 'right']}>
-        <View style={styles.columns}>
-          <View style={styles.stageWide}>{spider}</View>
-          <View style={[styles.side, { paddingTop: insets.top + space.lg }]}>
+        <View style={[styles.columns, { paddingTop: insets.top + space.md }]}>
+          <ScrollView style={styles.railColumn} showsVerticalScrollIndicator={false}>
             {header}
+            <View style={styles.railInner}>{rail}</View>
+          </ScrollView>
+
+          <View style={styles.centre}>
+            <View style={isReading ? styles.stageShort : styles.stageTall}>{spider}</View>
             <ScrollView
               style={styles.sideScroll}
               contentContainerStyle={styles.sideContent}
               showsVerticalScrollIndicator={false}
             >
-              {reading ?? <View>{legButtons(false)}</View>}
+              {reading}
             </ScrollView>
             {buttons}
           </View>
+
+          {wide3 ? (
+            <ScrollView style={styles.contextColumn} showsVerticalScrollIndicator={false}>
+              {context}
+            </ScrollView>
+          ) : null}
         </View>
         {palette ? (
           <CommandPalette corpus={corpus} legs={legs} onRun={run} onClose={() => setPalette(false)} />
@@ -382,6 +434,7 @@ export function HomeScreen({ reduceMotion }: Props) {
             showsVerticalScrollIndicator={false}
           >
             {reading}
+            <View style={styles.contextBelow}>{context}</View>
           </ScrollView>
         ) : (
           <>
@@ -411,14 +464,16 @@ const styles = StyleSheet.create({
     width: '100%',
     maxWidth: MAX_CONTENT_WIDTH,
     alignSelf: 'center',
+    gap: space.lg,
   },
-  stageWide: { flex: 1.1 },
-  side: {
-    flex: 1,
-    maxWidth: 480,
-    paddingHorizontal: space.lg,
-    paddingBottom: space.lg,
-  },
+  railColumn: { width: 232, paddingLeft: space.md },
+  railInner: { marginTop: space.lg },
+  centre: { flex: 1, paddingHorizontal: space.lg, paddingBottom: space.lg },
+  contextColumn: { width: 232, paddingRight: space.md },
+  contextBelow: { marginTop: space.lg },
+  // La araña manda en la portada y se retira a una franja mientras se lee.
+  stageTall: { flex: 1, minHeight: 260 },
+  stageShort: { height: 148 },
   sideScroll: { flex: 1, marginTop: space.md },
   sideContent: { flexGrow: 1, justifyContent: 'center', paddingVertical: space.md },
 
@@ -430,7 +485,7 @@ const styles = StyleSheet.create({
   legRow: { paddingHorizontal: space.sm },
   latest: {
     fontFamily: fonts.serif,
-    fontSize: 17,
+    ...text.body,
     color: colors.text,
     paddingHorizontal: space.md,
     marginTop: space.xs,
@@ -440,20 +495,18 @@ const styles = StyleSheet.create({
   buttons: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginTop: space.md },
   missing: {
     fontFamily: fonts.serif,
-    fontSize: 18,
-    lineHeight: 28,
+    ...text.body,
     color: colors.dim,
   },
 
   name: {
     fontFamily: fonts.serif,
-    fontSize: 30,
+    ...text.display,
     color: colors.text,
   },
   meta: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
     marginTop: space.xs,
   },

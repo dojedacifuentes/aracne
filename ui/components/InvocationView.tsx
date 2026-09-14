@@ -8,7 +8,7 @@ import type { Invocation } from '../../lib/oracle/invoke';
 import type { Entry } from '../../lib/schema';
 import { useFocusRing } from '../hooks/useFocusRing';
 import { bridgeText, dictumText, faultText, linkText, SHAPE_LABEL } from '../lib/copy';
-import { colors, fonts, space } from '../theme';
+import { colors, fonts, space, text } from '../theme';
 import { Reveal } from './Reveal';
 
 type Props = {
@@ -145,48 +145,41 @@ function Section({ label, text }: { label: string; text: string }) {
 const styles = StyleSheet.create({
   shape: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
     marginBottom: space.sm,
   },
   dictum: {
     fontFamily: fonts.serif,
-    fontSize: 30,
-    lineHeight: 38,
+    ...text.display,
     color: colors.text,
     marginBottom: space.lg,
   },
-  dictumCompact: { fontSize: 24, lineHeight: 31, marginBottom: space.md },
+  dictumCompact: { ...text.title, marginBottom: space.md },
   entry: { marginBottom: space.md, outlineWidth: 0 },
   focus: { outlineColor: colors.accent, outlineStyle: 'solid', outlineWidth: 1, outlineOffset: 4 },
   link: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
     marginBottom: space.xs,
   },
   // El identificador es uno de los dos únicos usos del acento.
   catalog: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.accent,
   },
   title: {
     fontFamily: fonts.serif,
-    fontSize: 22,
-    lineHeight: 29,
+    ...text.lead,
     color: colors.text,
     marginTop: 2,
   },
   titleHovered: { textDecorationLine: 'underline', textDecorationColor: colors.line },
   meta: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
-    lineHeight: 18,
+    ...text.data,
     color: colors.dim,
     marginTop: 4,
   },
@@ -200,21 +193,18 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
   },
   sectionText: {
     fontFamily: fonts.serif,
-    fontSize: 18,
-    lineHeight: 28,
+    ...text.body,
     color: colors.text,
     marginTop: 4,
   },
   note: {
     fontFamily: fonts.serif,
-    fontSize: 18,
-    lineHeight: 28,
+    ...text.body,
     color: colors.dim,
   },
 });

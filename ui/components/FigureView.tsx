@@ -5,7 +5,7 @@ import type { Corpus, Figure } from '../../lib/content/corpus';
 import { catalogId } from '../../lib/labels';
 import { roomsOf } from '../../lib/museum/rooms';
 import { useFocusRing } from '../hooks/useFocusRing';
-import { colors, fonts, HIT_SIZE, space } from '../theme';
+import { colors, fonts, HIT_SIZE, space, text } from '../theme';
 import { Emblem } from './Emblem';
 import { Reveal } from './Reveal';
 
@@ -128,36 +128,30 @@ const styles = StyleSheet.create({
   headText: { flex: 1, marginLeft: space.md },
   name: {
     fontFamily: fonts.serif,
-    fontSize: 30,
-    lineHeight: 38,
+    ...text.display,
     color: colors.text,
   },
   years: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    lineHeight: 18,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
     marginTop: space.xs,
   },
   emblem: {
     fontFamily: fonts.serif,
-    fontSize: 17,
-    lineHeight: 26,
+    ...text.body,
     color: colors.dim,
     marginTop: space.xs,
   },
   note: {
     fontFamily: fonts.serif,
-    fontSize: 18,
-    lineHeight: 30,
+    ...text.body,
     color: colors.text,
     marginTop: space.lg,
   },
   label: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.dim,
     marginTop: space.lg,
     marginBottom: space.xs,
@@ -173,27 +167,23 @@ const styles = StyleSheet.create({
   },
   linkText: {
     fontFamily: fonts.serif,
-    fontSize: 19,
-    lineHeight: 26,
+    ...text.body,
     color: colors.text,
   },
   linkMeta: {
     fontFamily: fonts.serif,
-    fontSize: 15,
-    lineHeight: 22,
+    ...text.small,
     color: colors.dim,
   },
   // El identificador es uno de los dos únicos usos del acento.
   catalog: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    ...text.data,
     color: colors.accent,
   },
   empty: {
     fontFamily: fonts.serif,
-    fontSize: 17,
-    lineHeight: 26,
+    ...text.body,
     color: colors.dim,
   },
   underline: { textDecorationLine: 'underline', textDecorationColor: colors.line },
