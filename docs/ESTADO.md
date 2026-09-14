@@ -12,7 +12,8 @@
 | 2 | Pulsar invoca; `/i/<semilla>?patas=…`; propósito; hilos de las patas; pruebas de la fase | `c498ba0` |
 | 3 | Vista de entrada, permalink `/e/<id>`, títulos cliqueables, Open Graph en build | `143570d` |
 | 6 | El gabinete: siete salas, treinta figuras, seis emblemas, invocar desde una sala | `2b0e0f0` |
-| 7 | `/archivo` con filtros combinables en la URL, búsqueda local y paleta ⌘K | pendiente de commit |
+| 7 | `/archivo` con filtros combinables en la URL, búsqueda local y paleta ⌘K | `b76a397` |
+| — | Arreglos: llegar al gabinete en un teléfono | pendiente de commit |
 
 En curso: una revisión adversarial de las fases 0–2.
 
@@ -72,6 +73,16 @@ el usuario estaba reuniendo.
   una sala, el recorte llegaba al motor pero no a `buildDrift`, así que la
   deriva se salía de la sala por la primera arista. Ahora la vista recibe el
   mismo corpus que vio el motor.
+- La fila de botones de la portada no envolvía. Con cuatro botones ocupaba
+  474 px, así que en un teléfono de 375 `archivo` quedaba fuera de la pantalla
+  y `gabinete` cortado: el gabinete existía y no se podía llegar a él.
+- `Reveal` dejaba el contenido a opacidad 0 cuando `requestAnimationFrame` no
+  disparaba —una pestaña de fondo, el ahorro de energía, una captura—, es decir
+  invisible. Se asienta con un plazo, como ya hacía el contador del
+  identificador. La animación puede faltar; el contenido no.
+- En vertical el panel estaba fijo a la mitad de la pantalla. En una invocación
+  está bien, porque la araña es parte del resultado; leyendo el gabinete o el
+  archivo, no. Las rutas de lectura se quedan con el 78 %.
 - `scripts/og.mjs` estaba escrito pero huérfano: su dependencia no estaba
   declarada y `npm run build` no lo llamaba. Conectado.
 - El contador del identificador de `EntryView` dependía de que
@@ -87,10 +98,7 @@ el usuario estaba reuniendo.
   son los que pedía la fase: Borges, Kafka, Euler, Spinoza, Pessoa y Bourgeois.
 - **21 de las 30 figuras no tienen ninguna entrada ligada**, y la sala «Los que
   firmaron con otro» no tiene ninguna: no se puede invocar desde ella todavía.
-- `Reveal` depende de `requestAnimationFrame`. Donde no dispara, el contenido se
-  queda a opacidad 0, es decir invisible. En un navegador real anima bien; el
-  riesgo es una captura, una pestaña de fondo o un modo de ahorro. Mismo origen
-  que el contador del identificador, que ya se corrigió. Sin decidir.
+
 - **El archivo está por debajo de su masa crítica.** Con 17 entradas, 60
   pulsaciones devuelven cada entrada 5,6 veces de media y *Tlön* sale 14; cuatro
   de las 17 llevan el tag `borges`. El grado medio del grafo es 4,9 vecinos de

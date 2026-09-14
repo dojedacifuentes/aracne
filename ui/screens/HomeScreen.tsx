@@ -190,6 +190,15 @@ export function HomeScreen({ reduceMotion }: Props) {
     setPanel((current) => (current === 'proposito' ? 'patas' : 'proposito'));
   }, []);
 
+  /**
+   * En vertical, la araña y el panel se reparten la pantalla. Leyendo una
+   * ficha, el gabinete o el archivo no se está consultando al oráculo: manda
+   * el texto y la araña se queda en una franja. En una invocación no, porque
+   * ahí la araña es parte del resultado.
+   */
+  const isReading = route.name !== 'invocation' && route.name !== 'home';
+  const panelShare = isReading ? 0.78 : 0.5;
+
   const lit = legs.filter((leg) => leg.visible).length;
   const latest = legs.find((leg) => leg.category.id === selected[selected.length - 1]);
 
@@ -368,7 +377,7 @@ export function HomeScreen({ reduceMotion }: Props) {
       <View style={styles.panel}>
         {reading ? (
           <ScrollView
-            style={{ maxHeight: Math.round(height * 0.5) }}
+            style={{ maxHeight: Math.round(height * panelShare) }}
             contentContainerStyle={styles.panelContent}
             showsVerticalScrollIndicator={false}
           >
@@ -427,7 +436,8 @@ const styles = StyleSheet.create({
     marginTop: space.xs,
   },
 
-  buttons: { flexDirection: 'row', gap: space.sm, marginTop: space.md },
+  // Cuatro botones no caben en 375 px: la fila envuelve antes que salirse.
+  buttons: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginTop: space.md },
   missing: {
     fontFamily: fonts.serif,
     fontSize: 18,
