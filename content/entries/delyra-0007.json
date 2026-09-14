@@ -1,0 +1,41 @@
+{
+  "id": "delyra-0007",
+  "title": "Estado de excepción",
+  "type": "theory",
+  "categories": [
+    "psicopolitica",
+    "derecho-de-lo-imposible"
+  ],
+  "tags": [
+    "agamben",
+    "excepcion",
+    "soberania",
+    "vacio-legal"
+  ],
+  "content": "Giorgio Agamben publicó Estado de excepción en 2003, dentro de su proyecto Homo sacer. Parte de una paradoja jurídica: la suspensión del orden legal en nombre de una emergencia está prevista por el propio derecho, que así contiene en su interior el lugar donde deja de valer. Agamben sostiene que esa excepción, pensada como algo provisional, tiende a convertirse en técnica normal de gobierno, y analiza como ejemplo la detención indefinida de sospechosos ordenada en Estados Unidos tras 2001. La tesis ha sido muy discutida, y lo fue aún más en 2020, cuando su autor la aplicó a las medidas contra la pandemia y recibió críticas incluso de colegas cercanos como Jean-Luc Nancy.",
+  "question": "¿Quién decide que una emergencia ha terminado, y según qué regla?",
+  "sources": [
+    {
+      "label": "Agamben, Stato di eccezione, 2003",
+      "author": "Giorgio Agamben",
+      "work": "Stato di eccezione",
+      "year": 2003,
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "controversial",
+  "scores": {
+    "strangeness": 3,
+    "darkness": 5,
+    "fictionality": 1
+  },
+  "sensitive": true,
+  "related": [
+    "delyra-0006"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude a partir de las referencias de content/figures.json (Agamben). Autoría asignada por la afinidad de esa figura: revisar texto y autoría."
+}
