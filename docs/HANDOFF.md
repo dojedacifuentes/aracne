@@ -57,9 +57,9 @@ definido que hay ahora mismo.
 | 5 | **La red dibujada**: `/deriva/<semilla>` con tres modos, y la tela permanente. |
 | 6 | El gabinete: `/gabinete`, salas, figuras, `invocar desde esta sala`. |
 | 7 | `/archivo` con filtros en la URL, búsqueda local y paleta ⌘K. |
+| 8 | `/adn`: la forma del archivo. Repartos por pata, tipo y estado, medias y tags. |
 
-**No está hecho:** fase 8 (`/adn`, estadísticas del archivo) y fase 9 (`/hoy`,
-accesibilidad, repaso de microcopy).
+**No está hecho:** fase 9 (`/hoy`, accesibilidad, repaso de microcopy).
 
 En la rama `diseno-denso` hay un rediseño a medias, sin verificar en pantalla:
 tipografía unificada en siete cuerpos —eso sí está terminado y con prueba— más
@@ -164,6 +164,26 @@ sería irrepetible.
 dibujo, paleta de seis tokens y un aviso automático si el acento se pasa del 5%.
 Añadir un emblema son diez o quince líneas.
 
+### 6.3bis Lo que ya se aplicó de la literatura de UX
+
+De una investigación sobre interfaces de colecciones digitales se aplicaron
+tres cosas; el resto se descartó y está en la sección 7.
+
+- **«No todos los enlaces deben mostrarse igual.»** Los hilos de la tela ya no
+  se dibujan todos con el mismo trazo: la razón del vínculo decide el estilo,
+  siguiendo la gramática que el proyecto ya usaba para el estado epistémico —
+  **el trazo codifica la certeza, nunca el color**. Continuo lo que el archivo
+  declara, discontinuo la misma pata, punteado el mismo tipo. Está en
+  `THREAD_STYLE` (`ui/lib/epistemic.ts`), con leyenda y tres pruebas, una de
+  ellas para que nadie meta color ahí dentro.
+- **«¿Por qué aparece este enlace?»** Pulsar un hilo dice por qué existe,
+  usando el mismo `linkText()` que nombra los pasos de la deriva: un vínculo no
+  puede llamarse de dos maneras según dónde se lea.
+- **«Interfaz generosa» (Whitelaw).** Buscar obliga a preguntar y esconde el
+  resto. `/adn` enseña cuánto hay y cómo está repartido, con barras de una
+  línea sin librería de gráficos: la longitud da la proporción y el número da
+  el dato exacto.
+
 ### 6.4 En cada entrada: por qué llegaste aquí
 
 Dos añadidos pequeños con mucho efecto:
@@ -262,6 +282,11 @@ Para que nadie lo vuelva a proponer sin saber que ya se pensó.
 | Plantillas de un clic | Aracne no es un lienzo donde el visitante cree cosas. No hay nada que plantillar. |
 | Tour guiado de tres pasos | Demasiado para esta voz. Basta la frase de 6.5. |
 | Paleta de comandos ⌘K | **Ya existe** desde la fase 7: buscar, invocar, saltar a pata, abrir sala. |
+| Cuentas de usuario, colecciones personales, comentarios, rutas compartidas | Piden un backend con estado. `CLAUDE.md`: sin base de datos. |
+| Google Analytics, Hotjar, mapas de calor, A/B testing | Servicios externos y datos de navegación de terceros. Las métricas que sí se pueden medir se miden aquí sobre el contenido, no sobre las personas. |
+| Neo4j, Sigma.js, ReGraph, D3 | El grafo son 44 entradas en archivos JSON y el dibujo son 150 líneas. Un motor de grafos no resuelve ningún problema que exista. |
+| Botón «explorar aleatoriamente» | **Ya existe, y es la araña.** Todo el oráculo es serendipia por diseño desde la fase 2. |
+| Tour guiado, modales de onboarding, tooltips de ayuda | Contradice la voz: ningún botón debe sonar a instrucción. Basta la frase de 6.5. |
 
 Dos correcciones a auditorías externas que circulan sobre el proyecto: **no es
 React/Vite/Next**, es Expo + React Native Web + three.js; y **las entradas sí

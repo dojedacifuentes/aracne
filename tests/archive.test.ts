@@ -10,6 +10,7 @@ import {
   toggle,
   type ArchiveFilters,
 } from '../lib/archive/filter';
+import { shapeOf } from '../lib/archive/shape';
 import { loadArchive } from '../lib/content/loader';
 import { ENTRY_TYPES, EPISTEMIC_STATUS } from '../lib/schema';
 import { filtersToQuery, parseFilters, parseRoute, routeToUrl } from '../ui/lib/route';
@@ -161,5 +162,56 @@ describe('los filtros viajan en la URL', () => {
     expect(filterEntries(corpus.entries, parseFilters('?tipos=nave-espacial'))).toHaveLength(
       corpus.entries.length,
     );
+  });
+});
+
+describe('la forma del archivo', () => {
+  const shape = shapeOf(corpus.entries, legs);
+
+  it('los totales cuadran con el archivo', () => {
+    expect(shape.entries).toBe(corpus.entries.length);
+    expect(shape.lit + shape.retracted).toBe(legs.length);
+    expect(shape.pending).toBe(
+      corpus.entries.filter((e) => e.epistemicStatus === 'unverified').length,
+    );
+  });
+
+  it('cada reparto suma el total, ni más ni menos', () => {
+    const suma = (xs: { count: number }[]) => xs.reduce((s, x) => s + x.count, 0);
+    expect(suma(shape.types)).toBe(corpus.entries.length);
+    expect(suma(shape.statuses)).toBe(corpus.entries.length);
+  });
+
+  it('las proporciones son proporciones', () => {
+    for (const grupo of [shape.types, shape.statuses, shape.legs, shape.tags]) {
+      for (const s of grupo) {
+        expect(s.share).toBeGreaterThan(0);
+        expect(s.share).toBeLessThanOrEqual(1);
+      }
+    }
+  });
+
+  it('solo se ofrecen los tags que aparecen más de una vez', () => {
+    for (const t of shape.tags) expect(t.count).toBeGreaterThan(1);
+  });
+
+  it('las medias caen dentro del rango de las puntuaciones', () => {
+    for (const media of Object.values(shape.averages)) {
+      expect(media).toBeGreaterThanOrEqual(1);
+      expect(media).toBeLessThanOrEqual(5);
+    }
+  });
+
+  it('un archivo vacío no rompe la forma', () => {
+    const vacio = shapeOf([], legs);
+    expect(vacio.entries).toBe(0);
+    expect(vacio.types).toEqual([]);
+    expect(vacio.averages.strangeness).toBe(0);
+  });
+
+  it('/adn tiene ruta propia y vuelve igual', () => {
+    expect(routeToUrl({ name: 'shape' })).toBe('/adn');
+    expect(parseRoute('/adn', '')).toEqual({ name: 'shape' });
+    expect(parseRoute('/adn/', '')).toEqual({ name: 'shape' });
   });
 });

@@ -15,11 +15,13 @@ export type Route =
   | { name: 'room'; id: string }
   | { name: 'figure'; id: string }
   | { name: 'archive'; filters: ArchiveFilters }
-  | { name: 'drift'; seed: string; mode: DriftMode; leg: string | null };
+  | { name: 'drift'; seed: string; mode: DriftMode; leg: string | null }
+  | { name: 'shape' };
 
 export const HOME: Route = { name: 'home' };
 export const CABINET: Route = { name: 'cabinet' };
 export const ARCHIVE: Route = { name: 'archive', filters: NO_FILTERS };
+export const SHAPE: Route = { name: 'shape' };
 
 const SLUG = /^[a-z0-9-]+$/;
 /** El mismo formato que `EntrySchema`: aquí solo decide si la ruta existe. */
@@ -53,6 +55,8 @@ export function parseRoute(pathname: string, search: string): Route {
     const pata = params.get('pata') ?? '';
     return { name: 'drift', seed: drift[1], mode, leg: SLUG.test(pata) ? pata : null };
   }
+  if (/^\/adn\/?$/.test(pathname)) return SHAPE;
+
   if (/^\/archivo\/?$/.test(pathname)) return { name: 'archive', filters: parseFilters(search) };
 
   const match = /^\/i\/([^/]+)\/?$/.exec(pathname);
@@ -89,6 +93,8 @@ export function routeToUrl(route: Route): string {
       const search = query.toString();
       return search ? `/deriva/${route.seed}?${search}` : `/deriva/${route.seed}`;
     }
+    case 'shape':
+      return '/adn';
     case 'archive': {
       const query = filtersToQuery(route.filters);
       return query ? `/archivo?${query}` : '/archivo';

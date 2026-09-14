@@ -3,7 +3,9 @@ import { describe, expect, it } from 'vitest';
 import { RING } from '../lib/aleph/tension';
 import { loadArchive } from '../lib/content/loader';
 import { buildWeb, farCrossings, ringDistance } from '../lib/drift/layout';
+import { WEIGHTS } from '../lib/drift/graph';
 import { longestReach, twoWorlds } from '../lib/drift/modes';
+import { THREAD_STYLE } from '../ui/lib/epistemic';
 
 const { corpus } = loadArchive();
 const web = buildWeb(corpus.entries, corpus.categories, 'k3x9q2ab', RING);
@@ -139,5 +141,31 @@ describe('distancia', () => {
   it('con menos de dos entradas no hay distancia que medir', () => {
     expect(longestReach([])).toBeNull();
     expect(longestReach(corpus.entries.slice(0, 1))).toBeNull();
+  });
+});
+
+describe('la gramática del hilo', () => {
+  it('cada razón de vínculo tiene su trazo, y ninguna se repite entera', () => {
+    const razones = Object.keys(WEIGHTS) as (keyof typeof WEIGHTS)[];
+    for (const r of razones) expect(THREAD_STYLE[r], r).toBeDefined();
+    // Lo que el archivo declara va continuo; lo que solo comparten, no.
+    expect(THREAD_STYLE.explicit.dash).toBeNull();
+    expect(THREAD_STYLE.tag.dash).toBeNull();
+    expect(THREAD_STYLE.category.dash).not.toBeNull();
+    expect(THREAD_STYLE.type.dash).not.toBeNull();
+  });
+
+  it('el trazo es más grueso cuanto más afirma el vínculo', () => {
+    // Un vínculo anotado a mano pesa más que una coincidencia de tipo, y el
+    // dibujo tiene que decir lo mismo que dice el motor.
+    expect(WEIGHTS.explicit).toBeGreaterThan(WEIGHTS.type);
+    expect(THREAD_STYLE.explicit.weight).toBeGreaterThan(THREAD_STYLE.type.weight);
+    expect(THREAD_STYLE.tag.weight).toBeGreaterThan(THREAD_STYLE.type.weight);
+  });
+
+  it('la gramática no usa color: solo trazo y grosor', () => {
+    for (const style of Object.values(THREAD_STYLE)) {
+      expect(Object.keys(style).sort()).toEqual(['dash', 'label', 'weight']);
+    }
   });
 });

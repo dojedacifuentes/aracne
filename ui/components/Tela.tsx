@@ -6,6 +6,8 @@ import { RING } from '../../lib/aleph/tension';
 import type { Corpus } from '../../lib/content/corpus';
 import { buildWeb, farCrossings, type Edge, type Node } from '../../lib/drift/layout';
 import { catalogId } from '../../lib/labels';
+import { linkText } from '../lib/copy';
+import { THREAD_STYLE } from '../lib/epistemic';
 import { colors, fonts, space } from '../theme';
 
 type Props = {
@@ -47,6 +49,8 @@ export function Tela({ corpus, seed, size, lit = [], showCrossings = true, ambie
   );
   const lejanos = useMemo(() => farCrossings(web, RING), [web]);
   const [hovered, setHovered] = useState<Node | null>(null);
+  // El hilo que se ha pulsado: un grafo debe poder decir por qué une lo que une.
+  const [thread, setThread] = useState<Edge | null>(null);
 
   const encendidas = new Set(lit);
   const byId = new Map(web.nodes.map((n) => [n.id, n]));
@@ -56,6 +60,7 @@ export function Tela({ corpus, seed, size, lit = [], showCrossings = true, ambie
 
   const destacada = (edge: Edge) =>
     encendidas.has(edge.from) && encendidas.has(edge.to);
+  const categoryName = (id: string) => corpus.categories.find((c) => c.id === id)?.name;
 
   return (
     <View>
@@ -82,14 +87,38 @@ export function Tela({ corpus, seed, size, lit = [], showCrossings = true, ambie
             const cx = mx + (0.5 - mx) * 0.35;
             const cy = my + (0.5 - my) * 0.35;
             const fuerte = destacada(edge);
+            const elegido = thread?.from === edge.from && thread?.to === edge.to;
+            // El trazo lo decide la razón del vínculo, no solo su peso: un hilo
+            // anotado a mano y una coincidencia de tipo no afirman lo mismo.
+            const estilo = THREAD_STYLE[edge.reason];
+            const trazo = `M ${P(a.x)} ${P(a.y)} Q ${P(cx)} ${P(cy)} ${P(b.x)} ${P(b.y)}`;
+            const visible = fuerte || elegido;
             return (
               <Path
                 key={`${edge.from}|${edge.to}`}
-                d={`M ${P(a.x)} ${P(a.y)} Q ${P(cx)} ${P(cy)} ${P(b.x)} ${P(b.y)}`}
+                d={trazo}
                 fill="none"
-                stroke={fuerte ? colors.text : colors.line}
-                strokeWidth={fuerte ? 1.6 : 0.4 + edge.weight * 1.1}
-                opacity={(fuerte ? 0.95 : 0.35 + edge.weight * 0.45) * alpha}
+                stroke={visible ? colors.text : colors.line}
+                strokeWidth={(visible ? 1.6 : 0.4 + edge.weight * 1.1) * estilo.weight}
+                strokeDasharray={estilo.dash ?? undefined}
+                opacity={(visible ? 0.95 : 0.3 + edge.weight * 0.4) * alpha}
+              />
+            );
+          })}
+          {(ambient ? [] : web.edges).map((edge) => {
+            const a = byId.get(edge.from);
+            const b = byId.get(edge.to);
+            if (!a || !b) return null;
+            const mx = (a.x + b.x) / 2;
+            const my = (a.y + b.y) / 2;
+            return (
+              <Path
+                key={`hit|${edge.from}|${edge.to}`}
+                d={`M ${P(a.x)} ${P(a.y)} Q ${P(mx + (0.5 - mx) * 0.35)} ${P(my + (0.5 - my) * 0.35)} ${P(b.x)} ${P(b.y)}`}
+                fill="none"
+                stroke="transparent"
+                strokeWidth={10}
+                onPress={() => setThread((c) => (c === edge ? null : edge))}
               />
             );
           })}
@@ -130,11 +159,22 @@ export function Tela({ corpus, seed, size, lit = [], showCrossings = true, ambie
 
       {ambient ? null : (
       <Text style={styles.legend} numberOfLines={2}>
-        {hovered
-          ? `${catalogId(hovered.id)} · ${hovered.title} · ${hovered.degree} vínculos`
-          : `${web.nodes.length} entradas · ${web.edges.length} hilos · ${lejanos.length} cruzan el anillo`}
+        {thread
+          ? `${byId.get(thread.from)?.title} — ${byId.get(thread.to)?.title} · por ${linkText(
+              { to: thread.to, score: 0, reason: thread.reason, label: thread.label },
+              categoryName,
+            )}`
+          : hovered
+            ? `${catalogId(hovered.id)} · ${hovered.title} · ${hovered.degree} vínculos`
+            : `${web.nodes.length} entradas · ${web.edges.length} hilos · ${lejanos.length} cruzan el anillo · pulsa un hilo`}
       </Text>
       )}
+
+      {showCrossings && !ambient ? (
+        <Text style={styles.key} numberOfLines={2}>
+          continuo, lo que el archivo declara · discontinuo, la misma pata · punteado, el mismo tipo
+        </Text>
+      ) : null}
 
       {showCrossings && !ambient && lejanos.length > 0 ? (
         <View style={styles.far}>
@@ -158,6 +198,15 @@ export function Tela({ corpus, seed, size, lit = [], showCrossings = true, ambie
 
 const styles = StyleSheet.create({
   hit: { position: 'absolute', width: 28, height: 28 },
+  // La leyenda de la gramática: sin ella, el trazo distinto es solo ruido.
+  key: {
+    fontFamily: fonts.mono,
+    fontSize: 12,
+    letterSpacing: 0.72,
+    lineHeight: 18,
+    color: colors.dim,
+    marginTop: space.xs,
+  },
   legend: {
     fontFamily: fonts.mono,
     fontSize: 12,

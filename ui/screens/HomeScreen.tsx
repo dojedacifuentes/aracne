@@ -15,6 +15,7 @@ import { ArchiveView } from '../components/ArchiveView';
 import { RoomsView, RoomView } from '../components/CabinetView';
 import { CommandPalette, type Command } from '../components/CommandPalette';
 import { DriftView } from '../components/DriftView';
+import { ShapeView } from '../components/ShapeView';
 import { Tela } from '../components/Tela';
 import { EntryView } from '../components/EntryView';
 import { FigureView } from '../components/FigureView';
@@ -25,7 +26,7 @@ import { Spider } from '../components/spider/Spider';
 import { TextButton } from '../components/TextButton';
 import { useRoute } from '../hooks/useRoute';
 import { getLayoutMode, MAX_CONTENT_WIDTH } from '../lib/layout';
-import { ARCHIVE, CABINET, HOME } from '../lib/route';
+import { ARCHIVE, CABINET, HOME, SHAPE } from '../lib/route';
 import { readHistory, rememberEntries } from '../lib/storedHistory';
 import { colors, fonts, space } from '../theme';
 
@@ -160,6 +161,7 @@ export function HomeScreen({ reduceMotion }: Props) {
   const openCabinet = useCallback(() => navigate(CABINET), [navigate]);
 
   const openArchive = useCallback(() => navigate(ARCHIVE), [navigate]);
+  const openShape = useCallback(() => navigate(SHAPE), [navigate]);
 
   /** La red se abre con la semilla de la invocación en curso, o con una nueva. */
   const openDrift = useCallback(() => {
@@ -333,6 +335,8 @@ export function HomeScreen({ reduceMotion }: Props) {
         onOpen={openEntry}
         onMode={setDriftMode}
       />
+    ) : route.name === 'shape' ? (
+      <ShapeView corpus={corpus} legs={legs} />
     ) : route.name === 'archive' ? (
       <ArchiveView
         corpus={corpus}
@@ -383,7 +387,7 @@ export function HomeScreen({ reduceMotion }: Props) {
         <TextButton label="invocar" onPress={press} />
         <TextButton label="volver" onPress={back} />
       </View>
-    ) : route.name === 'drift' ? (
+    ) : route.name === 'drift' || route.name === 'shape' ? (
       <View style={styles.buttons}>
         <TextButton label="invocar" onPress={press} />
         <TextButton label="volver" onPress={back} />
@@ -395,6 +399,7 @@ export function HomeScreen({ reduceMotion }: Props) {
         <TextButton label="gabinete" onPress={openCabinet} />
         <TextButton label="archivo" onPress={openArchive} />
         <TextButton label="la red" onPress={openDrift} />
+        <TextButton label="la forma" onPress={openShape} />
       </View>
     );
 
