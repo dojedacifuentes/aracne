@@ -1,0 +1,41 @@
+{
+  "id": "delyra-0016",
+  "title": "Aracne",
+  "type": "character",
+  "categories": [
+    "telaranas"
+  ],
+  "tags": [
+    "ovidio",
+    "arana",
+    "tejido",
+    "metamorfosis",
+    "castigo"
+  ],
+  "content": "En el libro sexto de las Metamorfosis, Ovidio cuenta la historia de Aracne, una joven de Lidia de origen humilde cuyo arte de tejer era tan admirado que las ninfas bajaban a mirarla trabajar. Negó deberle nada a Minerva y aceptó competir con ella. La diosa tejió a los dioses castigando la soberbia humana; Aracne tejió a los dioses engañando a mujeres, con Júpiter transformado en toro, en cisne, en lluvia de oro. Minerva no encontró defecto en la obra. La rompió de todos modos y golpeó a la joven con la lanzadera. Aracne se colgó, y la diosa la convirtió en araña para que siguiera colgando y tejiendo.",
+  "question": "Si la obra no tenía defecto, ¿qué fue exactamente lo castigado?",
+  "sources": [
+    {
+      "label": "Ovidio, Metamorfosis, libro VI",
+      "author": "Ovidio",
+      "work": "Metamorfosis",
+      "year": 8,
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "fiction",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 3,
+    "fictionality": 5
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0015"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude a partir de las referencias de content/figures.json (Ovidio). Autoría asignada por la afinidad de esa figura: revisar texto y autoría."
+}
