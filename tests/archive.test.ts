@@ -89,18 +89,29 @@ describe('filtros', () => {
     }
   });
 
-  it('las patas retraídas no se ofrecen como filtro', () => {
-    const retracted = legs.filter((leg) => !leg.visible).map((leg) => leg.category.id);
-    expect(retracted.length).toBeGreaterThan(0);
-    for (const id of retracted) {
-      expect(available.categories.map((f) => f.id)).not.toContain(id);
+  it('una pata retraída no se ofrece como filtro, pero sus entradas siguen en el archivo', () => {
+    // El estado del contenido cambia: hoy las once patas están encendidas y
+    // mañana una categoría nueva nace retraída. La regla se prueba apagando
+    // una pata a mano, no esperando que el archivo tenga alguna apagada.
+    const apagada = legs[0];
+    const conUnaApagada = legs.map((leg) =>
+      leg === apagada ? { ...leg, visible: false, missing: 1 } : leg,
+    );
+    const ofrecidas = facets(corpus.entries, conUnaApagada).categories.map((f) => f.id);
+    expect(ofrecidas).not.toContain(apagada.category.id);
+    expect(ofrecidas.length).toBe(available.categories.length - 1);
+
+    // Sus entradas no desaparecen: se llega a ellas por tag o buscando.
+    const escondidas = corpus.entries.filter((e) => e.categories.includes(apagada.category.id));
+    expect(escondidas.length).toBeGreaterThan(0);
+    for (const entry of escondidas) {
+      expect(filterEntries(corpus.entries, NO_FILTERS)).toContain(entry);
     }
-    // Pero sus entradas siguen en el archivo: se llega a ellas por tag o buscando.
-    for (const id of retracted) {
-      const hidden = corpus.entries.filter((e) => e.categories.includes(id));
-      for (const entry of hidden) {
-        expect(filterEntries(corpus.entries, NO_FILTERS)).toContain(entry);
-      }
+  });
+
+  it('las patas retraídas de hoy, si las hay, tampoco se ofrecen', () => {
+    for (const leg of legs.filter((l) => !l.visible)) {
+      expect(available.categories.map((f) => f.id)).not.toContain(leg.category.id);
     }
   });
 
