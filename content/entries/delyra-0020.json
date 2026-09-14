@@ -1,0 +1,44 @@
+{
+  "id": "delyra-0020",
+  "title": "La araña en las meninges",
+  "type": "work",
+  "categories": [
+    "telaranas",
+    "maquinas-que-imaginan"
+  ],
+  "tags": [
+    "diderot",
+    "arana",
+    "nervio",
+    "sensibilidad",
+    "red"
+  ],
+  "content": "En el verano de 1769 Diderot escribió un diálogo en el que un médico explica cómo puede un cuerpo entero sentirse a sí mismo. Imagínese una araña en el centro de su tela, dice; los hilos llegan a todos los puntos de la superficie y no hay uno solo donde no terminen. Toque un hilo y el animal acude. La araña vive alojada en las meninges y desde ahí se entera de cuanto ocurre en el vasto aposento que ella misma ha tejido. El diálogo no describe nervios que Diderot pudiera ver: describe una infraestructura que convierte un acontecimiento lejano en una vibración. No lo publicó en vida. El texto apareció en 1830, cuarenta y seis años después de su muerte.",
+  "question": "¿Qué se pierde de un acontecimiento cuando se convierte en la señal que lo anuncia?",
+  "sources": [
+    {
+      "label": "Diderot, «Le Rêve de d'Alembert», escrito en 1769",
+      "author": "Denis Diderot",
+      "work": "Le Rêve de d'Alembert",
+      "year": 1769,
+      "url": "https://www.theatre-classique.fr/pages/pdf/DIDEROT_REVEDALEMBERT.pdf",
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 1,
+    "fictionality": 2
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0015",
+    "delyra-0016"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Redactada por Claude a partir del material aportado. Comprobado: escrito en el verano de 1769, publicado póstumamente en 1830; Diderot murió en 1784."
+}
