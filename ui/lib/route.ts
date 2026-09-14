@@ -1,5 +1,6 @@
 import { NO_FILTERS, type ArchiveFilters } from '../../lib/archive/filter';
 import { ENTRY_TYPES, EPISTEMIC_STATUS, type EntryType, type EpistemicStatus } from '../../lib/schema';
+import type { DriftMode } from '../../lib/drift/modes';
 import { isSeed } from '../../lib/oracle/rng';
 
 /**
@@ -13,7 +14,8 @@ export type Route =
   | { name: 'cabinet' }
   | { name: 'room'; id: string }
   | { name: 'figure'; id: string }
-  | { name: 'archive'; filters: ArchiveFilters };
+  | { name: 'archive'; filters: ArchiveFilters }
+  | { name: 'drift'; seed: string; mode: DriftMode; leg: string | null };
 
 export const HOME: Route = { name: 'home' };
 export const CABINET: Route = { name: 'cabinet' };
@@ -21,6 +23,8 @@ export const ARCHIVE: Route = { name: 'archive', filters: NO_FILTERS };
 
 const SLUG = /^[a-z0-9-]+$/;
 /** El mismo formato que `EntrySchema`: aquí solo decide si la ruta existe. */
+/** `/deriva/<semilla>`: se construye con RegExp para no escapar cada barra. */
+const DRIFT_PATH = new RegExp('^/deriva/([^/]+)/?$');
 const ENTRY_ID = /^delyra-\d{4}$/;
 
 /**
@@ -40,6 +44,15 @@ export function parseRoute(pathname: string, search: string): Route {
   const room = /^\/gabinete\/([^/]+)\/?$/.exec(pathname);
   if (room) return SLUG.test(room[1]) ? { name: 'room', id: room[1] } : CABINET;
 
+  const drift = DRIFT_PATH.exec(pathname);
+  if (drift) {
+    if (!isSeed(drift[1])) return HOME;
+    const params = new URLSearchParams(search);
+    const raw = params.get('modo') ?? '';
+    const mode: DriftMode = raw === 'dos-mundos' || raw === 'contacto' ? raw : 'deriva';
+    const pata = params.get('pata') ?? '';
+    return { name: 'drift', seed: drift[1], mode, leg: SLUG.test(pata) ? pata : null };
+  }
   if (/^\/archivo\/?$/.test(pathname)) return { name: 'archive', filters: parseFilters(search) };
 
   const match = /^\/i\/([^/]+)\/?$/.exec(pathname);
@@ -69,6 +82,13 @@ export function routeToUrl(route: Route): string {
       return `/gabinete/${route.id}`;
     case 'figure':
       return `/figura/${route.id}`;
+    case 'drift': {
+      const query = new URLSearchParams();
+      if (route.mode !== 'deriva') query.set('modo', route.mode);
+      if (route.leg) query.set('pata', route.leg);
+      const search = query.toString();
+      return search ? `/deriva/${route.seed}?${search}` : `/deriva/${route.seed}`;
+    }
     case 'archive': {
       const query = filtersToQuery(route.filters);
       return query ? `/archivo?${query}` : '/archivo';

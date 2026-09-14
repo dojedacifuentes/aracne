@@ -8,10 +8,14 @@ import { loadArchive } from '../../lib/content/loader';
 import { pressSeed } from '../../lib/oracle';
 import { pushHistory } from '../../lib/oracle/history';
 import { entriesOfRoom, roomStates } from '../../lib/museum/rooms';
+import type { DriftMode } from '../../lib/drift/modes';
 import { invoke } from '../../lib/oracle/invoke';
+import { freshSeed } from '../../lib/oracle/rng';
 import { ArchiveView } from '../components/ArchiveView';
 import { RoomsView, RoomView } from '../components/CabinetView';
 import { CommandPalette, type Command } from '../components/CommandPalette';
+import { DriftView } from '../components/DriftView';
+import { Tela } from '../components/Tela';
 import { EntryView } from '../components/EntryView';
 import { FigureView } from '../components/FigureView';
 import { InvocationView } from '../components/InvocationView';
@@ -51,6 +55,7 @@ export function HomeScreen({ reduceMotion }: Props) {
   const [history, setHistory] = useState<readonly string[]>(NONE);
   const presses = useRef(0);
   const [palette, setPalette] = useState(false);
+  const telaSeed = 'aracne';
 
   useEffect(() => {
     let alive = true;
@@ -153,6 +158,21 @@ export function HomeScreen({ reduceMotion }: Props) {
   const openCabinet = useCallback(() => navigate(CABINET), [navigate]);
 
   const openArchive = useCallback(() => navigate(ARCHIVE), [navigate]);
+
+  /** La red se abre con la semilla de la invocación en curso, o con una nueva. */
+  const openDrift = useCallback(() => {
+    presses.current += 1;
+    const seed = route.name === 'invocation' ? route.seed : freshSeed(Date.now(), presses.current);
+    navigate({ name: 'drift', seed, mode: 'deriva', leg: selected[0] ?? null });
+  }, [route, selected, navigate]);
+
+  const setDriftMode = useCallback(
+    (mode: DriftMode) => {
+      if (route.name !== 'drift') return;
+      navigate({ ...route, mode });
+    },
+    [route, navigate],
+  );
   const setFilters = useCallback(
     (filters: ArchiveFilters) => navigate({ name: 'archive', filters }),
     [navigate],
@@ -198,6 +218,20 @@ export function HomeScreen({ reduceMotion }: Props) {
    */
   const isReading = route.name !== 'invocation' && route.name !== 'home';
   const panelShare = isReading ? 0.78 : 0.5;
+
+  /**
+   * Lo que la tela enciende: siempre es lo que tienes delante. En una
+   * invocación, lo que salió; leyendo una entrada, ella y sus vecinas
+   * declaradas; en una sala o una figura, lo que tienen ligado; y en la
+   * portada, por dónde has pasado.
+   */
+  const spot = useMemo(() => {
+    if (route.name === 'invocation') return invocation?.entries.map((e) => e.id) ?? [];
+    if (route.name === 'entry') return entry ? [entry.id, ...entry.related] : [];
+    if (route.name === 'figure') return figure?.entries ?? [];
+    if (route.name === 'room') return roomState?.entries ?? [];
+    return history.slice(0, 6);
+  }, [route, invocation, entry, figure, roomState, history]);
 
   const lit = legs.filter((leg) => leg.visible).length;
   const latest = legs.find((leg) => leg.category.id === selected[selected.length - 1]);
@@ -286,6 +320,17 @@ export function HomeScreen({ reduceMotion }: Props) {
       ) : (
         <Text style={styles.missing}>no hay ninguna figura con ese nombre. vuelve al gabinete.</Text>
       )
+    ) : route.name === 'drift' ? (
+      <DriftView
+        corpus={corpus}
+        seed={route.seed}
+        mode={route.mode}
+        leg={route.leg}
+        // El cuadro nunca es mayor que la columna que lo contiene.
+        size={Math.min(portrait ? width - space.md * 2 : 380, 420)}
+        onOpen={openEntry}
+        onMode={setDriftMode}
+      />
     ) : route.name === 'archive' ? (
       <ArchiveView
         corpus={corpus}
@@ -302,6 +347,7 @@ export function HomeScreen({ reduceMotion }: Props) {
     route.name === 'invocation' ? (
       <View style={styles.buttons}>
         <TextButton label="otra" onPress={press} hint="otra invocación con las mismas patas" />
+        <TextButton label="la red" onPress={openDrift} hint="ver esta invocación sobre la tela" />
         <TextButton label="volver" onPress={back} />
       </View>
     ) : route.name === 'entry' ? (
@@ -335,12 +381,18 @@ export function HomeScreen({ reduceMotion }: Props) {
         <TextButton label="invocar" onPress={press} />
         <TextButton label="volver" onPress={back} />
       </View>
+    ) : route.name === 'drift' ? (
+      <View style={styles.buttons}>
+        <TextButton label="invocar" onPress={press} />
+        <TextButton label="volver" onPress={back} />
+      </View>
     ) : (
       <View style={styles.buttons}>
         <TextButton label="invocar" onPress={press} />
         <TextButton label={panel === 'proposito' ? 'patas' : 'propósito'} onPress={togglePanel} />
         <TextButton label="gabinete" onPress={openCabinet} />
         <TextButton label="archivo" onPress={openArchive} />
+        <TextButton label="la red" onPress={openDrift} />
       </View>
     );
 
@@ -351,6 +403,11 @@ export function HomeScreen({ reduceMotion }: Props) {
           <View style={styles.stageWide}>{spider}</View>
           <View style={[styles.side, { paddingTop: insets.top + space.lg }]}>
             {header}
+            {route.name !== 'drift' ? (
+              <View style={styles.telaSmall}>
+                <Tela corpus={corpus} seed={telaSeed} size={216} lit={spot} showCrossings={false} onOpen={openEntry} />
+              </View>
+            ) : null}
             <ScrollView
               style={styles.sideScroll}
               contentContainerStyle={styles.sideContent}
@@ -437,6 +494,8 @@ const styles = StyleSheet.create({
   },
 
   // Cuatro botones no caben en 375 px: la fila envuelve antes que salirse.
+  // La tela permanente: pequeña, arriba del panel, en todas las rutas.
+  telaSmall: { marginTop: space.md, alignItems: 'flex-start' },
   buttons: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginTop: space.md },
   missing: {
     fontFamily: fonts.serif,

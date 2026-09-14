@@ -51,7 +51,7 @@ export function scoreLink(a: Entry, b: Entry): Link | null {
   return { to: b.id, score, reason: best.reason, label: best.label };
 }
 
-export function neighbours(entry: Entry, corpus: Entry[]): Link[] {
+export function neighbours(entry: Entry, corpus: readonly Entry[]): Link[] {
   return corpus
     .filter((e) => e.id !== entry.id)
     .map((e) => scoreLink(entry, e))
@@ -75,7 +75,7 @@ export interface DriftStep {
  */
 export function buildDrift(
   start: Entry,
-  corpus: Entry[],
+  corpus: readonly Entry[],
   length: number,
   seed: string,
 ): DriftStep[] {
@@ -109,7 +109,7 @@ export function buildDrift(
 export function shortestPath(
   from: Entry,
   to: Entry,
-  corpus: Entry[],
+  corpus: readonly Entry[],
 ): DriftStep[] | null {
   const byId = new Map(corpus.map((e) => [e.id, e]));
   const prev = new Map<string, Link>();

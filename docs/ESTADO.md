@@ -15,6 +15,7 @@
 | 7 | `/archivo` con filtros combinables en la URL, búsqueda local y paleta ⌘K | `b76a397` |
 | — | Arreglos: llegar al gabinete en un teléfono | `fb13d7c` |
 | 4 | Primeras siete entradas del material de investigación. **Las once patas encendidas** | `205447f` … `5c401dd` |
+| 5 | La red dibujada: `/deriva/<semilla>`, deriva, dos mundos, contacto, y la tela permanente en todas las rutas | pendiente de commit |
 | 4 | Veinte entradas más y catorce figuras: 44 entradas, 44 figuras, 63 vínculos anotados | `7f53881` … `f48b892` |
 
 En curso: una revisión adversarial de las fases 0–2.
@@ -122,7 +123,7 @@ diagramas de Wigmore— y también en el `.docx` de paneles de datos.
 
 ## Pendiente
 
-- Fases 5, 8 y 9 de `docs/PROMPTS.md`. La 4 está empezada, no cerrada: faltan
+- Fases 8 y 9 de `docs/PROMPTS.md`. La 4 está empezada, no cerrada: faltan
   las vías de incorporación (`npm run capture`, el issue form, `/pendientes`).
 - La rama `diseno-denso` tiene el rediseño a medias: tipografía unificada en
   siete cuerpos (eso sí está terminado y con prueba), más `Rail` y `Context`
