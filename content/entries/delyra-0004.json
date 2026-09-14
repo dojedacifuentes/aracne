@@ -1,0 +1,42 @@
+{
+  "id": "delyra-0004",
+  "title": "El emporio celestial de conocimientos benévolos",
+  "type": "work",
+  "categories": [
+    "bibliotecas-imposibles",
+    "logica"
+  ],
+  "tags": [
+    "borges",
+    "catalogo",
+    "clasificacion",
+    "taxonomia",
+    "enciclopedia"
+  ],
+  "content": "En un ensayo publicado en La Nación en 1942 y recogido después en Otras inquisiciones, Borges comenta el proyecto de John Wilkins, un obispo inglés del siglo XVII que quiso inventar un idioma universal en el que cada palabra indicara su lugar en una clasificación total del mundo. Para mostrar lo arbitrario de toda clasificación, atribuye a cierta enciclopedia china una división de los animales en categorías que se solapan y se contradicen, entre ellas los que pertenecen al Emperador y los que de lejos parecen moscas. La enciclopedia no existe. La lista, en cambio, se ha citado desde entonces en discusiones sobre cómo se ordena lo que se sabe.",
+  "question": "¿Qué clasificación de las que usas a diario resultaría igual de extraña vista desde fuera?",
+  "sources": [
+    {
+      "label": "Borges, «El idioma analítico de John Wilkins», La Nación, 1942",
+      "author": "Jorge Luis Borges",
+      "work": "El idioma analítico de John Wilkins",
+      "year": 1942,
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "fiction",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 1,
+    "fictionality": 4
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0009"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude a partir de las referencias de content/figures.json (Borges). Autoría asignada por la afinidad de esa figura: revisar texto y autoría."
+}
