@@ -34,7 +34,6 @@ if (!title) {
 const content = await ask("qué es, en dos líneas · ");
 const hint = await ask("de dónde viene (autor, obra, link, o nada) · ");
 const question = await ask("la pregunta que deja abierta · ");
-const who = (await ask("quién lo aporta [diego/paola] · ", "diego")).toLowerCase();
 const tags = (await ask("tags, separados por coma · "))
   .split(",")
   .map((t) => t.trim().toLowerCase().replace(/\s+/g, "-"))
@@ -52,7 +51,6 @@ const entry = {
   content: content || "PENDIENTE: redactar entre 60 y 140 palabras.",
   question: question || "PENDIENTE: una pregunta abierta.",
   sources: [],
-  contributors: [who],
   epistemicStatus: "unverified",
   scores: { strangeness: 3, darkness: 3, fictionality: 3 },
   sensitive: false,

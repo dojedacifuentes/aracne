@@ -28,9 +28,6 @@
       "kind": "reference"
     }
   ],
-  "contributors": [
-    "diego"
-  ],
   "epistemicStatus": "fact",
   "scores": {
     "strangeness": 4,
@@ -44,5 +41,5 @@
     "delyra-0037"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Redactada por Claude a partir del material aportado. Comprobado: presentado por John Matherly en DEFCON 17 (2009); el nombre procede de la inteligencia artificial de System Shock."
+  "captureNote": "Redactada por Claude a partir del material reunido. Comprobado: presentado por John Matherly en DEFCON 17 (2009); el nombre procede de la inteligencia artificial de System Shock."
 }

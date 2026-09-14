@@ -34,7 +34,6 @@ export function EntryView({ entry, corpus, reduceMotion, compact, onOpenFigure }
   const figures = figuresOfEntry(entry.id, corpus.figures);
   const border = STATUS_BORDER[entry.epistemicStatus];
   const categories = entry.categories.map((id) => corpus.categories.find((c) => c.id === id)?.name ?? id);
-  const contributors = entry.contributors.map((id) => corpus.contributors.find((c) => c.id === id)?.name ?? id);
 
   return (
     <View style={styles.column}>
@@ -105,7 +104,6 @@ export function EntryView({ entry, corpus, reduceMotion, compact, onOpenFigure }
               </View>
             </View>
           ) : null}
-          <MetaRow label="aportada por" value={contributors.join(' y ')} />
           <MetaRow label="añadida" value={entry.addedAt} />
         </View>
       </Reveal>

@@ -23,9 +23,6 @@
       "kind": "primary"
     }
   ],
-  "contributors": [
-    "paola"
-  ],
   "epistemicStatus": "fact",
   "scores": {
     "strangeness": 4,
@@ -38,5 +35,5 @@
     "delyra-0023"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Semilla de la fase 0, redactada por Claude para completar el anillo; no tiene figura en el gabinete. Autoría provisional: revisar texto y autoría."
+  "captureNote": "Semilla de la fase 0, redactada por Claude para completar el anillo."
 }

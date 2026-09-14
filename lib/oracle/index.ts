@@ -6,7 +6,6 @@ import { pickWeighted, weightOf, type Mode } from "./weighted";
 export interface DrawFilters {
   categories?: string[];
   types?: EntryType[];
-  contributors?: string[];
 }
 
 /** Una sola entrada, con modo, filtros y anti-repetición. */
@@ -22,8 +21,7 @@ export function draw(
   const pool = corpus.filter(
     (e) =>
       (!f.categories?.length || f.categories.some((c) => e.categories.includes(c))) &&
-      (!f.types?.length || f.types.includes(e.type)) &&
-      (!f.contributors?.length || f.contributors.some((c) => e.contributors.includes(c))),
+      (!f.types?.length || f.types.includes(e.type))
   );
   const fresh = pool.filter((e) => !recent.has(e.id));
   const rng = rngFromString(`draw|${seed}|${mode}`);

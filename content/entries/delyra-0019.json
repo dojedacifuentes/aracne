@@ -29,9 +29,6 @@
       "kind": "reference"
     }
   ],
-  "contributors": [
-    "diego"
-  ],
   "epistemicStatus": "fact",
   "scores": {
     "strangeness": 4,
@@ -45,5 +42,5 @@
     "delyra-0037"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Redactada por Claude a partir del material aportado. Capa de radar y satélites Sentinel-1 comprobados en la documentación de Global Fishing Watch."
+  "captureNote": "Redactada por Claude a partir del material reunido. Capa de radar y satélites Sentinel-1 comprobados en la documentación de Global Fishing Watch."
 }

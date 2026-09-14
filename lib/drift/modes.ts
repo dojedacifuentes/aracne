@@ -1,17 +1,17 @@
 import type { Ring } from "../aleph/tension";
 import type { RingCategory } from "../content/corpus";
 import type { Entry } from "../schema";
-import { shortestPath, type DriftStep } from "./graph";
+import { neighbours, shortestPath, type DriftStep } from "./graph";
 
 /** Las tres maneras de leer la red. */
-export type DriftMode = "deriva" | "dos-mundos" | "contacto";
+export type DriftMode = "deriva" | "dos-mundos" | "distancia";
 
 /**
  * Los dos modos de lectura del grafo que pide la fase 5.
  *
  * Ninguno de los dos resuelve nada: uno devuelve un desajuste y el otro una
- * ruta o su ausencia. Los dos son lecturas del mismo grafo que ya estaba
- * escrito en `graph.ts`.
+ * ruta. Los dos son lecturas del mismo grafo que ya estaba escrito en
+ * `graph.ts`.
  */
 
 export interface TwoWorlds {
@@ -38,45 +38,58 @@ export function twoWorlds(from: RingCategory, categories: readonly RingCategory[
   return { from, facing: [a, b] };
 }
 
-export interface Contact {
+export interface Distance {
   from: Entry;
   to: Entry;
-  /** null cuando el grafo no conecta a las dos. */
+  /** Pasos entre las dos. Cero si el archivo no llega a unirlas. */
+  steps: number;
+  /** null cuando el grafo no las conecta. */
   path: DriftStep[] | null;
 }
 
 /**
- * Contacto: el camino más corto entre una entrada de uno y una del otro.
+ * Distancia: las dos entradas más lejanas que el archivo llega a unir.
  *
- * Elige el par más corto que exista, no un par cualquiera: la pregunta no es
- * si estas dos concretas se tocan, sino a qué distancia están los dos archivos
- * que cada uno ha ido escribiendo. Si no hay ninguna ruta, lo dice.
+ * Es el diámetro del grafo, y sirve para medir de un vistazo cuánto se ha
+ * cerrado la red. Mientras el archivo era pequeño había entradas que no se
+ * tocaban con nada; según crece, el número baja. Cuando el diámetro llegue a
+ * dos, cualquier cosa estará a un paso de cualquier otra, la red habrá dejado
+ * de tener lejanía que recorrer, y ése será el momento de exigirles más a los
+ * vínculos y no menos.
+ *
+ * Determinista: recorre en el orden del archivo y los empates los decide ese
+ * orden, no el azar.
  */
-export function contact(
-  entries: readonly Entry[],
-  a: string,
-  b: string,
-  seed: string,
-): Contact | null {
-  const mine = entries.filter((e) => e.contributors.includes(a));
-  const yours = entries.filter((e) => e.contributors.includes(b));
-  if (mine.length === 0 || yours.length === 0) return null;
+export function longestReach(entries: readonly Entry[]): Distance | null {
+  if (entries.length < 2) return null;
 
-  // Determinista: recorre en el orden del archivo y se queda con la más corta.
-  // El empate lo rompe el orden de los identificadores, no el azar.
-  let best: Contact | null = null;
-  for (const from of mine) {
-    for (const to of yours) {
-      if (from.id === to.id) continue;
-      const path = shortestPath(from, to, entries);
-      if (!path) continue;
-      if (!best || !best.path || path.length < best.path.length) best = { from, to, path };
-      if (best.path && best.path.length === 2) return best;
+  // Una anchura primero por nodo: basta para saber a qué distancia queda cada
+  // par, sin reconstruir todavía ninguna ruta.
+  const vecinos = new Map(entries.map((e) => [e.id, neighbours(e, entries).map((l) => l.to)]));
+  const byId = new Map(entries.map((e) => [e.id, e]));
+
+  let best: { from: Entry; to: Entry; steps: number } | null = null;
+  for (const start of entries) {
+    const distancia = new Map<string, number>([[start.id, 0]]);
+    const cola: string[] = [start.id];
+    while (cola.length > 0) {
+      const actual = cola.shift() as string;
+      const d = distancia.get(actual) ?? 0;
+      for (const siguiente of vecinos.get(actual) ?? []) {
+        if (distancia.has(siguiente)) continue;
+        distancia.set(siguiente, d + 1);
+        cola.push(siguiente);
+      }
+    }
+    for (const [id, d] of distancia) {
+      if (id === start.id) continue;
+      const to = byId.get(id);
+      if (!to) continue;
+      if (!best || d > best.steps) best = { from: start, to, steps: d };
     }
   }
-  if (best) return best;
 
-  // Sin ruta: se devuelve el primer par para poder nombrarlo en la interfaz.
-  void seed;
-  return { from: mine[0], to: yours[0], path: null };
+  // Ni un solo par conectado: el archivo sería polvo suelto.
+  if (!best) return { from: entries[0], to: entries[1], steps: 0, path: null };
+  return { ...best, path: shortestPath(best.from, best.to, entries) };
 }

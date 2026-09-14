@@ -32,7 +32,6 @@ export function ArchiveView({ corpus, legs, filters, onChange, onOpen }: Props) 
   const results = useMemo(() => filterEntries(corpus.entries, filters), [corpus.entries, filters]);
 
   const categoryName = (id: string) => corpus.categories.find((c) => c.id === id)?.name ?? id;
-  const contributorName = (id: string) => corpus.contributors.find((c) => c.id === id)?.name ?? id;
 
   const tags = available.tags.filter(
     (tag) => tag.count >= TAG_FLOOR || filters.tags.includes(tag.id),
@@ -87,18 +86,6 @@ export function ArchiveView({ corpus, legs, filters, onChange, onOpen }: Props) 
             onPress={() =>
               onChange({ ...filters, statuses: toggle(filters.statuses, facet.id as EpistemicStatus) })
             }
-          />
-        ))}
-      </Group>
-
-      <Group label="quién">
-        {available.contributors.map((facet) => (
-          <Chip
-            key={facet.id}
-            label={contributorName(facet.id)}
-            count={facet.count}
-            on={filters.contributors.includes(facet.id)}
-            onPress={() => onChange({ ...filters, contributors: toggle(filters.contributors, facet.id) })}
           />
         ))}
       </Group>

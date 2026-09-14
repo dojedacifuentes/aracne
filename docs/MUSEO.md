@@ -69,8 +69,8 @@ otro: una figura cuya nota se pueda adivinar no aporta nada al gabinete.
 
 El gabinete no es una sección aislada. El campo `entries` de cada figura apunta
 a entradas del archivo, y la navegación va en los dos sentidos: desde una
-entrada se llega a la figura de su autor, y desde la figura se vuelve a todo lo
-que haya aportado.
+entrada se llega a la figura que la reclama, y desde la figura se vuelve a todo
+lo que el archivo le haya ligado.
 
 Una sala puede invocarse: `invocar desde esta sala` toma las entradas ligadas a
 sus figuras y las pasa al motor como si fueran una pata más.

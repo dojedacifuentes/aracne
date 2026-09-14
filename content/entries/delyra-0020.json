@@ -25,9 +25,6 @@
       "kind": "primary"
     }
   ],
-  "contributors": [
-    "diego"
-  ],
   "epistemicStatus": "fact",
   "scores": {
     "strangeness": 4,
@@ -43,5 +40,5 @@
     "delyra-0029"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Redactada por Claude a partir del material aportado. Comprobado: escrito en el verano de 1769, publicado póstumamente en 1830; Diderot murió en 1784."
+  "captureNote": "Redactada por Claude a partir del material reunido. Comprobado: escrito en el verano de 1769, publicado póstumamente en 1830; Diderot murió en 1784."
 }

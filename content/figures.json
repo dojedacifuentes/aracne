@@ -13,9 +13,6 @@
       "delyra-0002",
       "delyra-0003",
       "delyra-0004"
-    ],
-    "affinity": [
-      "paola"
     ]
   },
   {
@@ -27,10 +24,7 @@
       "despues-de-la-vista"
     ],
     "note": "Dictó El paraíso perdido completamente ciego, a quien estuviera disponible en la casa, incluidas sus hijas.",
-    "entries": [],
-    "affinity": [
-      "paola"
-    ]
+    "entries": []
   },
   {
     "id": "euler",
@@ -41,10 +35,7 @@
       "despues-de-la-vista"
     ],
     "note": "Ciego los últimos años de su vida, produjo en ese periodo una parte enorme de su obra dictando a sus asistentes.",
-    "entries": [],
-    "affinity": [
-      "diego"
-    ]
+    "entries": []
   },
   {
     "id": "kafka",
@@ -57,10 +48,7 @@
       "lugares-no-visitados"
     ],
     "note": "Abogado en el Instituto de Seguros de Accidentes de Trabajo de Praga. Redactaba informes sobre máquinas que amputaban dedos. Pidió que quemaran lo demás.",
-    "entries": [],
-    "affinity": [
-      "diego"
-    ]
+    "entries": []
   },
   {
     "id": "einstein",
@@ -71,10 +59,7 @@
       "en-horario-de-oficina"
     ],
     "note": "Examinador de tercera clase en la Oficina de Patentes de Berna durante el año en que publicó cuatro artículos que reorganizaron la física.",
-    "entries": [],
-    "affinity": [
-      "diego"
-    ]
+    "entries": []
   },
   {
     "id": "leibniz",
@@ -86,10 +71,7 @@
       "el-enemigo-elegido"
     ],
     "note": "Bibliotecario y consejero de corte. Pasó años en genealogías dinásticas por encargo mientras inventaba, en los márgenes, media lógica moderna.",
-    "entries": [],
-    "affinity": [
-      "diego"
-    ]
+    "entries": []
   },
   {
     "id": "stevens",
@@ -100,10 +82,7 @@
       "en-horario-de-oficina"
     ],
     "note": "Vicepresidente de una compañía de seguros en Hartford hasta su muerte. Componía versos caminando al trabajo y los dictaba al llegar.",
-    "entries": [],
-    "affinity": [
-      "paola"
-    ]
+    "entries": []
   },
   {
     "id": "spinoza",
@@ -115,10 +94,7 @@
       "empezaron-en-otra-cosa"
     ],
     "note": "Pulía lentes para vivir y rechazó una cátedra para no deberle nada a nadie. La Ética se publicó el año de su muerte y fue prohibida enseguida.",
-    "entries": [],
-    "affinity": [
-      "diego"
-    ]
+    "entries": []
   },
   {
     "id": "wittgenstein",
@@ -130,10 +106,7 @@
       "empezaron-en-otra-cosa"
     ],
     "note": "Estudió ingeniería aeronáutica y patentó una hélice. En vida publicó un solo libro de filosofía, y luego dedicó décadas a desmontarlo.",
-    "entries": [],
-    "affinity": [
-      "diego"
-    ]
+    "entries": []
   },
   {
     "id": "pessoa",
@@ -145,10 +118,7 @@
       "firmaron-con-otro"
     ],
     "note": "Dejó un baúl con decenas de miles de papeles firmados por autores que inventó, con biografías, horóscopos y opiniones contrarias entre sí.",
-    "entries": [],
-    "affinity": [
-      "paola"
-    ]
+    "entries": []
   },
   {
     "id": "godel",
@@ -159,10 +129,7 @@
       "el-baul"
     ],
     "note": "No publicó en vida su prueba ontológica de la existencia de Dios. La mostró a un colega por miedo a que se pensara que la creía.",
-    "entries": [],
-    "affinity": [
-      "diego"
-    ]
+    "entries": []
   },
   {
     "id": "turing",
@@ -177,9 +144,6 @@
     "entries": [
       "delyra-0005",
       "delyra-0014"
-    ],
-    "affinity": [
-      "diego"
     ]
   },
   {
@@ -191,10 +155,7 @@
       "el-enemigo-elegido"
     ],
     "note": "Programó sus clases en Berlín exactamente a la misma hora que las de Hegel. Se quedó sin alumnos y no cambió el horario.",
-    "entries": [],
-    "affinity": [
-      "paola"
-    ]
+    "entries": []
   },
   {
     "id": "hegel",
@@ -205,10 +166,7 @@
       "el-enemigo-elegido"
     ],
     "note": "El adversario que Schopenhauer eligió, y que probablemente nunca supo que había sido elegido.",
-    "entries": [],
-    "affinity": [
-      "paola"
-    ]
+    "entries": []
   },
   {
     "id": "newton",
@@ -220,10 +178,7 @@
       "en-horario-de-oficina"
     ],
     "note": "Dirigió la Casa de la Moneda y persiguió falsificadores en persona. Su disputa con Leibniz la arbitró una comisión que él mismo redactó.",
-    "entries": [],
-    "affinity": [
-      "diego"
-    ]
+    "entries": []
   },
   {
     "id": "foucault",
@@ -238,9 +193,6 @@
       "delyra-0006",
       "delyra-0009",
       "delyra-0032"
-    ],
-    "affinity": [
-      "paola"
     ]
   },
   {
@@ -252,10 +204,7 @@
       "el-enemigo-elegido"
     ],
     "note": "Atacó la lectura que Foucault hacía de un pasaje mínimo. El desacuerdo sobre una coma se convirtió en una ruptura de una década.",
-    "entries": [],
-    "affinity": [
-      "paola"
-    ]
+    "entries": []
   },
   {
     "id": "searle",
@@ -268,9 +217,6 @@
     "note": "Cuarenta años discutiendo con los mismos interlocutores sobre si un sistema que responde bien entiende algo.",
     "entries": [
       "delyra-0001"
-    ],
-    "affinity": [
-      "diego"
     ]
   },
   {
@@ -285,9 +231,6 @@
     "note": "Desterrado al mar Negro por un poema y un error que nunca especificó. Escribió el resto de su obra sobre una Roma a la que no volvió.",
     "entries": [
       "delyra-0016"
-    ],
-    "affinity": [
-      "paola"
     ]
   },
   {
@@ -299,10 +242,7 @@
       "firmaron-con-otro"
     ],
     "note": "Matemático francés inexistente, inventado por un grupo que publicó bajo su nombre durante décadas y llegó a pedir su ingreso en sociedades científicas.",
-    "entries": [],
-    "affinity": [
-      "diego"
-    ]
+    "entries": []
   },
   {
     "id": "kierkegaard",
@@ -313,10 +253,7 @@
       "firmaron-con-otro"
     ],
     "note": "Publicó bajo seudónimos que se criticaban entre sí, y algunos reseñaron los libros de los otros.",
-    "entries": [],
-    "affinity": [
-      "paola"
-    ]
+    "entries": []
   },
   {
     "id": "ccru",
@@ -329,10 +266,6 @@
     "note": "Unidad de investigación de existencia administrativa dudosa dentro de una universidad real. Publicó textos sin autor individual y disolvió deliberadamente la frontera entre teoría y ficción.",
     "entries": [
       "delyra-0036"
-    ],
-    "affinity": [
-      "diego",
-      "paola"
     ]
   },
   {
@@ -344,10 +277,7 @@
       "firmaron-con-otro"
     ],
     "note": "Nombre múltiple que cualquiera podía usar. Cientos de personas firmaron con él libros, sabotajes y engaños a la prensa durante cinco años.",
-    "entries": [],
-    "affinity": [
-      "diego"
-    ]
+    "entries": []
   },
   {
     "id": "lovecraft",
@@ -360,9 +290,6 @@
     "note": "Escribió la Antártida con detalle topográfico sin salir apenas de Nueva Inglaterra, apoyándose en informes de expediciones que leía obsesivamente.",
     "entries": [
       "delyra-0010"
-    ],
-    "affinity": [
-      "paola"
     ]
   },
   {
@@ -374,10 +301,7 @@
       "lugares-no-visitados"
     ],
     "note": "Escribió decenas de novelas de mares tropicales sin haber navegado casi nunca. Firmaba como capitán.",
-    "entries": [],
-    "affinity": [
-      "paola"
-    ]
+    "entries": []
   },
   {
     "id": "eco",
@@ -389,10 +313,7 @@
       "firmaron-con-otro"
     ],
     "note": "Construyó una abadía medieval completa, con su biblioteca laberíntica, antes de escribir una sola línea de la novela. Decía que primero hay que hacer habitable el mundo.",
-    "entries": [],
-    "affinity": [
-      "paola"
-    ]
+    "entries": []
   },
   {
     "id": "han",
@@ -405,9 +326,6 @@
     "note": "Estudió metalurgia en Seúl antes de irse a Alemania a estudiar filosofía sin saber alemán.",
     "entries": [
       "delyra-0008"
-    ],
-    "affinity": [
-      "paola"
     ]
   },
   {
@@ -421,9 +339,6 @@
     "note": "Estudió matemáticas en la Sorbona y las dejó por el arte. Dijo que buscaba en la geometría una estabilidad que no encontró.",
     "entries": [
       "delyra-0015"
-    ],
-    "affinity": [
-      "paola"
     ]
   },
   {
@@ -437,9 +352,6 @@
     "note": "Renunció a dar clases en Estados Unidos por negarse al registro biométrico de visitantes, y escribió por qué.",
     "entries": [
       "delyra-0007"
-    ],
-    "affinity": [
-      "diego"
     ]
   },
   {
@@ -451,10 +363,7 @@
       "empezaron-en-otra-cosa"
     ],
     "note": "Regentó un club de jazz en Tokio durante años y empezó a escribir a los veintinueve, según él, en mitad de un partido de béisbol.",
-    "entries": [],
-    "affinity": [
-      "paola"
-    ]
+    "entries": []
   },
   {
     "id": "diderot",
@@ -468,9 +377,6 @@
     "note": "Dirigió veinte años una enciclopedia mientras el impresor, sin decírselo, censuraba los artículos ya corregidos. Sus diálogos filosóficos más audaces no se publicaron en vida.",
     "entries": [
       "delyra-0020"
-    ],
-    "affinity": [
-      "diego"
     ]
   },
   {
@@ -485,9 +391,6 @@
     "note": "Fue catedrático de filología clásica a los veinticuatro años, antes de doctorarse. Renunció diez años después por la salud y escribió casi todo lo suyo sin puesto ni sueldo fijo.",
     "entries": [
       "delyra-0029"
-    ],
-    "affinity": [
-      "diego"
     ]
   },
   {
@@ -502,9 +405,6 @@
     "entries": [
       "delyra-0028",
       "delyra-0033"
-    ],
-    "affinity": [
-      "paola"
     ]
   },
   {
@@ -518,9 +418,6 @@
     "note": "Reconstruyó la cosmología de un molinero del siglo XVI a partir de las actas de los dos procesos inquisitoriales que acabaron con él.",
     "entries": [
       "delyra-0018"
-    ],
-    "affinity": [
-      "diego"
     ]
   },
   {
@@ -535,9 +432,6 @@
     "note": "Su familia la envió a un sanatorio en Santander en 1940. Escapó de sus cuidadores en Lisboa entrando en una embajada y salió de Europa con un matrimonio de conveniencia.",
     "entries": [
       "delyra-0022"
-    ],
-    "affinity": [
-      "paola"
     ]
   },
   {
@@ -552,9 +446,6 @@
     "note": "Era presidente de sala de un tribunal de apelación. Redactó desde el sanatorio la impugnación de su propia tutela, la defendió en persona y la ganó.",
     "entries": [
       "delyra-0023"
-    ],
-    "affinity": [
-      "diego"
     ]
   },
   {
@@ -568,9 +459,6 @@
     "note": "Pasó buena parte de su vida en cargos palaciegos de intendencia: se ocupaba de alojamientos, mudanzas y obras de la corte, y eso le dejaba poco tiempo para pintar.",
     "entries": [
       "delyra-0030"
-    ],
-    "affinity": [
-      "paola"
     ]
   },
   {
@@ -585,9 +473,6 @@
     "note": "Trabajó de cerrajero mecánico antes que de nada literario, y pasó casi veinte años sin publicar narrativa entre su primera novela y la siguiente.",
     "entries": [
       "delyra-0044"
-    ],
-    "affinity": [
-      "paola"
     ]
   },
   {
@@ -602,9 +487,6 @@
     "note": "Publicó su primera novela bajo el seudónimo de William Lee, el apellido de soltera de su madre.",
     "entries": [
       "delyra-0043"
-    ],
-    "affinity": [
-      "paola"
     ]
   },
   {
@@ -619,9 +501,6 @@
     "note": "Se ganó la vida treinta años midiendo la gravedad terrestre con péndulos para el servicio geodésico de su país. Casi toda su obra filosófica quedó inédita al morir.",
     "entries": [
       "delyra-0035"
-    ],
-    "affinity": [
-      "diego"
     ]
   },
   {
@@ -635,9 +514,6 @@
     "note": "Su primer trabajo de campo como antropólogo no fue en una aldea remota sino dentro de un laboratorio de California, observando a los científicos como a una tribu.",
     "entries": [
       "delyra-0031"
-    ],
-    "affinity": [
-      "diego"
     ]
   },
   {
@@ -651,9 +527,6 @@
     "note": "Construyó buena parte de su obra discutiendo con una sola tesis ajena, la de la muerte del autor, para señalar a quién le sale gratis.",
     "entries": [
       "delyra-0026"
-    ],
-    "affinity": [
-      "paola"
     ]
   },
   {
@@ -667,9 +540,6 @@
     "note": "Su método para diagramar la prueba era tan laborioso que quedó prácticamente olvidado durante décadas, hasta que aparecieron herramientas para dibujar redes.",
     "entries": [
       "delyra-0027"
-    ],
-    "affinity": [
-      "diego"
     ]
   },
   {
@@ -683,9 +553,6 @@
     "note": "Empezó la carrera de bioquímica antes de cambiarse a literatura, y rodó sus primeras películas con financiación pública para cine experimental.",
     "entries": [
       "delyra-0042"
-    ],
-    "affinity": [
-      "diego"
     ]
   }
 ]

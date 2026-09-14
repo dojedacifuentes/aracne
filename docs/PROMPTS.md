@@ -151,8 +151,8 @@ Sin esto el archivo muere en la entrada veinte.
 > devuelve las dos que la flanquean y presenta el cruce como pregunta abierta,
 > sin resolverlo.
 >
-> Modo `contacto`: camino más corto entre una entrada de Diego y una de Paola.
-> Si no hay camino, "sin ruta todavía".
+> Modo `distancia`: las dos entradas más lejanas que el archivo llega a unir, y
+> la ruta entre ellas. Es el diámetro del grafo. Si no hay ninguna, se dice.
 
 ---
 
@@ -181,7 +181,7 @@ Sin esto el archivo muere en la entrada veinte.
 ## Fase 7 — Archivo y paleta
 
 > `/archivo` con todas las entradas. Filtros por categoría, tipo, tag, estado y
-> contribuyente, combinables y reflejados en la URL. Búsqueda local sin
+> combinables y reflejados en la URL. Búsqueda local sin
 > dependencias. Las categorías retraídas no aparecen en los filtros.
 > Paleta de comandos con ⌘K: buscar, invocar, saltar a pata, abrir sala.
 

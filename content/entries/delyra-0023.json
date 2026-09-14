@@ -25,9 +25,6 @@
       "kind": "primary"
     }
   ],
-  "contributors": [
-    "diego"
-  ],
   "epistemicStatus": "fact",
   "scores": {
     "strangeness": 4,
@@ -41,5 +38,5 @@
     "delyra-0044"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Redactada por Claude a partir del material aportado. Comprobado: resolución del Amtsgericht de Dresde de marzo de 1900, revocación del tribunal de apelación el 14 de julio de 1902, publicación en 1903. La entrada no presenta como hechos los contenidos del delirio."
+  "captureNote": "Redactada por Claude a partir del material reunido. Comprobado: resolución del Amtsgericht de Dresde de marzo de 1900, revocación del tribunal de apelación el 14 de julio de 1902, publicación en 1903. La entrada no presenta como hechos los contenidos del delirio."
 }

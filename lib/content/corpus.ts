@@ -3,10 +3,8 @@ import { z } from "zod";
 import {
   CATEGORY_VISIBILITY_THRESHOLD,
   CategorySchema,
-  ContributorSchema,
   EntrySchema,
   validateCorpus,
-  type Contributor,
   type Entry,
   type ValidationIssue,
 } from "../schema";
@@ -28,7 +26,6 @@ export const FigureSchema = z.object({
   rooms: z.array(z.string()).min(1),
   note: z.string().min(1),
   entries: z.array(z.string()).default([]),
-  affinity: z.array(z.string()).default([]),
 });
 
 export const RoomSchema = z.object({
@@ -45,7 +42,6 @@ export interface Corpus {
   entries: Entry[];
   /** Ordenadas por su posición en el anillo. */
   categories: RingCategory[];
-  contributors: Contributor[];
   figures: Figure[];
   rooms: Room[];
 }
@@ -53,7 +49,6 @@ export interface Corpus {
 export interface RawCorpus {
   entries: unknown[];
   categories: unknown;
-  contributors: unknown;
   figures: unknown;
   rooms: unknown;
 }
@@ -103,7 +98,6 @@ export function parseCorpus(raw: RawCorpus): { corpus: Corpus; issues: Validatio
   const categories = parseList(RingCategorySchema, raw.categories, "categorías", issues).sort(
     (a, b) => a.leg - b.leg,
   );
-  const contributors = parseList(ContributorSchema, raw.contributors, "contribuyentes", issues);
   const figures = parseList(FigureSchema, raw.figures, "figuras", issues);
   const rooms = parseList(RoomSchema, raw.rooms, "salas", issues);
 
@@ -115,12 +109,10 @@ export function parseCorpus(raw: RawCorpus): { corpus: Corpus; issues: Validatio
   });
   for (const id of duplicates(categories.map((c) => c.id))) issues.push({ id, message: "categoría duplicada" });
   for (const glyph of duplicates(categories.map((c) => c.glyph))) issues.push({ id: glyph, message: "glifo repetido" });
-  for (const id of duplicates(contributors.map((c) => c.id))) issues.push({ id, message: "contribuyente duplicado" });
   for (const id of duplicates(figures.map((f) => f.id))) issues.push({ id, message: "figura duplicada" });
   for (const id of duplicates(rooms.map((r) => r.id))) issues.push({ id, message: "sala duplicada" });
 
-  const contributorIds = contributors.map((c) => c.id);
-  issues.push(...validateCorpus(raw.entries, categories.map((c) => c.id), contributorIds));
+  issues.push(...validateCorpus(raw.entries, categories.map((c) => c.id)));
 
   const entries: Entry[] = [];
   const seen = new Set<string>();
@@ -152,12 +144,9 @@ export function parseCorpus(raw: RawCorpus): { corpus: Corpus; issues: Validatio
     for (const id of figure.entries) {
       if (!byId.has(id)) issues.push({ id: figure.id, message: `entrada inexistente: ${id}` });
     }
-    for (const who of figure.affinity) {
-      if (!contributorIds.includes(who)) issues.push({ id: figure.id, message: `afinidad con un contribuyente inexistente: ${who}` });
-    }
   }
 
-  return { corpus: { entries, categories, contributors, figures, rooms }, issues };
+  return { corpus: { entries, categories, figures, rooms }, issues };
 }
 
 export interface LegState {

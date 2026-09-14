@@ -48,7 +48,6 @@ for (const file of files) {
 const { corpus, issues: corpusIssues } = parseCorpus({
   entries: rawEntries,
   categories: readJson(path.join(CONTENT, "categories.json")),
-  contributors: readJson(path.join(CONTENT, "contributors.json")),
   figures: readJson(path.join(CONTENT, "figures.json")),
   rooms: readJson(path.join(CONTENT, "rooms.json")),
 });

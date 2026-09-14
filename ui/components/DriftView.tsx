@@ -4,7 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { RING } from '../../lib/aleph/tension';
 import type { Corpus } from '../../lib/content/corpus';
 import { buildDrift } from '../../lib/drift/graph';
-import { contact, twoWorlds, type DriftMode } from '../../lib/drift/modes';
+import { longestReach, twoWorlds, type DriftMode } from '../../lib/drift/modes';
 import { catalogId } from '../../lib/labels';
 import { useFocusRing } from '../hooks/useFocusRing';
 import { linkText } from '../lib/copy';
@@ -50,16 +50,16 @@ export function DriftView({ corpus, seed, mode, leg, size, onOpen, onMode }: Pro
     return from ? twoWorlds(from, corpus.categories, RING) : null;
   }, [mode, leg, corpus.categories]);
 
-  const touch = useMemo(
-    () => (mode === 'contacto' ? contact(entries, 'diego', 'paola', seed) : null),
-    [mode, entries, seed],
+  const reach = useMemo(
+    () => (mode === 'distancia' ? longestReach(entries) : null),
+    [mode, entries],
   );
 
   const lit =
     mode === 'deriva'
       ? drift.map((s) => s.entry.id)
-      : mode === 'contacto'
-        ? (touch?.path ?? []).map((s) => s.entry.id)
+      : mode === 'distancia'
+        ? (reach?.path ?? []).map((s) => s.entry.id)
         : entries
             .filter((e) =>
               worlds ? e.categories.some((c) => c === worlds.facing[0].id || c === worlds.facing[1].id) : false,
@@ -74,7 +74,7 @@ export function DriftView({ corpus, seed, mode, leg, size, onOpen, onMode }: Pro
       <Tela corpus={corpus} seed={seed} size={size} lit={lit} onOpen={onOpen} />
 
       <View style={styles.modes}>
-        {(['deriva', 'dos-mundos', 'contacto'] as DriftMode[]).map((m) => (
+        {(['deriva', 'dos-mundos', 'distancia'] as DriftMode[]).map((m) => (
           <ModeButton key={m} label={m === 'dos-mundos' ? 'dos mundos' : m} on={m === mode} onPress={() => onMode(m)} />
         ))}
       </View>
@@ -110,15 +110,15 @@ export function DriftView({ corpus, seed, mode, leg, size, onOpen, onMode }: Pro
         </View>
       ) : null}
 
-      {mode === 'contacto' && touch ? (
+      {mode === 'distancia' && reach ? (
         <View style={styles.block}>
-          {touch.path ? (
+          {reach.path ? (
             <>
               <Text style={styles.lead}>
-                {touch.path.length - 1} {touch.path.length === 2 ? 'paso' : 'pasos'} entre lo que aportó Diego y lo
-                que aportó Paola.
+                Las dos entradas más lejanas que el archivo llega a unir están a {reach.steps}
+                {reach.steps === 1 ? ' paso' : ' pasos'}. Ése es el diámetro de la red.
               </Text>
-              {touch.path.map((step) => (
+              {reach.path.map((step) => (
                 <View key={step.entry.id} style={styles.step}>
                   {step.link ? <Text style={styles.why}>por {linkText(step.link, categoryName)}</Text> : null}
                   <Line id={step.entry.id} title={step.entry.title} onPress={() => onOpen(step.entry.id)} />
@@ -126,7 +126,7 @@ export function DriftView({ corpus, seed, mode, leg, size, onOpen, onMode }: Pro
               ))}
             </>
           ) : (
-            <Text style={styles.note}>sin ruta todavía.</Text>
+            <Text style={styles.note}>todavía no hay dos entradas que el archivo llegue a unir.</Text>
           )}
         </View>
       ) : null}

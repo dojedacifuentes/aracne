@@ -55,12 +55,12 @@ describe('filtros', () => {
   });
 
   it('se combinan entre sí y cada resultado cumple todo lo pedido', () => {
-    const filters = with_({ categories: ['logica'], contributors: ['paola'] });
+    const filters = with_({ categories: ['logica'], types: ['work'] });
     const results = filterEntries(corpus.entries, filters);
     expect(results.length).toBeGreaterThan(0);
     for (const entry of results) {
       expect(entry.categories).toContain('logica');
-      expect(entry.contributors).toContain('paola');
+      expect(entry.type).toBe('work');
     }
     // Combinar solo puede quitar, nunca añadir.
     expect(results.length).toBeLessThanOrEqual(
@@ -69,9 +69,9 @@ describe('filtros', () => {
   });
 
   it('dentro de un mismo filtro los valores suman', () => {
-    const uno = filterEntries(corpus.entries, with_({ contributors: ['diego'] })).length;
-    const otro = filterEntries(corpus.entries, with_({ contributors: ['paola'] })).length;
-    const ambos = filterEntries(corpus.entries, with_({ contributors: ['diego', 'paola'] })).length;
+    const uno = filterEntries(corpus.entries, with_({ types: ['work'] })).length;
+    const otro = filterEntries(corpus.entries, with_({ types: ['portal'] })).length;
+    const ambos = filterEntries(corpus.entries, with_({ types: ['work', 'portal'] })).length;
     expect(ambos).toBe(uno + otro);
   });
 
@@ -129,12 +129,11 @@ describe('los filtros viajan en la URL', () => {
       types: ['work'],
       tags: ['borges'],
       statuses: ['fiction'],
-      contributors: ['paola'],
       query: 'laberinto',
     });
     const url = routeToUrl({ name: 'archive', filters });
     expect(url).toBe(
-      '/archivo?categorias=logica,telaranas&tipos=work&tags=borges&estado=fiction&quien=paola&q=laberinto',
+      '/archivo?categorias=logica,telaranas&tipos=work&tags=borges&estado=fiction&q=laberinto',
     );
     const [pathname, query] = url.split('?');
     const route = parseRoute(pathname, `?${query}`);
@@ -155,12 +154,10 @@ describe('los filtros viajan en la URL', () => {
   });
 
   it('un filtro inventado se descarta y no vacía el archivo', () => {
-    const filters = parseFilters('?tipos=nave-espacial&estado=verdadero&categorias=<script>&quien=nadie');
+    const filters = parseFilters('?tipos=nave-espacial&estado=verdadero&categorias=<script>');
     expect(filters.types).toEqual([]);
     expect(filters.statuses).toEqual([]);
     expect(filters.categories).toEqual([]);
-    // `quien=nadie` tiene forma válida: no devuelve nada, y eso es correcto.
-    expect(filters.contributors).toEqual(['nadie']);
     expect(filterEntries(corpus.entries, parseFilters('?tipos=nave-espacial'))).toHaveLength(
       corpus.entries.length,
     );

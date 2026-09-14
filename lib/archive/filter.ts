@@ -14,7 +14,6 @@ export interface ArchiveFilters {
   types: EntryType[];
   tags: string[];
   statuses: EpistemicStatus[];
-  contributors: string[];
   query: string;
 }
 
@@ -23,7 +22,6 @@ export const NO_FILTERS: ArchiveFilters = {
   types: [],
   tags: [],
   statuses: [],
-  contributors: [],
   query: "",
 };
 
@@ -33,7 +31,6 @@ export function isEmpty(filters: ArchiveFilters): boolean {
     filters.types.length === 0 &&
     filters.tags.length === 0 &&
     filters.statuses.length === 0 &&
-    filters.contributors.length === 0 &&
     filters.query.trim() === ""
   );
 }
@@ -87,8 +84,6 @@ export function filterEntries(entries: readonly Entry[], filters: ArchiveFilters
       (filters.types.length === 0 || filters.types.includes(entry.type)) &&
       (filters.tags.length === 0 || filters.tags.some((t) => entry.tags.includes(t))) &&
       (filters.statuses.length === 0 || filters.statuses.includes(entry.epistemicStatus)) &&
-      (filters.contributors.length === 0 ||
-        filters.contributors.some((c) => entry.contributors.includes(c))) &&
       matchesQuery(entry, filters.query),
   );
 }
@@ -103,7 +98,6 @@ export interface Facets {
   types: Facet[];
   tags: Facet[];
   statuses: Facet[];
-  contributors: Facet[];
 }
 
 function tally(values: string[]): Facet[] {
@@ -128,7 +122,6 @@ export function facets(entries: readonly Entry[], legs: readonly LegState[]): Fa
     types: tally(entries.map((e) => e.type)),
     tags: tally(entries.flatMap((e) => e.tags)),
     statuses: tally(entries.map((e) => e.epistemicStatus)),
-    contributors: tally(entries.flatMap((e) => e.contributors)),
   };
 }
 

@@ -16,9 +16,6 @@
   "content": "La deducción va de la regla al caso y no añade nada nuevo. La inducción va de los casos a la regla y necesita muchos. Peirce describió un tercer movimiento que no garantiza nada: partir de un hecho sorprendente e inventar la hipótesis que, de ser cierta, lo volvería esperable. Es el único de los tres que produce ideas y el único que puede equivocarse por completo. Un diagnóstico, una atribución y una investigación criminal funcionan así: no demuestran su conclusión, la proponen como la mejor explicación disponible y la someten después a prueba. El salto es inevitable; lo que se puede exigir es que se declare.",
   "question": "¿Qué obliga a preferir una explicación sobre otra igual de compatible con los hechos?",
   "sources": [],
-  "contributors": [
-    "diego"
-  ],
   "epistemicStatus": "unverified",
   "scores": {
     "strangeness": 4,
@@ -32,5 +29,5 @@
     "delyra-0027"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación aportado por Diego y Paola. Pendiente de verificar: formulación de la abducción en Charles Sanders Peirce y su relación con el paradigma indiciario."
+  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: formulación de la abducción en Charles Sanders Peirce y su relación con el paradigma indiciario."
 }

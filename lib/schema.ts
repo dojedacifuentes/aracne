@@ -34,7 +34,6 @@ export const EntrySchema = z.object({
   content: z.string().min(1),
   question: z.string().min(1),
   sources: z.array(SourceSchema).default([]),
-  contributors: z.array(z.string()).min(1),
   epistemicStatus: z.enum(EPISTEMIC_STATUS),
   scores: z.object({
     strangeness: score,
@@ -55,15 +54,8 @@ export const CategorySchema = z.object({
   tags: z.array(z.string()).default([]),
 });
 
-export const ContributorSchema = z.object({
-  id: z.string().regex(/^[a-z0-9-]+$/),
-  name: z.string().min(1),
-  description: z.string().default(""),
-});
-
 export type Entry = z.infer<typeof EntrySchema>;
 export type Category = z.infer<typeof CategorySchema>;
-export type Contributor = z.infer<typeof ContributorSchema>;
 
 /** Umbral a partir del cual una categoría se muestra en la interfaz. */
 export const CATEGORY_VISIBILITY_THRESHOLD = 3;
@@ -80,7 +72,6 @@ export interface ValidationIssue {
 export function validateCorpus(
   entries: unknown[],
   categoryIds: string[],
-  contributorIds: string[],
 ): ValidationIssue[] {
   const issues: ValidationIssue[] = [];
   const parsed: Entry[] = [];
@@ -107,11 +98,6 @@ export function validateCorpus(
     for (const c of entry.categories) {
       if (!categoryIds.includes(c)) {
         issues.push({ id: entry.id, message: `categoría inexistente: ${c}` });
-      }
-    }
-    for (const c of entry.contributors) {
-      if (!contributorIds.includes(c)) {
-        issues.push({ id: entry.id, message: `contribuyente inexistente: ${c}` });
       }
     }
     for (const r of entry.related) {

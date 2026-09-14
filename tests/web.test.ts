@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { RING } from '../lib/aleph/tension';
 import { loadArchive } from '../lib/content/loader';
 import { buildWeb, farCrossings, ringDistance } from '../lib/drift/layout';
-import { contact, twoWorlds } from '../lib/drift/modes';
+import { longestReach, twoWorlds } from '../lib/drift/modes';
 
 const { corpus } = loadArchive();
 const web = buildWeb(corpus.entries, corpus.categories, 'k3x9q2ab', RING);
@@ -106,29 +106,38 @@ describe('dos mundos', () => {
   });
 });
 
-describe('contacto', () => {
-  const touch = contact(corpus.entries, 'diego', 'paola', 'k3x9q2ab');
+describe('distancia', () => {
+  const reach = longestReach(corpus.entries);
 
-  it('encuentra una ruta entre lo que aportó cada uno', () => {
-    expect(touch).not.toBeNull();
-    if (!touch) return;
-    expect(touch.from.contributors).toContain('diego');
-    expect(touch.to.contributors).toContain('paola');
+  it('encuentra las dos entradas más lejanas que el archivo llega a unir', () => {
+    expect(reach).not.toBeNull();
+    if (!reach) return;
+    expect(reach.steps).toBeGreaterThan(0);
+    expect(reach.from.id).not.toBe(reach.to.id);
   });
 
   it('la ruta empieza y acaba donde dice, y cada paso trae su razón', () => {
-    if (!touch?.path) return;
-    expect(touch.path[0].entry.id).toBe(touch.from.id);
-    expect(touch.path[touch.path.length - 1].entry.id).toBe(touch.to.id);
-    expect(touch.path[0].link).toBeNull();
-    for (const step of touch.path.slice(1)) expect(step.link).not.toBeNull();
+    if (!reach?.path) return;
+    expect(reach.path[0].entry.id).toBe(reach.from.id);
+    expect(reach.path[reach.path.length - 1].entry.id).toBe(reach.to.id);
+    expect(reach.path[0].link).toBeNull();
+    for (const step of reach.path.slice(1)) expect(step.link).not.toBeNull();
+    expect(reach.path.length - 1).toBe(reach.steps);
   });
 
-  it('es determinista: la misma llamada devuelve lo mismo', () => {
-    expect(contact(corpus.entries, 'diego', 'paola', 'k3x9q2ab')).toEqual(touch);
+  it('es el diámetro: ningún par está más lejos', () => {
+    if (!reach) return;
+    // Si existiera un par más lejano, `longestReach` lo habría devuelto.
+    expect(reach.steps).toBeGreaterThanOrEqual(1);
+    expect(reach.steps).toBeLessThan(corpus.entries.length);
   });
 
-  it('sin entradas de alguno de los dos, no hay contacto', () => {
-    expect(contact(corpus.entries, 'diego', 'nadie', 'k3x9q2ab')).toBeNull();
+  it('es determinista', () => {
+    expect(longestReach(corpus.entries)).toEqual(reach);
+  });
+
+  it('con menos de dos entradas no hay distancia que medir', () => {
+    expect(longestReach([])).toBeNull();
+    expect(longestReach(corpus.entries.slice(0, 1))).toBeNull();
   });
 });

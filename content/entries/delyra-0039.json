@@ -16,9 +16,6 @@
   "content": "Hay proyectos que no registran acontecimientos sino noticias sobre acontecimientos: rastrean medios en decenas de idiomas, extraen quién hizo qué a quién y dónde, y le asignan un tono. Lo que queda es una base de datos enorme y rara, porque su unidad no es el hecho sino su mención. Sirve para ver cómo se propaga un tema, qué países aparecen y con qué carga, y cuándo un asunto desaparece de la conversación. Confundir ese archivo con el mundo es un error específico: no mide lo que ocurre, mide lo que se cuenta, y el silencio de un país puede significar paz o significar censura.",
   "question": "¿Qué se está midiendo cuando se mide la atención?",
   "sources": [],
-  "contributors": [
-    "diego"
-  ],
   "epistemicStatus": "unverified",
   "scores": {
     "strangeness": 4,
@@ -31,5 +28,5 @@
     "delyra-0036"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación aportado por Diego y Paola. Pendiente de verificar: GDELT Project, cobertura en más de cien idiomas y codificación de eventos y tono."
+  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: GDELT Project, cobertura en más de cien idiomas y codificación de eventos y tono."
 }

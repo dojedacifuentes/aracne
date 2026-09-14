@@ -24,9 +24,6 @@
       "kind": "primary"
     }
   ],
-  "contributors": [
-    "paola"
-  ],
   "epistemicStatus": "fact",
   "scores": {
     "strangeness": 4,
@@ -39,5 +36,5 @@
     "delyra-0044"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Redactada por Claude a partir del material aportado. Fechas del internamiento (24 de agosto de 1940 al 1 de enero de 1941), sanatorio del doctor Luis Morales y tratamiento con cardiazol comprobados por separado."
+  "captureNote": "Redactada por Claude a partir del material reunido. Fechas del internamiento (24 de agosto de 1940 al 1 de enero de 1941), sanatorio del doctor Luis Morales y tratamiento con cardiazol comprobados por separado."
 }

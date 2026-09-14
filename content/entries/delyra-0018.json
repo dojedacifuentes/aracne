@@ -25,9 +25,6 @@
       "kind": "primary"
     }
   ],
-  "contributors": [
-    "diego"
-  ],
   "epistemicStatus": "fact",
   "scores": {
     "strangeness": 4,
@@ -40,5 +37,5 @@
     "delyra-0035"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Redactada por Claude a partir del material de investigación aportado por Diego y Paola. Fuente comprobada por separado: el ensayo es de 1979, recogido en Miti emblemi spie (Einaudi, 1986)."
+  "captureNote": "Redactada por Claude a partir del material de investigación reunido para el archivo. Fuente comprobada por separado: el ensayo es de 1979, recogido en Miti emblemi spie (Einaudi, 1986)."
 }

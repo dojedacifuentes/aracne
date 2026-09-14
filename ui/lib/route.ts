@@ -49,7 +49,7 @@ export function parseRoute(pathname: string, search: string): Route {
     if (!isSeed(drift[1])) return HOME;
     const params = new URLSearchParams(search);
     const raw = params.get('modo') ?? '';
-    const mode: DriftMode = raw === 'dos-mundos' || raw === 'contacto' ? raw : 'deriva';
+    const mode: DriftMode = raw === 'dos-mundos' || raw === 'distancia' ? raw : 'deriva';
     const pata = params.get('pata') ?? '';
     return { name: 'drift', seed: drift[1], mode, leg: SLUG.test(pata) ? pata : null };
   }
@@ -124,7 +124,6 @@ export function parseFilters(search: string): ArchiveFilters {
     types: list(params, 'tipos').filter((v): v is EntryType => types.includes(v)),
     tags: list(params, 'tags'),
     statuses: list(params, 'estado').filter((v): v is EpistemicStatus => statuses.includes(v)),
-    contributors: list(params, 'quien'),
     query: (params.get('q') ?? '').slice(0, 120),
   };
 }
@@ -139,7 +138,6 @@ export function filtersToQuery(filters: ArchiveFilters): string {
   add('tipos', filters.types);
   add('tags', filters.tags);
   add('estado', filters.statuses);
-  add('quien', filters.contributors);
   if (filters.query.trim()) params.set('q', filters.query.trim());
   return params.toString().replace(/%2C/g, ',');
 }

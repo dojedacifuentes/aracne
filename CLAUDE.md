@@ -13,8 +13,9 @@ algo que no se estaba buscando.
 La metáfora está desarrollada en `docs/ARANA.md` y es vinculante: si una
 funcionalidad no cabe en el animal, probablemente no hace falta.
 
-Lo construyen dos personas, Diego y Paola, y el archivo es el espacio entre las
-dos. La autoría no es metadato administrativo: el motor la usa.
+El archivo no lleva firma. Una entrada no dice quién la escribió, y el motor no
+sabe distinguir a nadie: lo que se conserva de cada una es de dónde sale, qué
+toca y con qué se cruza.
 
 ## Reglas duras
 
@@ -54,7 +55,6 @@ tags          string[]   // minúsculas, sin acentos en el id, singular
 content       string     // 60–140 palabras. Prosa. Sin listas.
 question      string     // una sola, abierta, sin respuesta implícita
 sources       [{ label, author?, work?, year?, url?, kind }]
-contributors  ("diego" | "paola")[]
 epistemicStatus  fact | hypothesis | fiction | speculation
                  | interpretation | controversial | unverified
 scores        { strangeness, darkness, fictionality }  // 1–5

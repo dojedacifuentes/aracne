@@ -16,9 +16,6 @@
   "content": "Hay mapas que muestran el viento del planeta entero como un tejido de líneas que se mueven. No son fotografías: ninguna cámara ve el viento. Lo que se dibuja es la salida de un modelo numérico que divide la atmósfera en celdas y calcula, cada pocas horas, qué hace el aire en cada una. La imagen es hipnótica y conviene recordar de qué está hecha: cada hebra que parece una corriente real es una interpolación entre puntos de una rejilla. El planeta no se ve así. Se ve así el cálculo con el que intentamos adelantarnos a él.",
   "question": "¿Qué parte de lo que muestra un mapa del mundo es el mundo?",
   "sources": [],
-  "contributors": [
-    "paola"
-  ],
   "epistemicStatus": "unverified",
   "scores": {
     "strangeness": 4,
@@ -31,5 +28,5 @@
     "delyra-0041"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación aportado por Diego y Paola. Pendiente de verificar: earth.nullschool.net (Cameron Beccario) y Ventusky; origen de los datos en modelos de predicción tipo GFS."
+  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: earth.nullschool.net (Cameron Beccario) y Ventusky; origen de los datos en modelos de predicción tipo GFS."
 }
