@@ -1,0 +1,42 @@
+{
+  "id": "delyra-0001",
+  "title": "La habitación china",
+  "type": "experiment",
+  "categories": [
+    "maquinas-que-imaginan",
+    "logica"
+  ],
+  "tags": [
+    "ia",
+    "conciencia",
+    "simulacion",
+    "lenguaje",
+    "searle"
+  ],
+  "content": "En 1980 John Searle propuso imaginar a una persona encerrada en una habitación con un libro de reglas para manipular símbolos chinos que no entiende. Por una ranura le llegan preguntas escritas en chino; siguiendo las reglas, devuelve respuestas que para quien está fuera resultan indistinguibles de las de un hablante nativo. Searle sostenía que eso es exactamente lo que hace un programa: manipula sintaxis sin acceder al significado, de modo que ejecutar el programa adecuado no bastaría para comprender. Las réplicas llegaron enseguida: que entiende el sistema entero y no la persona, que faltaría un cuerpo en el mundo, que la intuición del ejemplo engaña. Más de cuarenta años después, la discusión sigue abierta.",
+  "question": "Si la comprensión estuviera en algún lugar de esa habitación, ¿dónde habría que buscarla?",
+  "sources": [
+    {
+      "label": "Searle, «Minds, Brains, and Programs», 1980",
+      "author": "John Searle",
+      "work": "Minds, Brains, and Programs",
+      "year": 1980,
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "interpretation",
+  "scores": {
+    "strangeness": 3,
+    "darkness": 2,
+    "fictionality": 2
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0005"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude a partir de las referencias de content/figures.json (Searle). Autoría asignada por la afinidad de esa figura: revisar texto y autoría."
+}
