@@ -1,0 +1,35 @@
+{
+  "id": "delyra-0030",
+  "title": "Las hilanderas",
+  "type": "work",
+  "categories": [
+    "telaranas",
+    "ciencia-y-arte"
+  ],
+  "tags": [
+    "velazquez",
+    "aracne",
+    "pintura",
+    "representacion",
+    "tejido"
+  ],
+  "content": "Velázquez pintó un taller de tapices: mujeres cardando lana, un torno girando tan deprisa que los radios desaparecen. Al fondo, tras un arco iluminado, hay otra escena con figuras vestidas de otro modo y un tapiz que representa el rapto de Europa. Durante siglos el cuadro se catalogó como una escena de oficio. La lectura que hoy se sostiene es que el fondo es el momento del mito de Aracne y que el primer plano son las tejedoras que compiten. El cuadro sería entonces una pintura sobre pintar: una obra que representa a una artista representando, dentro de un taller que fabrica representaciones.",
+  "question": "¿Dónde termina el oficio y empieza la obra?",
+  "sources": [],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "unverified",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 2,
+    "fictionality": 2
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0016",
+    "delyra-0026"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Del material de investigación aportado por Diego y Paola. Pendiente de verificar: fecha (hacia 1657), ficha del Museo del Prado de «Las hilanderas o La fábula de Aracne» e identificación del fondo con el mito de Ovidio."
+}

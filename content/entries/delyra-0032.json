@@ -1,0 +1,36 @@
+{
+  "id": "delyra-0032",
+  "title": "El dispositivo",
+  "type": "concept",
+  "categories": [
+    "psicopolitica",
+    "telaranas"
+  ],
+  "tags": [
+    "foucault",
+    "dispositivo",
+    "poder",
+    "saber",
+    "institucion"
+  ],
+  "content": "Foucault llamó dispositivo a un conjunto que no tiene una sola sustancia: discursos, instituciones, edificios, reglamentos, leyes, medidas administrativas, enunciados científicos y proposiciones filosóficas. Lo que lo vuelve uno no es su contenido, sino la red que se establece entre esos elementos. La consecuencia incomoda a cualquier sistema de información: no basta preguntar qué contiene la base de datos. Hay que preguntar qué puede entrar en ella, quién puede nombrarlo, quién puede conectarlo, quién puede verlo y qué decisiones se toman a partir de esa visibilidad. Hacer algo visible no solo lo vuelve conocible: lo vuelve clasificable, comparable y administrable.",
+  "question": "¿Qué se vuelve posible hacerle a algo por el solo hecho de haberlo hecho visible?",
+  "sources": [],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "unverified",
+  "scores": {
+    "strangeness": 3,
+    "darkness": 4,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0006",
+    "delyra-0029",
+    "delyra-0031"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Del material de investigación aportado por Diego y Paola. Pendiente de verificar: la definición procede de una entrevista de Foucault de 1977 recogida en Dits et écrits, y es la que reconstruye Agamben en «¿Qué es un dispositivo?»."
+}

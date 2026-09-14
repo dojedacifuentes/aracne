@@ -1,0 +1,36 @@
+{
+  "id": "delyra-0031",
+  "title": "Seguir la asociación",
+  "type": "theory",
+  "categories": [
+    "telaranas",
+    "maquinas-que-imaginan"
+  ],
+  "tags": [
+    "latour",
+    "asociacion",
+    "mediacion",
+    "red",
+    "metodo"
+  ],
+  "content": "La propuesta es dejar de explicar las cosas por «lo social» y dedicarse a rastrear asociaciones: no dar por hecho que dos elementos están relacionados, sino reconstruir la cadena de mediaciones que hizo posible esa relación. Aplicado a un grafo, la pregunta deja de ser quién dibujó la red y pasa a ser qué serie de pasos hizo aparecer esta línea entre estos dos puntos. Un documento se extrae, un nombre se normaliza, una regla decide que dos registros son la misma persona, una clasificación la llama relación comercial y un diseño la dibuja gruesa. La línea visible es el final de la cadena, no su principio.",
+  "question": "¿Cuántas decisiones hay detrás de una línea que parece un hecho?",
+  "sources": [],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "unverified",
+  "scores": {
+    "strangeness": 3,
+    "darkness": 2,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0032",
+    "delyra-0033",
+    "delyra-0034"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Del material de investigación aportado por Diego y Paola. Pendiente de verificar: Bruno Latour, Reassembling the Social (2005), traducido como Reensamblar lo social."
+}

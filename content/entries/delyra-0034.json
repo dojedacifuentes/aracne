@@ -1,0 +1,36 @@
+{
+  "id": "delyra-0034",
+  "title": "Ocho cosas que puede decir una línea",
+  "type": "concept",
+  "categories": [
+    "epistemologia-forense",
+    "telaranas"
+  ],
+  "tags": [
+    "arista",
+    "relacion",
+    "prueba",
+    "inferencia",
+    "ambiguedad"
+  ],
+  "content": "Un grafo dibuja todas sus uniones igual y, sin embargo, una unión puede afirmar cosas muy distintas. Que dos personas compartan un rasgo verificable. Que aparezcan juntas en un mismo documento. Que dos hechos ocurrieran cerca en el tiempo. Que uno contribuyera a producir el otro. Que un dato aumente el apoyo a una hipótesis. Que el ordenamiento les atribuya efectos jurídicos. Que un modelo estime una asociación que nadie observó. O, simplemente, que estar dibujados cerca produzca en quien mira una impresión que ninguna de las proposiciones sueltas llega a afirmar. La misma línea no debería poder significar esas ocho cosas.",
+  "question": "¿Qué tendría que mostrar un dibujo para que no se confundan entre sí?",
+  "sources": [],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "unverified",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 3,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0021",
+    "delyra-0027",
+    "delyra-0031"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Del material de investigación aportado por Diego y Paola. Taxonomía tomada de la sección sobre epistemología jurídica de la prueba. Pendiente de contrastar con Anderson, Schum y Twining, Analysis of Evidence."
+}

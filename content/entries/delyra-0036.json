@@ -1,0 +1,36 @@
+{
+  "id": "delyra-0036",
+  "title": "Hiperstición",
+  "type": "concept",
+  "categories": [
+    "maquinas-que-imaginan",
+    "logica"
+  ],
+  "tags": [
+    "ccru",
+    "hipersticion",
+    "ficcion",
+    "profecia",
+    "circularidad"
+  ],
+  "content": "Una superstición es una creencia falsa. Una hiperstición sería una ficción que, al circular, produce las condiciones que la vuelven cierta: no describe un futuro, lo fabrica. El término procede de un grupo de investigación británico de los años noventa que trabajaba entre la teoría y la escritura de ficción y que usaba sus propios textos como experimentos. La figura incomoda porque no se deja evaluar con la pregunta de si es verdad: una vez que suficiente gente actúa como si lo fuera, la distinción entre describir y provocar deja de poder trazarse desde fuera.",
+  "question": "¿En qué momento una historia deja de contar algo y empieza a causarlo?",
+  "sources": [],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "unverified",
+  "scores": {
+    "strangeness": 5,
+    "darkness": 3,
+    "fictionality": 4
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0003",
+    "delyra-0039",
+    "delyra-0043"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Del material de investigación aportado por Diego y Paola. Pendiente de verificar: origen del término en el CCRU (Cybernetic Culture Research Unit, Warwick, años noventa) y su formulación en los textos de Nick Land."
+}
