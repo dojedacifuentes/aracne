@@ -1,0 +1,40 @@
+{
+  "id": "delyra-0003",
+  "title": "Tlön, Uqbar, Orbis Tertius",
+  "type": "work",
+  "categories": [
+    "bibliotecas-imposibles"
+  ],
+  "tags": [
+    "borges",
+    "enciclopedia",
+    "apocrifo",
+    "idealismo"
+  ],
+  "content": "El cuento empieza con un artículo que aparece en un solo ejemplar de una enciclopedia y en ningún otro: describe un país, Uqbar, cuya literatura trata de una región imaginaria llamada Tlön. Borges lo publicó en 1940. Poco a poco se descubre que una sociedad secreta de sabios lleva generaciones redactando la enciclopedia completa de ese planeta, con su geografía, su álgebra y lenguas sin sustantivos en las que el mundo no es un conjunto de objetos sino una serie de actos. Al final empiezan a aparecer en la Tierra objetos de Tlön, y la humanidad, fascinada por un orden tan riguroso, va adoptando su historia y su idioma. El narrador, mientras tanto, sigue con su traducción.",
+  "question": "¿Qué distingue una enciclopedia que describe el mundo de una que lo está redactando?",
+  "sources": [
+    {
+      "label": "Borges, «Tlön, Uqbar, Orbis Tertius», 1940",
+      "author": "Jorge Luis Borges",
+      "work": "Tlön, Uqbar, Orbis Tertius",
+      "year": 1940,
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "fiction",
+  "scores": {
+    "strangeness": 5,
+    "darkness": 2,
+    "fictionality": 5
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0002"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude a partir de las referencias de content/figures.json (Borges). Autoría asignada por la afinidad de esa figura: revisar texto y autoría."
+}
