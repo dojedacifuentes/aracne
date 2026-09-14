@@ -1,0 +1,44 @@
+{
+  "id": "delyra-0011",
+  "title": "Arañas bajo sustancias",
+  "type": "experiment",
+  "categories": [
+    "telaranas",
+    "epistemologia-forense",
+    "ciencia-y-arte"
+  ],
+  "tags": [
+    "arana",
+    "red",
+    "evidencia",
+    "toxicidad",
+    "patron"
+  ],
+  "content": "En abril de 1995, tres investigadores del Centro Marshall de la NASA, David Noever, Raymond Cronise y Rachna Relwani, publicaron en NASA Tech Briefs una propuesta para medir la toxicidad de una sustancia mirando telarañas. Expusieron arañas a sustancias como cafeína, marihuana, anfetamina e hidrato de cloral, y compararon la geometría de sus redes con la de una red normal mediante análisis estadístico de imagen. Uno de los indicadores más claros era cuántas celdas quedaban sin cerrar: cuanto más tóxica la sustancia, más lados sin completar. La cafeína produjo algunas de las redes más desordenadas. La araña no declara nada; la prueba es lo que teje.",
+  "question": "¿Qué otros objetos guardan, sin proponérselo, el registro de lo que le pasó a quien los hizo?",
+  "sources": [
+    {
+      "label": "Noever, Cronise y Relwani, «Using Spider-Web Patterns To Determine Toxicity», NASA Tech Briefs, 1995",
+      "author": "David A. Noever",
+      "work": "Using Spider-Web Patterns To Determine Toxicity",
+      "year": 1995,
+      "url": "https://ntrs.nasa.gov/citations/19950065352",
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 2,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0015"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude para completar el anillo; no tiene figura en el gabinete. Autoría provisional: revisar texto y autoría."
+}
