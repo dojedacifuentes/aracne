@@ -1,0 +1,40 @@
+{
+  "id": "delyra-0008",
+  "title": "Psicopolítica",
+  "type": "theory",
+  "categories": [
+    "psicopolitica"
+  ],
+  "tags": [
+    "han",
+    "autoexplotacion",
+    "dataismo",
+    "vigilancia"
+  ],
+  "content": "En Psicopolítica, publicado en alemán en 2014, Byung-Chul Han sostiene que el poder contemporáneo ya no funciona sobre todo prohibiendo, sino seduciendo. Donde el panóptico disciplinario encerraba y vigilaba, el régimen neoliberal que describe invita a cada persona a exponerse, medirse y optimizarse por voluntad propia, y a vivir su cansancio como un fracaso individual. Los datos entregados sin coacción permitirían intervenir en la psique antes de que llegue a formarse una decisión. Han llama dataísmo a la fe en esa transparencia total. En el mismo libro compara el teléfono inteligente con un objeto de devoción: algo que se lleva siempre encima y ante lo que uno se confiesa.",
+  "question": "¿Qué parte de lo que haces por decisión propia empezó siendo una sugerencia?",
+  "sources": [
+    {
+      "label": "Han, Psychopolitik, 2014",
+      "author": "Byung-Chul Han",
+      "work": "Psychopolitik: Neoliberalismus und die neuen Machttechniken",
+      "year": 2014,
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "interpretation",
+  "scores": {
+    "strangeness": 2,
+    "darkness": 4,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0006"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude a partir de las referencias de content/figures.json (Han). Autoría asignada por la afinidad de esa figura: revisar texto y autoría."
+}
