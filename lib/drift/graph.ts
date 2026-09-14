@@ -31,7 +31,8 @@ function shared<T>(a: T[], b: T[]): T[] {
 /** Puntúa el vínculo entre dos entradas y guarda la razón más fuerte. */
 export function scoreLink(a: Entry, b: Entry): Link | null {
   let score = 0;
-  let best: { reason: LinkReason; label: string } | null = null;
+  // El `as` evita que TypeScript fije `best` en null: se asigna dentro de `consider`.
+  let best = null as { reason: LinkReason; label: string } | null;
 
   const consider = (reason: LinkReason, label: string) => {
     score += WEIGHTS[reason];
