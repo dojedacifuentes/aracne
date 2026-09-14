@@ -31,7 +31,9 @@
     "fictionality": 1
   },
   "sensitive": false,
-  "related": [],
+  "related": [
+    "delyra-0019"
+  ],
   "addedAt": "2026-09-14",
   "captureNote": "Semilla de la fase 0, redactada por Claude para completar el anillo; no tiene figura en el gabinete. Autoría provisional: revisar texto y autoría."
 }
