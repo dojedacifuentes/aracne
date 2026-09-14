@@ -1,0 +1,37 @@
+{
+  "id": "delyra-0013",
+  "title": "Los sismos del último día",
+  "type": "portal",
+  "categories": [
+    "estado-del-mundo"
+  ],
+  "tags": [
+    "sismo",
+    "tiempo-real",
+    "planeta",
+    "datos"
+  ],
+  "content": "El Servicio Geológico de Estados Unidos mantiene un mapa público con los terremotos que se registran en el planeta a medida que se detectan. Cada punto es un evento con su magnitud, su profundidad y la hora en que ocurrió, y la lista se actualiza sola. Mirado durante un rato, deja de parecer un mapa de desastres y empieza a parecer lo que es: un planeta que se mueve todo el tiempo, casi siempre por debajo de lo que un cuerpo puede sentir. La mayoría de los eventos de un día cualquiera son pequeños y no aparecen en ninguna noticia. El mapa no predice nada. Solo registra, con un retraso de minutos.",
+  "question": "¿Qué cambiaría en tu forma de habitar un lugar si vieras en todo momento cómo se mueve el suelo bajo él?",
+  "sources": [
+    {
+      "label": "USGS, Latest Earthquakes",
+      "author": "U.S. Geological Survey",
+      "url": "https://earthquake.usgs.gov/earthquakes/map/",
+      "kind": "portal"
+    }
+  ],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 2,
+    "darkness": 3,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude para completar el anillo; no tiene figura en el gabinete. Autoría provisional: revisar texto y autoría."
+}
