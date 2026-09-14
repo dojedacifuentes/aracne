@@ -34,6 +34,20 @@
       html {
         background-color: #0e0d0c;
       }
+      /*
+        El paquete pesa 1,8 MB y hasta que arranca no hay nada que mirar.
+        Esta marca ocupa ese hueco y desaparece sola: en cuanto React monta
+        algo dentro, #root deja de estar vacío y el pseudoelemento se va. Sin
+        JavaScript, sin animación y sin un solo byte de bundle.
+      */
+      #root:empty::before {
+        content: 'aracne';
+        margin: auto;
+        font-family: ui-monospace, Menlo, Consolas, monospace;
+        font-size: 12px;
+        letter-spacing: 2.4px;
+        color: #8a857d;
+      }
     </style>
   </head>
 

@@ -6,6 +6,13 @@ import { NATIVE_DRIVER } from '../theme';
 /** docs/DESIGN.md: el único momento de movimiento de la interfaz. */
 const APPEAR_MS = 320;
 const STAGGER_MS = 40;
+/**
+ * Tope del escalonado. Sin él, una lista de cuarenta elementos tardaría un
+ * segundo y seis décimas en terminar de aparecer, y lo último en llegar sería
+ * justo lo que alguien ha bajado a leer. Ocho piezas de retraso se notan como
+ * un orden; cuarenta se notan como una espera.
+ */
+const MAX_STAGGER = 8;
 const RISE_PX = 8;
 const REDUCED_MS = 120;
 const EASE = Easing.bezier(0.2, 0.8, 0.2, 1);
@@ -31,7 +38,7 @@ export function Reveal({ index = 0, reduceMotion, children }: Props) {
   useEffect(() => {
     progress.setValue(0);
     const duration = reduceMotion ? REDUCED_MS : APPEAR_MS;
-    const delay = reduceMotion ? 0 : index * STAGGER_MS;
+    const delay = reduceMotion ? 0 : Math.min(index, MAX_STAGGER) * STAGGER_MS;
     const animation = Animated.timing(progress, {
       toValue: 1,
       duration,

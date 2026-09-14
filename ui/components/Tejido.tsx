@@ -108,6 +108,60 @@ export function Tejido({ corpus, focus, skin, size, onFocus, onSkin, onOpen, onM
   const visibles = web.edges.filter((edge) => Math.min(weight(edge.from), weight(edge.to)) > GHOST);
   const lejanos = useMemo(() => farCrossings(web, RING), [web]);
 
+  /**
+   * Los hilos se calculan aparte y solo cuando cambia algo que les afecte.
+   * Son casi trescientos, más otros tantos blancos de pulsación: si se
+   * rehicieran cada vez que el cursor roza un punto, mover el ratón por la
+   * tela costaría seiscientos nodos de SVG por fotograma.
+   */
+  const hilos = useMemo(
+    () =>
+      visibles.map((edge) => {
+        const a = byId.get(edge.from);
+        const b = byId.get(edge.to);
+        if (!a || !b) return null;
+        const fuerza = Math.min(weight(edge.from), weight(edge.to));
+        const elegido = thread?.from === edge.from && thread?.to === edge.to;
+        // El trazo lo decide la razón del vínculo, nunca el color.
+        const estilo = THREAD_STYLE[edge.reason];
+        const d = path(a, b);
+        return (
+          <Path
+            key={`${edge.from}|${edge.to}`}
+            d={d}
+            fill="none"
+            stroke={elegido ? colors.text : colors.line}
+            strokeWidth={(elegido ? 1.6 : 0.4 + edge.weight * 1.1) * estilo.weight}
+            strokeDasharray={estilo.dash ?? undefined}
+            opacity={(elegido ? 0.95 : 0.3 + edge.weight * 0.4) * fuerza}
+          />
+        );
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [web, focus, skin, thread, size],
+  );
+
+  const blancos = useMemo(
+    () =>
+      visibles.map((edge) => {
+        const a = byId.get(edge.from);
+        const b = byId.get(edge.to);
+        if (!a || !b) return null;
+        return (
+          <Path
+            key={`hit|${edge.from}|${edge.to}`}
+            d={path(a, b)}
+            fill="none"
+            stroke="transparent"
+            strokeWidth={10}
+            onPress={() => setThread((current) => (current === edge ? null : edge))}
+          />
+        );
+      }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [web, focus, skin, size],
+  );
+
   return (
     <View>
       <View style={[styles.canvas, { width: size, height: size }]}>
@@ -121,41 +175,8 @@ export function Tejido({ corpus, focus, skin, size, onFocus, onSkin, onOpen, onM
             strokeWidth={1}
             opacity={skin === 'flujo' ? 0.35 : 1}
           />
-          {visibles.map((edge) => {
-            const a = byId.get(edge.from);
-            const b = byId.get(edge.to);
-            if (!a || !b) return null;
-            const fuerza = Math.min(weight(edge.from), weight(edge.to));
-            const elegido = thread?.from === edge.from && thread?.to === edge.to;
-            // El trazo lo decide la razón del vínculo, nunca el color.
-            const estilo = THREAD_STYLE[edge.reason];
-            return (
-              <Path
-                key={`${edge.from}|${edge.to}`}
-                d={path(a, b)}
-                fill="none"
-                stroke={elegido ? colors.text : colors.line}
-                strokeWidth={(elegido ? 1.6 : 0.4 + edge.weight * 1.1) * estilo.weight}
-                strokeDasharray={estilo.dash ?? undefined}
-                opacity={(elegido ? 0.95 : 0.3 + edge.weight * 0.4) * fuerza}
-              />
-            );
-          })}
-          {visibles.map((edge) => {
-            const a = byId.get(edge.from);
-            const b = byId.get(edge.to);
-            if (!a || !b) return null;
-            return (
-              <Path
-                key={`hit|${edge.from}|${edge.to}`}
-                d={path(a, b)}
-                fill="none"
-                stroke="transparent"
-                strokeWidth={10}
-                onPress={() => setThread((current) => (current === edge ? null : edge))}
-              />
-            );
-          })}
+          {hilos}
+          {blancos}
           {web.nodes.map((node) => {
             const fuerza = weight(node.id);
             const centred = node.id === focus;
