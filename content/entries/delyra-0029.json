@@ -1,0 +1,44 @@
+{
+  "id": "delyra-0029",
+  "title": "Las tarántulas",
+  "type": "work",
+  "categories": [
+    "telaranas",
+    "psicopolitica"
+  ],
+  "tags": [
+    "nietzsche",
+    "tarantula",
+    "venganza",
+    "resentimiento",
+    "justicia"
+  ],
+  "content": "En la segunda parte de Así habló Zaratustra hay un capítulo que empieza con una guarida y una tela. Zaratustra la toca para que tiemble y salga el animal. Lo que sale no es un insecto: llama tarántulas a los que predican la igualdad y dice que su veneno produce vértigo en el alma. La acusación no es que se equivoquen, sino que el vocabulario de la justicia —recompensa, castigo, retribución— les sirve de escondite a una venganza que no se nombra. El capítulo deja la tela convertida en otra cosa. Ya no es un órgano para percibir lo que ocurre lejos: es un sitio donde esperar escondido a que algo se acerque.",
+  "question": "¿Qué se puede esconder detrás del vocabulario de la justicia?",
+  "sources": [
+    {
+      "label": "Nietzsche, «De las tarántulas», Así habló Zaratustra, segunda parte, 1883",
+      "author": "Friedrich Nietzsche",
+      "work": "Also sprach Zarathustra",
+      "year": 1883,
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "interpretation",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 4,
+    "fictionality": 3
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0020",
+    "delyra-0028",
+    "delyra-0032"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Comprobado: el capítulo «Von den Taranteln» está en la segunda parte de Así habló Zaratustra (1883) y su blanco son los «predicadores de la igualdad». La entrada describe lo que el capítulo hace, sin suscribir su tesis."
+}
