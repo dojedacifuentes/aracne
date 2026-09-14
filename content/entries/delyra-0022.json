@@ -1,0 +1,42 @@
+{
+  "id": "delyra-0022",
+  "title": "Memorias de abajo",
+  "type": "work",
+  "categories": [
+    "umbral-del-sueno",
+    "cuerpo-y-horror"
+  ],
+  "tags": [
+    "carrington",
+    "locura",
+    "psiquiatria",
+    "testimonio",
+    "surrealismo"
+  ],
+  "content": "En agosto de 1940 Leonora Carrington, pintora inglesa de veintitrés años, fue internada en el sanatorio del doctor Luis Morales, en Santander, en la España recién salida de la guerra. Permaneció allí hasta el uno de enero. La trataron con cardiazol, un fármaco que provoca convulsiones deliberadas, y recibió tres inyecciones. En 1943, ya fuera de Europa, escribió el relato de aquellos meses. No lo escribió como una paciente que agradece: describe con precisión lo que vio y lo que le hicieron, y llama a ese lugar «allá abajo». Del internamiento dijo que había sido como estar muerta. Es una de las pocas veces en que el interior de un tratamiento psiquiátrico lo cuenta quien lo recibió.",
+  "question": "¿Quién tiene autoridad para narrar lo que ocurre dentro de un tratamiento?",
+  "sources": [
+    {
+      "label": "Carrington, «Memorias de abajo», escrito en 1943",
+      "author": "Leonora Carrington",
+      "work": "Down Below / Memorias de abajo",
+      "year": 1943,
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 5,
+    "fictionality": 1
+  },
+  "sensitive": true,
+  "related": [
+    "delyra-0023"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Redactada por Claude a partir del material aportado. Fechas del internamiento (24 de agosto de 1940 al 1 de enero de 1941), sanatorio del doctor Luis Morales y tratamiento con cardiazol comprobados por separado."
+}
