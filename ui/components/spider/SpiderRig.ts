@@ -1,7 +1,7 @@
 import { Group, Vector3, type Object3D } from 'three';
 
-import { alephState, impulse, RING } from '../../../lib/aleph/tension';
-import { MOTION, SCENE, SILK_ATTACH, type SpiderOptions } from './spiderConfig';
+import { alephState, impulse, legVector, RING, threadFrequency, type Ring } from '../../../lib/aleph/tension';
+import { MOTION, SCENE, SILK_ATTACH, THREAD, type SpiderOptions } from './spiderConfig';
 import {
   ambientAt,
   pupil,
@@ -20,14 +20,24 @@ export interface StageMetrics {
   height: number;
 }
 
+interface LegThread {
+  silk: SpiderSilk;
+  /** Dirección de la pata en el mundo (y hacia arriba), calculada una vez. */
+  dx: number;
+  dy: number;
+  supported: boolean;
+  /** Instante del último cambio, en segundos; −∞ si no debe vibrar. */
+  changedAt: number;
+  opacity: number;
+}
+
 /**
- * Una araña colgada de su hilo: el modelo, la seda y el movimiento. No sabe
- * nada de React ni del render; la escena la actualiza una vez por fotograma y
- * ella no reserva memoria al hacerlo.
+ * Una araña colgada de su hilo: el modelo, la seda, los hilos de las patas y
+ * el movimiento. No sabe nada de React ni del render; la escena la actualiza
+ * una vez por fotograma y ella no reserva memoria al hacerlo.
  *
- * La física de las patas no se calcula aquí: sale de `alephState()` e
- * `impulse()` de lib/aleph/tension.ts. La araña cuelga de la red y cada pata
- * apoyada tira de ella hacia su ángulo.
+ * La física de las patas no se calcula aquí: sale de `alephState()`,
+ * `impulse()` y `threadFrequency()` de lib/aleph/tension.ts.
  */
 export class SpiderRig {
   readonly object = new Group();
@@ -46,6 +56,8 @@ export class SpiderRig {
 
   private options: SpiderOptions;
   private stage: StageMetrics = { width: 2, height: 2 };
+  private ring: Ring = RING;
+  private threads: LegThread[] = [];
   private legs: readonly number[] = [];
   /** Destino de la tensión, en radios de `alephState()` y ejes de pantalla. */
   private pullX = 0;
@@ -80,9 +92,10 @@ export class SpiderRig {
     this.pressedAt = nowMs;
   }
 
-  /** Nueva selección de patas: golpe hacia las que se apoyan y retroceso de las que se sueltan. */
-  setLegs(next: readonly number[], ringSize: number, quiet: boolean): void {
-    const ring = { legs: ringSize, reach: RING.reach };
+  /** Nueva selección: golpe hacia las patas que se apoyan, retroceso de las que se sueltan, y sus hilos. */
+  setLegs(next: readonly number[], ringSize: number, quiet: boolean, nowSeconds: number): void {
+    if (this.threads.length !== ringSize) this.buildThreads(ringSize);
+    const ring = this.ring;
     const state = alephState([...next], ring);
     this.pullX = state.offset.x;
     this.pullY = state.offset.y;
@@ -103,6 +116,14 @@ export class SpiderRig {
         this.tension.y -= k.y * unit;
       }
     }
+
+    this.threads.forEach((thread, leg) => {
+      const supported = next.includes(leg);
+      if (thread.supported === supported) return;
+      thread.supported = supported;
+      // Sin movimiento, o al cargar una URL compartida, el hilo aparece sin vibrar.
+      thread.changedAt = quiet ? -Infinity : nowSeconds;
+    });
     this.legs = [...next];
   }
 
@@ -180,13 +201,69 @@ export class SpiderRig {
         this.ambient.silkZ * chord,
       );
     }
-    return busy;
+
+    return this.updateThreads(x, y, nowSeconds, dt, quiet) || busy;
   }
 
-  /** El modelo es de la plantilla compartida: aquí solo se libera la seda. */
+  /** El modelo es de la plantilla compartida: aquí solo se liberan los hilos. */
   dispose(): void {
     this.body.remove(this.model);
     this.silk.dispose();
+    for (const thread of this.threads) thread.silk.dispose();
+  }
+
+  private buildThreads(ringSize: number): void {
+    for (const thread of this.threads) {
+      this.object.remove(thread.silk.line);
+      thread.silk.dispose();
+    }
+    this.ring = { legs: ringSize, reach: RING.reach };
+    this.threads = Array.from({ length: ringSize }, (_, leg) => {
+      const direction = legVector(leg, this.ring);
+      const silk = new SpiderSilk({ segments: 24, opacity: 0 });
+      silk.line.visible = false;
+      this.object.add(silk.line);
+      return { silk, dx: direction.x, dy: -direction.y, supported: false, changedAt: -Infinity, opacity: 0 };
+    });
+  }
+
+  private updateThreads(x: number, y: number, now: number, dt: number, quiet: boolean): boolean {
+    // Largo de sobra para salir del escenario en cualquier dirección.
+    const reach = Math.max(this.stage.width, this.stage.height);
+    let busy = false;
+
+    for (let leg = 0; leg < this.threads.length; leg += 1) {
+      const thread = this.threads[leg];
+      const target = thread.supported ? THREAD.opacity : 0;
+      if (quiet) thread.opacity = target;
+      else thread.opacity += (target - thread.opacity) * Math.min(1, dt / (thread.supported ? THREAD.fadeIn : THREAD.fadeOut));
+
+      if (thread.opacity <= 0.002) {
+        thread.silk.line.visible = false;
+        continue;
+      }
+      if (Math.abs(target - thread.opacity) > 0.002) busy = true;
+
+      const age = now - thread.changedAt;
+      let sway = 0;
+      let slack = 0;
+      if (!quiet && Number.isFinite(age)) {
+        if (thread.supported) {
+          const envelope = Math.exp(-age / THREAD.decay);
+          if (envelope > 0.01) {
+            sway = THREAD.amplitude * reach * envelope * Math.sin(2 * Math.PI * threadFrequency(leg, this.ring) * age);
+            busy = true;
+          }
+        } else {
+          slack = THREAD.slack * reach * Math.min(1, age / THREAD.fadeOut);
+        }
+      }
+
+      thread.silk.setOpacity(thread.opacity);
+      thread.silk.line.visible = this.options.silk;
+      thread.silk.update(x, y, 0, x + thread.dx * reach, y + thread.dy * reach, 0, slack, sway, 0);
+    }
+    return busy;
   }
 
   private span(): number {

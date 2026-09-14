@@ -1,10 +1,8 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useFocusRing } from '../hooks/useFocusRing';
+import { textGlyph } from '../lib/glyph';
 import { colors, fonts, HIT_SIZE, space } from '../theme';
-
-/** Fuerza la presentación como texto: sin esto, Windows pinta ♒ como emoji. */
-const TEXT_PRESENTATION = String.fromCharCode(0xfe0e);
 
 type Props = {
   glyph: string;
@@ -58,7 +56,7 @@ export function LegButton({ glyph, name, count, lit, missing, selected, compact 
         ]}
       />
       <Text style={[styles.glyph, selected && styles.on]} maxFontSizeMultiplier={1.4}>
-        {glyph + TEXT_PRESENTATION}
+        {textGlyph(glyph)}
       </Text>
       {compact ? null : (
         <>

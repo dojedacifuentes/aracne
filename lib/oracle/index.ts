@@ -32,9 +32,10 @@ export function draw(
 
 /**
  * La semilla de una pulsación. El historial no entra en `invoke()`, porque la
- * misma URL tiene que devolver lo mismo en cualquier parte: se prueba una
- * semilla nueva y, si lo primero que saldría acaba de salir, se prueba otra,
- * hasta `tries` veces.
+ * misma URL tiene que devolver lo mismo en cualquier parte: se prueban
+ * semillas nuevas y se queda la primera cuya entrada principal no salió en las
+ * cuatro últimas. Si el archivo es tan pequeño que no la hay, al menos una que
+ * no repita la inmediatamente anterior.
  */
 export function pressSeed(
   corpus: Entry[],
@@ -42,14 +43,19 @@ export function pressSeed(
   now: number,
   counter: number,
   history: readonly string[] = [],
-  tries = 6,
+  tries = 8,
 ): { seed: string; invocation: Invocation | null } {
   const recent = new Set(history.slice(0, 4));
-  let seed = freshSeed(now, counter);
-  let invocation = invoke(corpus, seed, legs);
-  for (let i = 1; i < tries && invocation && recent.has(invocation.entries[0].id); i += 1) {
-    seed = freshSeed(now + i, counter);
-    invocation = invoke(corpus, seed, legs);
+  const previous = history[0];
+  let best = { seed: freshSeed(now, counter), invocation: null as Invocation | null, score: -2 };
+
+  for (let i = 0; i < tries; i += 1) {
+    const seed = freshSeed(now + i, counter);
+    const invocation = invoke(corpus, seed, legs);
+    const first = invocation?.entries[0]?.id;
+    const score = !first ? -1 : !recent.has(first) ? 2 : first !== previous ? 1 : 0;
+    if (score > best.score) best = { seed, invocation, score };
+    if (score === 2) break;
   }
-  return { seed, invocation };
+  return { seed: best.seed, invocation: best.invocation };
 }

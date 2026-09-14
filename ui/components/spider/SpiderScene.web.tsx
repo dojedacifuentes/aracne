@@ -224,7 +224,7 @@ export function SpiderScene({
         request();
       },
       legs: () => {
-        rig?.setLegs(live.current.legs, live.current.ringSize, live.current.reduceMotion);
+        rig?.setLegs(live.current.legs, live.current.ringSize, live.current.reduceMotion, performance.now() / 1000);
         request();
       },
       hover: () => {
@@ -255,7 +255,7 @@ export function SpiderScene({
         if (disposed) return;
         rig = new SpiderRig(model, live.current.options);
         rig.setStage(stage);
-        rig.setLegs(live.current.legs, live.current.ringSize, true);
+        rig.setLegs(live.current.legs, live.current.ringSize, true, performance.now() / 1000);
         scene.add(rig.object);
         last = performance.now();
         request();

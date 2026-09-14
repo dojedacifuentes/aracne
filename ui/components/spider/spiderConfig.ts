@@ -116,3 +116,20 @@ export const MOTION = {
   /** Radios de `alephState()` → medias envergaduras de desplazamiento. */
   tensionReach: 1.6,
 } as const;
+
+/**
+ * El hilo de cada pata apoyada: sale de la araña hacia el ángulo de su pata en
+ * el anillo. Al apoyarla vibra a `threadFrequency()` y se amortigua en unos
+ * 700 ms (e^(−0,7 / 0,23) ≈ 5 %); al soltarla, se afloja y se apaga.
+ */
+export const THREAD = {
+  opacity: 0.22,
+  fadeIn: 0.12,
+  fadeOut: 0.35,
+  /** Amplitud de la vibración, en fracción de la longitud del hilo. */
+  amplitude: 0.03,
+  /** Constante de caída de la vibración, en segundos. */
+  decay: 0.23,
+  /** Holgura al soltarse, en fracción de la longitud. */
+  slack: 0.05,
+} as const;
