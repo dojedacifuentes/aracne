@@ -35,7 +35,9 @@
   "sensitive": false,
   "related": [
     "delyra-0015",
-    "delyra-0020"
+    "delyra-0020",
+    "delyra-0026",
+    "delyra-0030"
   ],
   "addedAt": "2026-09-14",
   "captureNote": "Semilla de la fase 0, redactada por Claude a partir de las referencias de content/figures.json (Ovidio). Autoría asignada por la afinidad de esa figura: revisar texto y autoría."

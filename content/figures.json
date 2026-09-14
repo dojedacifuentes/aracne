@@ -236,7 +236,8 @@
     "note": "Su discusión con Derrida sobre tres páginas de Descartes duró años y terminó en silencio entre ambos.",
     "entries": [
       "delyra-0006",
-      "delyra-0009"
+      "delyra-0009",
+      "delyra-0032"
     ],
     "affinity": [
       "paola"
@@ -326,7 +327,9 @@
       "firmaron-con-otro"
     ],
     "note": "Unidad de investigación de existencia administrativa dudosa dentro de una universidad real. Publicó textos sin autor individual y disolvió deliberadamente la frontera entre teoría y ficción.",
-    "entries": [],
+    "entries": [
+      "delyra-0036"
+    ],
     "affinity": [
       "diego",
       "paola"
@@ -451,6 +454,238 @@
     "entries": [],
     "affinity": [
       "paola"
+    ]
+  },
+  {
+    "id": "diderot",
+    "name": "Denis Diderot",
+    "years": "1713–1784",
+    "emblem": "un pliego doblado sin abrir",
+    "rooms": [
+      "el-baul",
+      "en-horario-de-oficina"
+    ],
+    "note": "Dirigió veinte años una enciclopedia mientras el impresor, sin decírselo, censuraba los artículos ya corregidos. Sus diálogos filosóficos más audaces no se publicaron en vida.",
+    "entries": [
+      "delyra-0020"
+    ],
+    "affinity": [
+      "diego"
+    ]
+  },
+  {
+    "id": "nietzsche",
+    "name": "Friedrich Nietzsche",
+    "years": "1844–1900",
+    "emblem": "una silla de montar vacía",
+    "rooms": [
+      "el-enemigo-elegido",
+      "el-baul"
+    ],
+    "note": "Fue catedrático de filología clásica a los veinticuatro años, antes de doctorarse. Renunció diez años después por la salud y escribió casi todo lo suyo sin puesto ni sueldo fijo.",
+    "entries": [
+      "delyra-0029"
+    ],
+    "affinity": [
+      "diego"
+    ]
+  },
+  {
+    "id": "deleuze",
+    "name": "Gilles Deleuze",
+    "years": "1925–1995",
+    "emblem": "un guante que no se quita",
+    "rooms": [
+      "el-enemigo-elegido"
+    ],
+    "note": "Se dejó las uñas largas toda la vida porque decía carecer de las huellas protectoras normales en las yemas de los dedos.",
+    "entries": [
+      "delyra-0028",
+      "delyra-0033"
+    ],
+    "affinity": [
+      "paola"
+    ]
+  },
+  {
+    "id": "ginzburg",
+    "name": "Carlo Ginzburg",
+    "years": "1939–",
+    "emblem": "una lupa sobre un lóbulo",
+    "rooms": [
+      "empezaron-en-otra-cosa"
+    ],
+    "note": "Reconstruyó la cosmología de un molinero del siglo XVI a partir de las actas de los dos procesos inquisitoriales que acabaron con él.",
+    "entries": [
+      "delyra-0018"
+    ],
+    "affinity": [
+      "diego"
+    ]
+  },
+  {
+    "id": "carrington",
+    "name": "Leonora Carrington",
+    "years": "1917–2011",
+    "emblem": "una silla de montar del revés",
+    "rooms": [
+      "el-baul",
+      "lugares-no-visitados"
+    ],
+    "note": "Su familia la envió a un sanatorio en Santander en 1940. Escapó de sus cuidadores en Lisboa entrando en una embajada y salió de Europa con un matrimonio de conveniencia.",
+    "entries": [
+      "delyra-0022"
+    ],
+    "affinity": [
+      "paola"
+    ]
+  },
+  {
+    "id": "schreber",
+    "name": "Daniel Paul Schreber",
+    "years": "1842–1911",
+    "emblem": "una toga colgada",
+    "rooms": [
+      "el-baul",
+      "en-horario-de-oficina"
+    ],
+    "note": "Era presidente de sala de un tribunal de apelación. Redactó desde el sanatorio la impugnación de su propia tutela, la defendió en persona y la ganó.",
+    "entries": [
+      "delyra-0023"
+    ],
+    "affinity": [
+      "diego"
+    ]
+  },
+  {
+    "id": "velazquez",
+    "name": "Diego Velázquez",
+    "years": "1599–1660",
+    "emblem": "una llave de aposentador",
+    "rooms": [
+      "en-horario-de-oficina"
+    ],
+    "note": "Pasó buena parte de su vida en cargos palaciegos de intendencia: se ocupaba de alojamientos, mudanzas y obras de la corte, y eso le dejaba poco tiempo para pintar.",
+    "entries": [
+      "delyra-0030"
+    ],
+    "affinity": [
+      "paola"
+    ]
+  },
+  {
+    "id": "saramago",
+    "name": "José Saramago",
+    "years": "1922–2010",
+    "emblem": "un torno de cerrajero",
+    "rooms": [
+      "empezaron-en-otra-cosa",
+      "el-baul"
+    ],
+    "note": "Trabajó de cerrajero mecánico antes que de nada literario, y pasó casi veinte años sin publicar narrativa entre su primera novela y la siguiente.",
+    "entries": [
+      "delyra-0044"
+    ],
+    "affinity": [
+      "paola"
+    ]
+  },
+  {
+    "id": "burroughs",
+    "name": "William S. Burroughs",
+    "years": "1914–1997",
+    "emblem": "unas tijeras sobre una columna de texto",
+    "rooms": [
+      "firmaron-con-otro",
+      "el-enemigo-elegido"
+    ],
+    "note": "Publicó su primera novela bajo el seudónimo de William Lee, el apellido de soltera de su madre.",
+    "entries": [
+      "delyra-0043"
+    ],
+    "affinity": [
+      "paola"
+    ]
+  },
+  {
+    "id": "peirce",
+    "name": "Charles Sanders Peirce",
+    "years": "1839–1914",
+    "emblem": "un péndulo de gravimetría",
+    "rooms": [
+      "el-baul",
+      "en-horario-de-oficina"
+    ],
+    "note": "Se ganó la vida treinta años midiendo la gravedad terrestre con péndulos para el servicio geodésico de su país. Casi toda su obra filosófica quedó inédita al morir.",
+    "entries": [
+      "delyra-0035"
+    ],
+    "affinity": [
+      "diego"
+    ]
+  },
+  {
+    "id": "latour",
+    "name": "Bruno Latour",
+    "years": "1947–2022",
+    "emblem": "un cuaderno de campo en un laboratorio",
+    "rooms": [
+      "empezaron-en-otra-cosa"
+    ],
+    "note": "Su primer trabajo de campo como antropólogo no fue en una aldea remota sino dentro de un laboratorio de California, observando a los científicos como a una tribu.",
+    "entries": [
+      "delyra-0031"
+    ],
+    "affinity": [
+      "diego"
+    ]
+  },
+  {
+    "id": "miller",
+    "name": "Nancy K. Miller",
+    "years": "1941–",
+    "emblem": "un hilo con el extremo a la vista",
+    "rooms": [
+      "el-enemigo-elegido"
+    ],
+    "note": "Construyó buena parte de su obra discutiendo con una sola tesis ajena, la de la muerte del autor, para señalar a quién le sale gratis.",
+    "entries": [
+      "delyra-0026"
+    ],
+    "affinity": [
+      "paola"
+    ]
+  },
+  {
+    "id": "wigmore",
+    "name": "John Henry Wigmore",
+    "years": "1863–1943",
+    "emblem": "un árbol de líneas y símbolos",
+    "rooms": [
+      "en-horario-de-oficina"
+    ],
+    "note": "Su método para diagramar la prueba era tan laborioso que quedó prácticamente olvidado durante décadas, hasta que aparecieron herramientas para dibujar redes.",
+    "entries": [
+      "delyra-0027"
+    ],
+    "affinity": [
+      "diego"
+    ]
+  },
+  {
+    "id": "cronenberg",
+    "name": "David Cronenberg",
+    "years": "1943–",
+    "emblem": "una ranura en un abdomen",
+    "rooms": [
+      "empezaron-en-otra-cosa"
+    ],
+    "note": "Empezó la carrera de bioquímica antes de cambiarse a literatura, y rodó sus primeras películas con financiación pública para cine experimental.",
+    "entries": [
+      "delyra-0042"
+    ],
+    "affinity": [
+      "diego"
     ]
   }
 ]

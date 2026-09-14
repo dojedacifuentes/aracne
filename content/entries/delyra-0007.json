@@ -34,7 +34,8 @@
   },
   "sensitive": true,
   "related": [
-    "delyra-0006"
+    "delyra-0006",
+    "delyra-0044"
   ],
   "addedAt": "2026-09-14",
   "captureNote": "Semilla de la fase 0, redactada por Claude a partir de las referencias de content/figures.json (Agamben). Autoría asignada por la afinidad de esa figura: revisar texto y autoría."
