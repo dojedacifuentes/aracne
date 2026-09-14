@@ -20,6 +20,12 @@ type Props = {
   compact: boolean;
   /** Abre el permalink de una entrada. Cada resultado tiene salida. */
   onOpen: (id: string) => void;
+  /**
+   * El corpus que vio el motor. Invocar desde una sala lo recorta, y la deriva
+   * tiene que quedarse dentro del mismo recorte: si derivara sobre el archivo
+   * entero, saldría de la sala por la primera arista.
+   */
+  pool: Entry[];
 };
 
 const DRIFT_LENGTH = 4;
@@ -31,7 +37,7 @@ type CategoryName = (id: string) => string | undefined;
  * si hay más de una, lo que las une y lo que las separa. El dictamen es la
  * línea grande: sin comillas y sin atribuirse a nadie.
  */
-export function InvocationView({ invocation, corpus, seed, reduceMotion, compact, onOpen }: Props) {
+export function InvocationView({ invocation, corpus, seed, reduceMotion, compact, onOpen, pool }: Props) {
   const categoryName: CategoryName = (id) => corpus.categories.find((c) => c.id === id)?.name;
 
   if (!invocation) {
@@ -40,7 +46,7 @@ export function InvocationView({ invocation, corpus, seed, reduceMotion, compact
 
   const steps: DriftStep[] =
     invocation.shape === 'deriva'
-      ? buildDrift(invocation.entries[0], corpus.entries, DRIFT_LENGTH, seed)
+      ? buildDrift(invocation.entries[0], pool, DRIFT_LENGTH, seed)
       : invocation.entries.map((entry) => ({ entry, link: null }));
   const many = invocation.entries.length > 1;
   const after = steps.length + 2;

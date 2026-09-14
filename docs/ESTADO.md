@@ -10,9 +10,14 @@
 | 0 | Andamio sobre la arquitectura del tarot; kit en su sitio; motores que faltaban reconstruidos; 17 entradas; `validate` imprime 17 entradas · 7 categorías visibles · 4 retraídas; CI | `7055e03` … `86c0d0b` |
 | 1 | La araña 3D como oráculo (`docs/ARANA-3D.md`) | `28e0a1d` |
 | 2 | Pulsar invoca; `/i/<semilla>?patas=…`; propósito; hilos de las patas; pruebas de la fase | `c498ba0` |
-| 3 | Vista de entrada, permalink `/e/<id>`, títulos cliqueables, Open Graph en build | pendiente de commit |
+| 3 | Vista de entrada, permalink `/e/<id>`, títulos cliqueables, Open Graph en build | `143570d` |
+| 6 | El gabinete: siete salas, treinta figuras, seis emblemas, invocar desde una sala | pendiente de commit |
 
 En curso: una revisión adversarial de las fases 0–2.
+
+La fase 6 se adelantó a la 4 y la 5 por decisión del usuario: es la única cuyo
+contenido ya estaba escrito (`figures.json` y `rooms.json`), así que no dependía
+del material que el usuario estaba reuniendo para el archivo.
 
 ## Decisiones tomadas sin confirmación explícita
 
@@ -33,7 +38,13 @@ En curso: una revisión adversarial de las fases 0–2.
    figura correspondiente; en las cuatro sin figura es provisional. Cada
    entrada lo declara en `captureNote`.
 7. **Sin React Three Fiber.** three sin abstracción, como en el tarot.
-8. **satori en lugar de `@vercel/og`.** La fase 3 pedía `@vercel/og`, que no
+8. **Los emblemas se generan, no se dibujan a mano en el SVG.**
+   `docs/MUSEO.md` pide un SVG por figura con rectángulos de 1×1, versionado y
+   diferenciable línea a línea: eso es lo que hay en `public/figures/`. El
+   dibujo vive en `scripts/sprites.mjs` (`npm run sprites`) porque así se
+   corrige una figura cambiando dos líneas en vez de doscientos rectángulos,
+   y porque el repositorio ya tenía tres scripts de assets con esa forma.
+9. **satori en lugar de `@vercel/og`.** La fase 3 pedía `@vercel/og`, que no
    arranca fuera del runtime de Vercel: su bundle hace un `require` dinámico
    que Node rechaza, y la entrada CommonJS falla también. `scripts/og.mjs` usa
    directamente satori —el motor que `@vercel/og` lleva dentro— y sharp, que ya
@@ -50,6 +61,10 @@ En curso: una revisión adversarial de las fases 0–2.
   `faultBetween` usa los ids ingleses de tipo: la interfaz los lee como nombres.
 - El kit suponía que el tarot era Next.js y privado: es Expo y público.
 - `figures.json` daba a Searle por vivo: corregido a 1932–2025.
+- `InvocationView` construía la deriva sobre el corpus entero. Al invocar desde
+  una sala, el recorte llegaba al motor pero no a `buildDrift`, así que la
+  deriva se salía de la sala por la primera arista. Ahora la vista recibe el
+  mismo corpus que vio el motor.
 - `scripts/og.mjs` estaba escrito pero huérfano: su dependencia no estaba
   declarada y `npm run build` no lo llamaba. Conectado.
 - El contador del identificador de `EntryView` dependía de que
@@ -59,7 +74,16 @@ En curso: una revisión adversarial de las fases 0–2.
 
 ## Pendiente
 
-- Fases 4 a 9 de `docs/PROMPTS.md`.
+- Fases 4, 5, 7, 8 y 9 de `docs/PROMPTS.md`.
+- **24 figuras siguen sin emblema.** Muestran el hueco marcado que pide
+  `docs/MUSEO.md`, que es el estado correcto, no un error. Los seis dibujados
+  son los que pedía la fase: Borges, Kafka, Euler, Spinoza, Pessoa y Bourgeois.
+- **21 de las 30 figuras no tienen ninguna entrada ligada**, y la sala «Los que
+  firmaron con otro» no tiene ninguna: no se puede invocar desde ella todavía.
+- `Reveal` depende de `requestAnimationFrame`. Donde no dispara, el contenido se
+  queda a opacidad 0, es decir invisible. En un navegador real anima bien; el
+  riesgo es una captura, una pestaña de fondo o un modo de ahorro. Mismo origen
+  que el contador del identificador, que ya se corrigió. Sin decidir.
 - **El archivo está por debajo de su masa crítica.** Con 17 entradas, 60
   pulsaciones devuelven cada entrada 5,6 veces de media y *Tlön* sale 14; cuatro
   de las 17 llevan el tag `borges`. El grado medio del grafo es 4,9 vecinos de

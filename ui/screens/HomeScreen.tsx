@@ -6,8 +6,11 @@ import { usableLegs } from '../../lib/content/corpus';
 import { loadArchive } from '../../lib/content/loader';
 import { pressSeed } from '../../lib/oracle';
 import { pushHistory } from '../../lib/oracle/history';
+import { entriesOfRoom, roomStates } from '../../lib/museum/rooms';
 import { invoke } from '../../lib/oracle/invoke';
+import { RoomsView, RoomView } from '../components/CabinetView';
 import { EntryView } from '../components/EntryView';
+import { FigureView } from '../components/FigureView';
 import { InvocationView } from '../components/InvocationView';
 import { LegButton } from '../components/LegButton';
 import { PurposeView } from '../components/PurposeView';
@@ -15,7 +18,7 @@ import { Spider } from '../components/spider/Spider';
 import { TextButton } from '../components/TextButton';
 import { useRoute } from '../hooks/useRoute';
 import { getLayoutMode, MAX_CONTENT_WIDTH } from '../lib/layout';
-import { HOME } from '../lib/route';
+import { CABINET, HOME } from '../lib/route';
 import { readHistory, rememberEntries } from '../lib/storedHistory';
 import { colors, fonts, space } from '../theme';
 
@@ -55,14 +58,36 @@ export function HomeScreen({ reduceMotion }: Props) {
     };
   }, []);
 
+  // Las salas salen de las figuras: rooms.json no lista a nadie.
+  const rooms = useMemo(() => roomStates(corpus.figures, corpus.rooms), [corpus.figures, corpus.rooms]);
+  const roomState = useMemo(
+    () => (route.name === 'room' ? (rooms.find((r) => r.room.id === route.id) ?? null) : null),
+    [route, rooms],
+  );
+  const figure = useMemo(
+    () => (route.name === 'figure' ? (corpus.figures.find((f) => f.id === route.id) ?? null) : null),
+    [route, corpus.figures],
+  );
+
   // La invocación sale de la URL, nunca del historial: la misma URL da lo mismo en cualquier parte.
   const invocationLegs = useMemo(
     () => (route.name === 'invocation' ? usableLegs(route.legs, legs) : null),
     [route, legs],
   );
+  /**
+   * Invocar desde una sala no añade una categoría: recorta el corpus a las
+   * entradas ligadas a sus figuras y se lo pasa al motor. El motor no sabe que
+   * el gabinete existe.
+   */
+  const pool = useMemo(() => {
+    if (route.name !== 'invocation' || !route.room) return corpus.entries;
+    const state = rooms.find((r) => r.room.id === route.room);
+    return state ? entriesOfRoom(state, corpus.entries) : corpus.entries;
+  }, [route, rooms, corpus.entries]);
+
   const invocation = useMemo(
-    () => (route.name === 'invocation' && invocationLegs ? invoke(corpus.entries, route.seed, invocationLegs) : null),
-    [route, invocationLegs, corpus.entries],
+    () => (route.name === 'invocation' && invocationLegs ? invoke(pool, route.seed, invocationLegs) : null),
+    [route, invocationLegs, pool],
   );
 
   const entry = useMemo(
@@ -81,17 +106,24 @@ export function HomeScreen({ reduceMotion }: Props) {
     setSelected((current) => (current.includes(id) ? current.filter((x) => x !== id) : [...current, id]));
   }, []);
 
-  const press = useCallback(() => {
-    const patas = usableLegs(active, legs);
-    presses.current += 1;
-    const { seed, invocation: next } = pressSeed(corpus.entries, patas, Date.now(), presses.current, history);
-    setSelected(patas);
-    navigate({ name: 'invocation', seed, legs: patas });
-    if (!next) return;
-    const ids = next.entries.map((entry) => entry.id);
-    setHistory((current) => pushHistory(current, ids));
-    void rememberEntries(ids);
-  }, [active, legs, corpus.entries, history, navigate]);
+  const pressWith = useCallback(
+    (room?: string) => {
+      const patas = usableLegs(active, legs);
+      const state = room ? rooms.find((r) => r.room.id === room) : undefined;
+      const from = state ? entriesOfRoom(state, corpus.entries) : corpus.entries;
+      presses.current += 1;
+      const { seed, invocation: next } = pressSeed(from, patas, Date.now(), presses.current, history);
+      setSelected(patas);
+      navigate(state ? { name: 'invocation', seed, legs: patas, room } : { name: 'invocation', seed, legs: patas });
+      if (!next) return;
+      const ids = next.entries.map((item) => item.id);
+      setHistory((current) => pushHistory(current, ids));
+      void rememberEntries(ids);
+    },
+    [active, legs, rooms, corpus.entries, history, navigate],
+  );
+
+  const press = useCallback(() => pressWith(), [pressWith]);
 
   const openEntry = useCallback(
     (id: string) => {
@@ -99,6 +131,10 @@ export function HomeScreen({ reduceMotion }: Props) {
     },
     [navigate],
   );
+
+  const openRoom = useCallback((id: string) => navigate({ name: 'room', id }), [navigate]);
+  const openFigure = useCallback((id: string) => navigate({ name: 'figure', id }), [navigate]);
+  const openCabinet = useCallback(() => navigate(CABINET), [navigate]);
 
   const back = useCallback(() => {
     setSelected(active);
@@ -161,12 +197,41 @@ export function HomeScreen({ reduceMotion }: Props) {
         reduceMotion={reduceMotion}
         compact={portrait}
         onOpen={openEntry}
+        pool={pool}
       />
     ) : route.name === 'entry' ? (
       entry ? (
-        <EntryView key={entry.id} entry={entry} corpus={corpus} reduceMotion={reduceMotion} compact={portrait} />
+        <EntryView
+          key={entry.id}
+          entry={entry}
+          corpus={corpus}
+          reduceMotion={reduceMotion}
+          compact={portrait}
+          onOpenFigure={openFigure}
+        />
       ) : (
         <Text style={styles.missing}>no hay ninguna entrada con ese identificador. vuelve y pulsa.</Text>
+      )
+    ) : route.name === 'cabinet' ? (
+      <RoomsView rooms={rooms} reduceMotion={reduceMotion} onOpenRoom={openRoom} />
+    ) : route.name === 'room' ? (
+      roomState ? (
+        <RoomView state={roomState} reduceMotion={reduceMotion} onOpenFigure={openFigure} />
+      ) : (
+        <Text style={styles.missing}>no hay ninguna sala con ese nombre. vuelve al gabinete.</Text>
+      )
+    ) : route.name === 'figure' ? (
+      figure ? (
+        <FigureView
+          key={figure.id}
+          figure={figure}
+          corpus={corpus}
+          reduceMotion={reduceMotion}
+          onOpenEntry={openEntry}
+          onOpenRoom={openRoom}
+        />
+      ) : (
+        <Text style={styles.missing}>no hay ninguna figura con ese nombre. vuelve al gabinete.</Text>
       )
     ) : panel === 'proposito' ? (
       <PurposeView legs={legs} selected={selected} reduceMotion={reduceMotion} />
@@ -183,10 +248,32 @@ export function HomeScreen({ reduceMotion }: Props) {
         <TextButton label="invocar" onPress={press} hint="una invocación nueva con las patas apoyadas" />
         <TextButton label="volver" onPress={back} />
       </View>
+    ) : route.name === 'cabinet' ? (
+      <View style={styles.buttons}>
+        <TextButton label="invocar" onPress={press} />
+        <TextButton label="volver" onPress={back} />
+      </View>
+    ) : route.name === 'room' ? (
+      <View style={styles.buttons}>
+        {roomState && roomState.entries.length > 0 ? (
+          <TextButton
+            label="invocar desde esta sala"
+            onPress={() => pressWith(roomState.room.id)}
+            hint={`solo las ${roomState.entries.length} entradas ligadas a esta sala`}
+          />
+        ) : null}
+        <TextButton label="gabinete" onPress={openCabinet} />
+      </View>
+    ) : route.name === 'figure' ? (
+      <View style={styles.buttons}>
+        <TextButton label="gabinete" onPress={openCabinet} />
+        <TextButton label="volver" onPress={back} />
+      </View>
     ) : (
       <View style={styles.buttons}>
         <TextButton label="invocar" onPress={press} />
         <TextButton label={panel === 'proposito' ? 'patas' : 'propósito'} onPress={togglePanel} />
+        <TextButton label="gabinete" onPress={openCabinet} />
       </View>
     );
 

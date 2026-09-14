@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Linking, StyleSheet, Text, View } from 'react-native';
+import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Corpus } from '../../lib/content/corpus';
 import { catalogId, STATUS_LABEL, TYPE_LABEL } from '../../lib/labels';
+import { figuresOfEntry } from '../../lib/museum/rooms';
 import type { Entry } from '../../lib/schema';
 import { STATUS_BORDER, type StatusBorder } from '../lib/epistemic';
 import { colors, fonts, space } from '../theme';
@@ -14,6 +15,8 @@ type Props = {
   reduceMotion: boolean;
   /** Pantalla estrecha: título a 30 px en lugar de 42. */
   compact: boolean;
+  /** Abre la figura del gabinete que reclama esta entrada. */
+  onOpenFigure: (id: string) => void;
 };
 
 /** El identificador cuenta hasta su número en 200 ms: el único gesto de «procesamiento». */
@@ -25,7 +28,10 @@ const COUNTER_MS = 200;
  * el borde izquierdo, la pregunta tras un blanco generoso y los metadatos
  * colgados al pie en dos columnas. Aparece escalonada, una sola vez.
  */
-export function EntryView({ entry, corpus, reduceMotion, compact }: Props) {
+export function EntryView({ entry, corpus, reduceMotion, compact, onOpenFigure }: Props) {
+  // docs/MUSEO.md: la navegación va en los dos sentidos, y el vínculo solo
+  // está escrito del lado de la figura.
+  const figures = figuresOfEntry(entry.id, corpus.figures);
   const border = STATUS_BORDER[entry.epistemicStatus];
   const categories = entry.categories.map((id) => corpus.categories.find((c) => c.id === id)?.name ?? id);
   const contributors = entry.contributors.map((id) => corpus.contributors.find((c) => c.id === id)?.name ?? id);
@@ -81,6 +87,24 @@ export function EntryView({ entry, corpus, reduceMotion, compact }: Props) {
               )}
             </View>
           </View>
+          {figures.length > 0 ? (
+            <View style={styles.metaRow}>
+              <Text style={styles.metaLabel}>en el gabinete</Text>
+              <View style={styles.metaValues}>
+                {figures.map((figure) => (
+                  <Pressable
+                    key={figure.id}
+                    accessibilityRole="link"
+                    accessibilityLabel={figure.name}
+                    accessibilityHint="abre la figura"
+                    onPress={() => onOpenFigure(figure.id)}
+                  >
+                    <Text style={[styles.metaValue, styles.link]}>{figure.name}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            </View>
+          ) : null}
           <MetaRow label="aportada por" value={contributors.join(' y ')} />
           <MetaRow label="añadida" value={entry.addedAt} />
         </View>

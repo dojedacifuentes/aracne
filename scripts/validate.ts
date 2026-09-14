@@ -11,6 +11,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { legStates, parseCorpus } from "../lib/content/corpus";
+import { roomStates } from "../lib/museum/rooms";
 import type { ValidationIssue } from "../lib/schema";
 
 const ROOT = process.cwd();
@@ -91,7 +92,17 @@ for (const leg of legs) {
   const state = leg.visible ? "" : `   retraída, faltan ${leg.missing}`;
   console.log(`  ${leg.category.glyph}  ${leg.category.name.padEnd(32)}${String(leg.count).padStart(3)}${state}`);
 }
-console.log(`${corpus.figures.length} figuras · ${corpus.rooms.length} salas`);
+const drawn = corpus.figures.filter((figure) =>
+  fs.existsSync(path.join(ROOT, "public", "figures", `${figure.id}.svg`)),
+).length;
+console.log(
+  `${corpus.figures.length} figuras · ${corpus.rooms.length} salas · ${drawn} emblemas dibujados`,
+);
+// Las salas se calculan desde las figuras, igual que las patas desde las entradas.
+for (const state of roomStates(corpus.figures, corpus.rooms)) {
+  const linked = state.entries.length > 0 ? `${state.entries.length} entradas` : "sin entradas ligadas";
+  console.log(`  ${state.room.name.padEnd(42)}${String(state.figures.length).padStart(3)}   ${linked}`);
+}
 
 for (const warning of warnings) console.warn(`aviso  ${warning.id}  ${warning.message}`);
 

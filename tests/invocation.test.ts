@@ -75,7 +75,7 @@ describe('el motor de botones', () => {
 describe('rutas', () => {
   it('cualquier cosa que no sea una invocación es la portada', () => {
     expect(parseRoute('/', '')).toEqual({ name: 'home' });
-    expect(parseRoute('/gabinete', '')).toEqual({ name: 'home' });
+    expect(parseRoute('/archivo', '')).toEqual({ name: 'home' });
     expect(parseRoute('/i/AB!', '')).toEqual({ name: 'home' });
     expect(parseRoute('/i/ab', '')).toEqual({ name: 'home' });
   });
