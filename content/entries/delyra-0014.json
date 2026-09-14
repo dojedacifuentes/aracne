@@ -1,0 +1,41 @@
+{
+  "id": "delyra-0014",
+  "title": "Lo que ninguna máquina puede decidir",
+  "type": "concept",
+  "categories": [
+    "logica",
+    "maquinas-que-imaginan"
+  ],
+  "tags": [
+    "turing",
+    "indecidibilidad",
+    "autorreferencia",
+    "algoritmo"
+  ],
+  "content": "En un artículo de 1936, Alan Turing definió con precisión qué significa calcular describiendo una máquina imaginaria que lee y escribe símbolos en una cinta. Con esa definición demostró que hay preguntas bien planteadas que ningún procedimiento mecánico puede responder en general. La versión que se enseña hoy, formulada más tarde con el nombre de problema de la parada, dice que no existe un programa capaz de decidir, para cualquier programa y cualquier entrada, si ese cálculo terminará alguna vez. La prueba usa una trampa de autorreferencia: un programa que consulta al supuesto decisor sobre sí mismo y hace lo contrario. El límite no depende de la potencia de la máquina.",
+  "question": "Si hay cálculos de los que nunca se sabrá si terminan, ¿cuánto conviene esperar antes de dejar de mirar?",
+  "sources": [
+    {
+      "label": "Turing, «On Computable Numbers, with an Application to the Entscheidungsproblem», 1936",
+      "author": "Alan Turing",
+      "work": "On Computable Numbers, with an Application to the Entscheidungsproblem",
+      "year": 1936,
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 2,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0005"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude a partir de las referencias de content/figures.json (Turing). Autoría asignada por la afinidad de esa figura: revisar texto y autoría."
+}
