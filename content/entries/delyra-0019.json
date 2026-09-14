@@ -1,0 +1,48 @@
+{
+  "id": "delyra-0019",
+  "title": "Los barcos que no emiten",
+  "type": "portal",
+  "categories": [
+    "estado-del-mundo",
+    "epistemologia-forense"
+  ],
+  "tags": [
+    "barco",
+    "satelite",
+    "tiempo-real",
+    "ausencia",
+    "radar"
+  ],
+  "content": "El sistema de identificación automática obliga a muchos barcos a emitir su posición, y esa señal alimenta los mapas públicos de tráfico marítimo. En 2022 Global Fishing Watch añadió una capa que funciona al revés: en lugar de escuchar lo que se emite, mira el mar con el radar de apertura sintética de los satélites Sentinel-1, que atraviesa las nubes y detecta cascos por su eco. Al superponer lo que el radar ve sobre lo que el sistema declara aparece una tercera categoría, que antes no era representable: embarcaciones que están ahí y no dicen que están. El mapa deja entonces de ser un registro de lo que se emite y pasa a ser un instrumento para medir el silencio.",
+  "question": "¿Qué hace falta para que una ausencia se convierta en un dato?",
+  "sources": [
+    {
+      "label": "Global Fishing Watch, mapa público",
+      "work": "Mapping Human Activity at Sea",
+      "url": "https://globalfishingwatch.org/our-map/",
+      "kind": "portal"
+    },
+    {
+      "label": "Global Fishing Watch, proyecto sobre embarcaciones oscuras",
+      "work": "Dark Vessels",
+      "url": "https://globalfishingwatch.org/research-project-dark-vessels/",
+      "kind": "reference"
+    }
+  ],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 3,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0013",
+    "delyra-0024"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Redactada por Claude a partir del material aportado. Capa de radar y satélites Sentinel-1 comprobados en la documentación de Global Fishing Watch."
+}
