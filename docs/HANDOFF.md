@@ -8,6 +8,94 @@ estás parado y qué conviene hacer a continuación**.
 
 ---
 
+## 0. Coordenadas
+
+| | |
+|---|---|
+| repositorio | `https://github.com/dojedacifuentes/aracne.git` |
+| rama de trabajo | `main` |
+| otra rama viva | `diseno-denso` (rediseño a medias, ver §3) |
+| ruta local | `C:\Users\Asus\Desktop\aracne` |
+| desplegado en | `https://aracne-mu.vercel.app` |
+| plataforma | Vercel, `buildCommand: npm run build`, salida `dist` |
+
+### Mapa del repositorio
+
+```
+CLAUDE.md              reglas del proyecto. MANDA SOBRE TODO. Léelo primero.
+docs/
+  HANDOFF.md           este archivo
+  ESTADO.md            historia de cada fase y decisiones tomadas
+  ARANA.md             la metáfora del animal. Vinculante.
+  ARANA-3D.md          por qué la araña es 3D y cómo se comporta
+  DESIGN.md            paleta, tipografía, qué no se hace nunca
+  MUSEO.md             reglas del gabinete: emblemas, salas, notas
+  PROMPTS.md           las fases 0 a 9, en orden
+  TAROT.md             qué se heredó del proyecto anterior
+
+content/               EL ARCHIVO. Sin base de datos: JSON versionado.
+  entries/*.json       44 entradas, una por archivo
+  categories.json      las once patas, con su posición en el anillo y glifo
+  figures.json         44 figuras del gabinete
+  rooms.json           las siete salas y su criterio
+  index.generated.ts   lo escribe `npm run validate`. No editar.
+
+lib/                   el motor. Puro, sin React, probable sin pantalla.
+  schema.ts            fuente de verdad del modelo de datos (zod)
+  labels.ts            los ids van en inglés; la interfaz habla español
+  content/corpus.ts    parseo y validación cruzada del contenido
+  content/loader.ts    carga el archivo una vez
+  oracle/rng.ts        el PRNG sembrado. TODA la aleatoriedad pasa por aquí.
+  oracle/invoke.ts     qué sale al pulsar: formas, puentes, fallas, dictámenes
+  oracle/weighted.ts   los cuatro modos. PESOS PROVISIONALES desde la fase 0.
+  oracle/index.ts      draw() y pressSeed(), con anti-repetición
+  oracle/history.ts    memoria corta de lo que ya salió
+  aleph/tension.ts     física del anillo: legAngle, alephState, muelles
+  drift/graph.ts       el grafo: scoreLink, neighbours, buildDrift, shortestPath
+  drift/layout.ts      dónde se dibuja cada entrada sobre el anillo
+  drift/modes.ts       dos mundos y distancia (diámetro del grafo)
+  archive/filter.ts    filtros, facetas y búsqueda local con acentos plegados
+  archive/shape.ts     la forma del archivo para /adn
+  museum/rooms.ts      salas calculadas desde las figuras
+
+ui/
+  theme.ts             los seis colores y las dos familias. No hay más.
+  screens/HomeScreen.tsx   UNA sola escena; la ruta decide qué muestra el panel
+  lib/route.ts         todas las rutas y su ida y vuelta a la URL
+  lib/copy.ts          textos del resultado. Solo leen metadatos reales.
+  lib/epistemic.ts     STATUS_BORDER y THREAD_STYLE: el trazo codifica certeza
+  components/          Tela, DriftView, EntryView, ArchiveView, CabinetView,
+                       FigureView, ShapeView, CommandPalette, Emblem, Reveal…
+  components/spider/   la araña 3D: rig, escena, seda, config, fallback SVG
+
+scripts/
+  validate.ts          valida y genera el índice. Corre antes de todo.
+  og.mjs               permalinks + imagen Open Graph por entrada, en build
+  sprites.mjs          dibuja los emblemas del gabinete
+  capture.mjs          alta de entrada por consola
+
+tests/                 11 archivos, 98 pruebas
+public/figures/        6 emblemas SVG de 44
+public/models/spider/  el GLB de la araña (87 000 triángulos)
+```
+
+### Rutas de la aplicación
+
+| ruta | qué |
+|---|---|
+| `/` | la portada: la araña, la tela al fondo, las once patas |
+| `/i/<semilla>?patas=…&sala=…` | una invocación, reproducible y compartible |
+| `/e/<id>` | una entrada. Tiene HTML propio con Open Graph. |
+| `/deriva/<semilla>?modo=…` | la red dibujada. Modos: deriva, dos-mundos, distancia. |
+| `/gabinete` · `/gabinete/<sala>` · `/figura/<id>` | el museo |
+| `/archivo?categorias=…&tipos=…&q=…` | filtros y búsqueda, todo en la URL |
+| `/adn` | la forma del archivo |
+
+Todo se enruta en cliente sobre **una sola escena**. `vercel.json` reescribe
+cualquier ruta a `/`, salvo los `dist/e/<id>/index.html` que genera `og.mjs`.
+
+---
+
 ## 1. Qué es esto, en una frase
 
 Un archivo para encontrar lo que no estabas buscando. Once categorías son las
@@ -34,9 +122,10 @@ diagnóstico de la sección 8.
 | diámetro de la red | 3 pasos (*La habitación china* → *Un río que es alguien*) |
 | figuras del gabinete | 44, en 7 salas |
 | emblemas dibujados | 6 de 44 |
+| medias | extrañeza 3,8 · oscuridad 2,8 · ficción 2,0 |
 | estados epistémicos | 17 `fact` · 15 `unverified` · 6 `interpretation` · 5 `fiction` · 1 `controversial` |
-| pruebas | 88 |
-| bundle web | 1,72 MB |
+| pruebas | 98, en 11 archivos |
+| bundle web | ~2 MB |
 
 **Las 15 `unverified` no son un descuido: son la cola editorial.** Cada una
 lleva en `captureNote` la referencia exacta que hay que comprobar para
@@ -296,6 +385,19 @@ tienen Open Graph** desde la fase 3.
 
 ## 8. Cómo trabajar
 
+### Arranque en frío
+
+```bash
+git clone https://github.com/dojedacifuentes/aracne.git
+cd aracne
+npm install
+npm run validate   # OBLIGATORIO: escribe content/index.generated.ts
+npm run web        # servidor de desarrollo en :8081
+```
+
+`typecheck` y `test` fallan si no has corrido `validate` antes: necesitan el
+índice generado.
+
 ```bash
 npm install
 npm run validate   # valida el contenido y escribe content/index.generated.ts
@@ -356,3 +458,35 @@ Cosas que ya costaron una sesión y no hace falta redescubrir.
   original. No los usa nadie. Conviene borrarlos.
 - **Vercel no tiene `SITE_URL` definida**, así que `og:image` sale con URL
   relativa y algunas redes no la leen. Se arregla en el panel, no en el código.
+
+---
+
+## 10. Primer día: qué hacer y qué no
+
+Si retomas esto sin contexto, en este orden:
+
+1. **Lee `CLAUDE.md` entero.** Manda sobre cualquier cosa que diga este archivo.
+2. **Corre `npm run validate`.** Te dice en dos segundos si el archivo está sano
+   y te imprime el reparto por pata y por sala.
+3. **Abre `/adn` y `/deriva/<cualquier-semilla>`.** En un minuto ves qué hay y
+   cómo está conectado, sin leer una línea de código.
+4. **Elige UNA fase** de la sección 6 y quédate en ella. `CLAUDE.md` pide una
+   fase por sesión, decir antes qué archivos vas a tocar en cinco líneas, y
+   terminar con `validate`, `test` y `build`.
+
+Lo que más tienta y más daño hace:
+
+- **Instalar una librería de grafos.** El dibujo son ~150 líneas y su valor está
+  en que la posición es la categoría. Un layout de fuerzas lo destruye.
+- **Meter color para distinguir cosas.** El proyecto distingue con el trazo.
+  Hay una prueba que falla si metes color en `THREAD_STYLE`.
+- **Rellenar entradas sin verificar la fuente.** Si no la compruebas:
+  `unverified` y `sources: []`. Nunca un autor, un año o una URL inventados.
+- **Tocar `weighted.ts` a ciegas.** Sus pesos son provisionales desde la fase 0
+  y cambiarlos cambia lo que devuelve cada semilla ya compartida.
+- **Añadir animación sin plazo de seguridad.** Ver §9: ya ha mordido tres veces.
+
+Y lo que está listo para empezar sin pensar mucho: **dibujar emblemas**
+(§6.3, quedan 38, son diez líneas cada uno en `scripts/sprites.mjs`) y
+**verificar las 15 entradas pendientes** (§2, cada una dice en `captureNote`
+exactamente qué comprobar).

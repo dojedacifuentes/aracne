@@ -17,7 +17,11 @@ el proyecto y qué conviene hacer. Este archivo es la historia de cada fase.
 | 7 | `/archivo` con filtros combinables en la URL, búsqueda local y paleta ⌘K | `b76a397` |
 | — | Arreglos: llegar al gabinete en un teléfono | `fb13d7c` |
 | 4 | Primeras siete entradas del material de investigación. **Las once patas encendidas** | `205447f` … `5c401dd` |
-| 5 | La red dibujada: `/deriva/<semilla>`, deriva, dos mundos, contacto, y la tela permanente en todas las rutas | pendiente de commit |
+| 5 | La red dibujada: `/deriva/<semilla>`, tres modos, y la tela permanente | `777b325` |
+| — | Archivo sin firma: se retira la autoría del modelo y de la interfaz | `63e3079` |
+| — | Handoff | `aff0707` |
+| 9 | Economía cognitiva: el área de lectura pasa de 254 a 520 px | `adeea9d` |
+| 8 | `/adn`, la forma del archivo, y la gramática del hilo en la tela | `7528682` |
 | 4 | Veinte entradas más y catorce figuras: 44 entradas, 44 figuras, 63 vínculos anotados | `7f53881` … `f48b892` |
 
 En curso: una revisión adversarial de las fases 0–2.
