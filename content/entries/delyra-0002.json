@@ -1,0 +1,42 @@
+{
+  "id": "delyra-0002",
+  "title": "La biblioteca de Babel",
+  "type": "work",
+  "categories": [
+    "bibliotecas-imposibles",
+    "logica"
+  ],
+  "tags": [
+    "borges",
+    "biblioteca",
+    "infinito",
+    "combinatoria",
+    "laberinto"
+  ],
+  "content": "Borges publicó en 1941 un cuento narrado por un bibliotecario de un universo hecho de galerías hexagonales. Cada libro tiene cuatrocientas diez páginas, cada página cuarenta renglones, y la biblioteca contiene todas las combinaciones posibles de veinticinco símbolos. Allí está, por tanto, todo lo que puede escribirse: el relato exacto del futuro, su refutación y la refutación de la refutación. Casi todo es ruido. Generaciones de bibliotecarios han recorrido las galerías buscando el catálogo verdadero o el libro que cifra a todos los demás, y algunos se dedicaron a destruir los que juzgaban inútiles. En esa biblioteca, tenerlo todo y no encontrar nada son la misma experiencia.",
+  "question": "¿En qué se diferencia un libro imposible de encontrar de un libro que no existe?",
+  "sources": [
+    {
+      "label": "Borges, «La biblioteca de Babel», 1941",
+      "author": "Jorge Luis Borges",
+      "work": "La biblioteca de Babel",
+      "year": 1941,
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "fiction",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 3,
+    "fictionality": 5
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0003"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude a partir de las referencias de content/figures.json (Borges). Autoría asignada por la afinidad de esa figura: revisar texto y autoría."
+}
