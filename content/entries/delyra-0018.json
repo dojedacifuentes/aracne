@@ -1,0 +1,43 @@
+{
+  "id": "delyra-0018",
+  "title": "Las orejas de Morelli",
+  "type": "concept",
+  "categories": [
+    "epistemologia-forense",
+    "ciencia-y-arte"
+  ],
+  "tags": [
+    "ginzburg",
+    "indicio",
+    "atribucion",
+    "detalle",
+    "morelli"
+  ],
+  "content": "Giovanni Morelli, médico de formación, propuso a finales del siglo XIX un método para atribuir cuadros sin firma: no mirar lo que el pintor hizo con intención —el rostro, el gesto, la composición— sino lo que repetía sin darse cuenta. Las orejas. Las uñas. Los pliegues de los dedos. Un falsificador copia lo memorable; lo involuntario se le escapa. Carlo Ginzburg recogió ese método en 1979 y lo puso junto a otros dos que trabajan igual: Sherlock Holmes, que también se detiene en la anatomía de una oreja, y Freud, que lee lapsus. Los tres buscan en el margen, en el detalle que nadie vigila porque nadie lo cree importante. Ginzburg llamó a eso paradigma indiciario, y advirtió que es un saber que no se deja formalizar: se aprende mirando, como un cazador.",
+  "question": "¿Por qué el rasgo que nadie considera importante es el más difícil de falsificar?",
+  "sources": [
+    {
+      "label": "Ginzburg, «Spie. Radici di un paradigma indiziario», 1979",
+      "author": "Carlo Ginzburg",
+      "work": "Miti emblemi spie. Morfologia e storia",
+      "year": 1979,
+      "url": "https://it.wikipedia.org/wiki/Spie._Radici_di_un_paradigma_indiziario",
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 1,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0011"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Redactada por Claude a partir del material de investigación aportado por Diego y Paola. Fuente comprobada por separado: el ensayo es de 1979, recogido en Miti emblemi spie (Einaudi, 1986)."
+}
