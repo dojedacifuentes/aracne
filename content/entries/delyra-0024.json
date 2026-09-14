@@ -1,0 +1,47 @@
+{
+  "id": "delyra-0024",
+  "title": "Un buscador de máquinas",
+  "type": "portal",
+  "categories": [
+    "estado-del-mundo",
+    "psicopolitica"
+  ],
+  "tags": [
+    "buscador",
+    "dispositivo",
+    "red",
+    "exposicion",
+    "tiempo-real"
+  ],
+  "content": "En 2009, en una conferencia de seguridad, John Matherly presentó un buscador que no indexa páginas. Indexa lo que responden las máquinas cuando algo llama a su puerta: la cabecera con la que un aparato conectado se identifica ante cualquiera que pregunte. Con eso aparecieron cámaras, routers, sistemas de control de plantas de agua, redes eléctricas y un ciclotrón, accesibles porque nadie previó que alguien fuera a buscarlos de esa manera. Le puso el nombre de la inteligencia artificial hostil de un videojuego. No revela nada oculto: se limita a ordenar lo que cada máquina dice de sí misma en voz alta, sin que nadie se lo haya preguntado.",
+  "question": "¿Cuántas cosas están diciendo dónde están porque nadie les dijo que se callaran?",
+  "sources": [
+    {
+      "label": "Shodan",
+      "url": "https://www.shodan.io",
+      "kind": "portal"
+    },
+    {
+      "label": "Shodan (website)",
+      "work": "Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Shodan_(website)",
+      "kind": "reference"
+    }
+  ],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 4,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0006",
+    "delyra-0019"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Redactada por Claude a partir del material aportado. Comprobado: presentado por John Matherly en DEFCON 17 (2009); el nombre procede de la inteligencia artificial de System Shock."
+}
