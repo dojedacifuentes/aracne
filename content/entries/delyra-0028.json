@@ -1,0 +1,44 @@
+{
+  "id": "delyra-0028",
+  "title": "La araña que no mira",
+  "type": "concept",
+  "categories": [
+    "telaranas",
+    "umbral-del-sueno"
+  ],
+  "tags": [
+    "deleuze",
+    "proust",
+    "signo",
+    "vibracion",
+    "locura"
+  ],
+  "content": "Deleuze cierra la segunda parte de su libro sobre Proust con una figura: el narrador es una araña. No ve los objetos enteros y no le hace ninguna falta. No sale al encuentro de nada. Recibe la vibración más leve en el borde de su tela, esa vibración se propaga por su cuerpo como una onda y lo lanza al lugar exacto. Lo que en Proust suele leerse como memoria y sensibilidad queda convertido así en un dispositivo: la obra deja de ser el relato de alguien que observa el mundo y pasa a ser una máquina que reacciona a signos. Deleuze tituló esa conclusión «Presencia y función de la locura: la araña».",
+  "question": "¿Qué diferencia hay entre mirar algo y reaccionar a la señal que emite?",
+  "sources": [
+    {
+      "label": "Deleuze, «Proust et les signes», conclusión de la segunda parte",
+      "author": "Gilles Deleuze",
+      "work": "Proust et les signes",
+      "year": 1964,
+      "url": "https://www.jstor.org/stable/10.5749/j.ctt9qh3bc",
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "interpretation",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 2,
+    "fictionality": 2
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0020",
+    "delyra-0029"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Comprobado: el capítulo existe como conclusión de la segunda parte y se titula «Presence and Function of Madness: The Spider». Pertenece a la ampliación del libro, no a la edición de 1964; el año exacto de esa ampliación no se pudo verificar y por eso no se menciona."
+}
