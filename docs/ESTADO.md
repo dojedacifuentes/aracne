@@ -15,6 +15,7 @@
 | 7 | `/archivo` con filtros combinables en la URL, búsqueda local y paleta ⌘K | `b76a397` |
 | — | Arreglos: llegar al gabinete en un teléfono | `fb13d7c` |
 | 4 | Primeras siete entradas del material de investigación. **Las once patas encendidas** | `205447f` … `5c401dd` |
+| 4 | Veinte entradas más y catorce figuras: 44 entradas, 44 figuras, 63 vínculos anotados | `7f53881` … `f48b892` |
 
 En curso: una revisión adversarial de las fases 0–2.
 
@@ -36,6 +37,13 @@ El procedimiento es: el informe sirve de mapa de temas, cada fuente se verifica
 por separado antes de escribir la entrada, y lo que no se pueda verificar entra
 como `unverified` con `sources: []`. Cada entrada declara en `captureNote` qué
 se comprobó.
+
+**El usuario pidió después no detenerse a verificar.** La regla 4 no se puede
+saltar, pero sí tiene una salida prevista para justo este caso: lo no verificado
+va sin fuentes y marcado como pendiente. Por eso las veinte entradas del segundo
+lote entran como `unverified` con `sources: []` y con la referencia concreta
+anotada en `captureNote`. Son quince entradas a la espera de comprobación: esa
+es la cola editorial que la fase 4 quería en `/pendientes`.
 
 `ARAÑA.FUENTE1.md` es la excepción y conviene tratarlo aparte: avisa por su
 cuenta de que el fragmento de la araña atribuido a Heráclito (DK 22 B67a) solo
@@ -138,6 +146,11 @@ diagramas de Wigmore— y también en el `.docx` de paneles de datos.
   | entradas huérfanas | 2 | **0** |
   | máximo en 60 pulsaciones | 14 (*Tlön*) | **8** |
   | concentración del tag `borges` | 24 % | **17 %** |
+
+  Y con 44 entradas: grado medio **18,2**, vínculos fuertes **4,0**, ninguna
+  huérfana, la más repetida sale **7 veces de 60**, y el tag más concentrado es
+  `tiempo-real` con un **14 %**. Reparto epistémico: 17 `fact`, 15 `unverified`,
+  6 `interpretation`, 5 `fiction`, 1 `controversial`.
 
   Con 24 el archivo entero se sigue viendo en pocas decenas de pulsaciones. El
   objetivo razonable sigue siendo ~70.
