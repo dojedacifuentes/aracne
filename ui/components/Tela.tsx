@@ -17,6 +17,12 @@ type Props = {
   lit?: readonly string[];
   /** La lista de cruces lejanos solo cabe en la tela grande. */
   showCrossings?: boolean;
+  /**
+   * Fondo: la tela se dibuja tenue, sin leyenda, sin lista y sin blancos
+   * táctiles. Deja de ser una sección y pasa a ser el sitio donde ocurre
+   * todo lo demás.
+   */
+  ambient?: boolean;
   onOpen: (id: string) => void;
 };
 
@@ -34,7 +40,7 @@ type Props = {
  * Sin librería de grafos y sin layout de fuerzas: un layout de fuerzas
  * ordenaría los puntos por una física que no significa nada aquí.
  */
-export function Tela({ corpus, seed, size, lit = [], showCrossings = true, onOpen }: Props) {
+export function Tela({ corpus, seed, size, lit = [], showCrossings = true, ambient = false, onOpen }: Props) {
   const web = useMemo(
     () => buildWeb(corpus.entries, corpus.categories, seed, RING),
     [corpus.entries, corpus.categories, seed],
@@ -45,6 +51,8 @@ export function Tela({ corpus, seed, size, lit = [], showCrossings = true, onOpe
   const encendidas = new Set(lit);
   const byId = new Map(web.nodes.map((n) => [n.id, n]));
   const P = (v: number) => v * size;
+  // De fondo, la tela baja casi hasta desaparecer: se intuye, no se lee.
+  const alpha = ambient ? 0.26 : 1;
 
   const destacada = (edge: Edge) =>
     encendidas.has(edge.from) && encendidas.has(edge.to);
@@ -61,6 +69,7 @@ export function Tela({ corpus, seed, size, lit = [], showCrossings = true, onOpe
             fill="none"
             stroke={colors.line}
             strokeWidth={1}
+            opacity={alpha}
           />
           {web.edges.map((edge) => {
             const a = byId.get(edge.from);
@@ -80,7 +89,7 @@ export function Tela({ corpus, seed, size, lit = [], showCrossings = true, onOpe
                 fill="none"
                 stroke={fuerte ? colors.text : colors.line}
                 strokeWidth={fuerte ? 1.6 : 0.4 + edge.weight * 1.1}
-                opacity={fuerte ? 0.95 : 0.35 + edge.weight * 0.45}
+                opacity={(fuerte ? 0.95 : 0.35 + edge.weight * 0.45) * alpha}
               />
             );
           })}
@@ -94,6 +103,7 @@ export function Tela({ corpus, seed, size, lit = [], showCrossings = true, onOpe
                 cy={P(node.y)}
                 r={hovered?.id === node.id ? r + 2 : r}
                 fill={on ? colors.text : node.unverified ? colors.bg : colors.dim}
+                opacity={on ? 1 : alpha}
                 stroke={node.unverified ? colors.accent : 'none'}
                 strokeWidth={node.unverified ? 1 : 0}
               />
@@ -102,8 +112,9 @@ export function Tela({ corpus, seed, size, lit = [], showCrossings = true, onOpe
         </Svg>
 
         {/* Las áreas táctiles van encima del SVG: así el punto puede ser
-            pequeño y el blanco seguir siendo grande. */}
-        {web.nodes.map((node) => (
+            pequeño y el blanco seguir siendo grande. De fondo no hay ninguna:
+            la tela no debe robarle clics al texto. */}
+        {(ambient ? [] : web.nodes).map((node) => (
           <Pressable
             key={node.id}
             accessibilityRole="link"
@@ -117,13 +128,15 @@ export function Tela({ corpus, seed, size, lit = [], showCrossings = true, onOpe
         ))}
       </View>
 
+      {ambient ? null : (
       <Text style={styles.legend} numberOfLines={2}>
         {hovered
           ? `${catalogId(hovered.id)} · ${hovered.title} · ${hovered.degree} vínculos`
           : `${web.nodes.length} entradas · ${web.edges.length} hilos · ${lejanos.length} cruzan el anillo`}
       </Text>
+      )}
 
-      {showCrossings && lejanos.length > 0 ? (
+      {showCrossings && !ambient && lejanos.length > 0 ? (
         <View style={styles.far}>
           <Text style={styles.farLabel}>los cruces más lejanos</Text>
           {lejanos.slice(0, 3).map((edge) => {

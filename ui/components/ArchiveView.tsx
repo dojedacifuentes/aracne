@@ -113,9 +113,11 @@ export function ArchiveView({ corpus, legs, filters, onChange, onOpen }: Props) 
       {results.length === 0 ? (
         <Text style={styles.empty}>ninguna entrada cumple estos filtros. quita alguno.</Text>
       ) : (
-        results.map((entry) => (
-          <Row key={entry.id} entry={entry} categoryName={categoryName} onPress={() => onOpen(entry.id)} />
-        ))
+        <View style={styles.results}>
+          {results.map((entry) => (
+            <Row key={entry.id} entry={entry} categoryName={categoryName} onPress={() => onOpen(entry.id)} />
+          ))}
+        </View>
       )}
     </View>
   );
@@ -259,7 +261,11 @@ const styles = StyleSheet.create({
     color: colors.dim,
   },
 
+  // Dos resultados por fila: 44 entradas apiladas son veinte pantallas.
+  results: { flexDirection: 'row', flexWrap: 'wrap', columnGap: space.lg },
   row: {
+    flexGrow: 1,
+    flexBasis: 260,
     minHeight: HIT_SIZE,
     paddingVertical: space.sm,
     borderTopWidth: StyleSheet.hairlineWidth * 2,

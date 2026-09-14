@@ -56,6 +56,8 @@ export function HomeScreen({ reduceMotion }: Props) {
   const presses = useRef(0);
   const [palette, setPalette] = useState(false);
   const telaSeed = 'aracne';
+  // La tela del fondo ocupa el escenario entero, sin pasarse de alto.
+  const stageWeb = Math.min(Math.round(width * 0.38), height - 120);
 
   useEffect(() => {
     let alive = true;
@@ -400,14 +402,26 @@ export function HomeScreen({ reduceMotion }: Props) {
     return (
       <SafeAreaView style={styles.root} edges={['bottom', 'left', 'right']}>
         <View style={styles.columns}>
-          <View style={styles.stageWide}>{spider}</View>
-          <View style={[styles.side, { paddingTop: insets.top + space.lg }]}>
-            {header}
+          {/* El escenario: la tela al fondo y la araña encima. Las dos son
+              ambiente, no contenido, así que no ocupan altura de lectura. */}
+          <View style={styles.stageWide}>
             {route.name !== 'drift' ? (
-              <View style={styles.telaSmall}>
-                <Tela corpus={corpus} seed={telaSeed} size={216} lit={spot} showCrossings={false} onOpen={openEntry} />
+              <View style={styles.telaAmbient} pointerEvents="none">
+                <Tela
+                  corpus={corpus}
+                  seed={telaSeed}
+                  size={stageWeb}
+                  lit={spot}
+                  showCrossings={false}
+                  ambient
+                  onOpen={openEntry}
+                />
               </View>
             ) : null}
+            {spider}
+          </View>
+          <View style={[styles.side, { paddingTop: insets.top + space.lg }]}>
+            {header}
             <ScrollView
               style={styles.sideScroll}
               contentContainerStyle={styles.sideContent}
@@ -469,10 +483,10 @@ const styles = StyleSheet.create({
     maxWidth: MAX_CONTENT_WIDTH,
     alignSelf: 'center',
   },
-  stageWide: { flex: 1.1 },
+  stageWide: { flex: 0.85, justifyContent: 'center', alignItems: 'center' },
   side: {
-    flex: 1,
-    maxWidth: 480,
+    flex: 1.15,
+    maxWidth: 680,
     paddingHorizontal: space.lg,
     paddingBottom: space.lg,
   },
@@ -495,7 +509,16 @@ const styles = StyleSheet.create({
 
   // Cuatro botones no caben en 375 px: la fila envuelve antes que salirse.
   // La tela permanente: pequeña, arriba del panel, en todas las rutas.
-  telaSmall: { marginTop: space.md, alignItems: 'flex-start' },
+  // La tela del fondo: centrada en el escenario, detrás de la araña.
+  telaAmbient: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   buttons: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginTop: space.md },
   missing: {
     fontFamily: fonts.serif,

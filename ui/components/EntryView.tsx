@@ -35,8 +35,10 @@ export function EntryView({ entry, corpus, reduceMotion, compact, onOpenFigure }
   const border = STATUS_BORDER[entry.epistemicStatus];
   const categories = entry.categories.map((id) => corpus.categories.find((c) => c.id === id)?.name ?? id);
 
+  const wide = !compact;
+
   return (
-    <View style={styles.column}>
+    <View style={[styles.column, wide && styles.columnWide]}>
       <Reveal index={0} reduceMotion={reduceMotion}>
         <CatalogId id={entry.id} reduceMotion={reduceMotion} />
       </Reveal>
@@ -48,16 +50,19 @@ export function EntryView({ entry, corpus, reduceMotion, compact, onOpenFigure }
         {entry.sensitive ? <Text style={styles.sensitive}>contenido sensible, con fines educativos</Text> : null}
       </Reveal>
 
-      <Reveal index={2} reduceMotion={reduceMotion}>
-        <ContentBlock border={border} text={entry.content} statusLabel={STATUS_LABEL[entry.epistemicStatus]} />
-      </Reveal>
+      <View style={wide ? styles.split : undefined}>
+        <View style={wide ? styles.splitBody : undefined}>
+          <Reveal index={2} reduceMotion={reduceMotion}>
+            <ContentBlock border={border} text={entry.content} statusLabel={STATUS_LABEL[entry.epistemicStatus]} />
+          </Reveal>
 
-      <Reveal index={3} reduceMotion={reduceMotion}>
-        <Text style={[styles.question, compact && styles.questionCompact]}>{entry.question}</Text>
-      </Reveal>
+          <Reveal index={3} reduceMotion={reduceMotion}>
+            <Text style={[styles.question, compact && styles.questionCompact]}>{entry.question}</Text>
+          </Reveal>
+        </View>
 
       <Reveal index={4} reduceMotion={reduceMotion}>
-        <View style={styles.meta}>
+        <View style={[styles.meta, wide && styles.metaAside]}>
           <MetaRow label="tipo" value={TYPE_LABEL[entry.type]} />
           <MetaRow label="categorías" value={categories.length > 0 ? categories.join(', ') : 'sin categoría todavía'} />
           <MetaRow label="estado" value={STATUS_LABEL[entry.epistemicStatus]} accent={border.accentLabel} />
@@ -107,6 +112,7 @@ export function EntryView({ entry, corpus, reduceMotion, compact, onOpenFigure }
           <MetaRow label="añadida" value={entry.addedAt} />
         </View>
       </Reveal>
+      </View>
     </View>
   );
 }
@@ -178,8 +184,20 @@ function MetaRow({ label, value, accent = false }: { label: string; value: strin
 }
 
 const styles = StyleSheet.create({
-  // Una columna de 640 px, alineada a la izquierda.
+  // Una columna de 640 px, alineada a la izquierda; con sitio, 680 para que
+  // quepa la banda de datos sin estrechar la medida del texto.
   column: { maxWidth: 640, width: '100%' },
+  columnWide: { maxWidth: 680 },
+  // Cuerpo y datos en paralelo: el texto conserva su medida y los metadatos
+  // dejan de empujarlo hacia abajo.
+  split: { flexDirection: 'row', alignItems: 'flex-start', gap: space.lg },
+  splitBody: { flex: 1, minWidth: 0 },
+  metaAside: {
+    width: 196,
+    marginTop: space.lg,
+    borderTopWidth: 0,
+    paddingTop: 0,
+  },
   // El identificador es uno de los dos únicos usos del acento.
   catalog: {
     fontFamily: fonts.mono,
@@ -236,6 +254,7 @@ const styles = StyleSheet.create({
     borderTopColor: colors.line,
   },
   metaRow: { flexDirection: 'row', marginBottom: space.xs },
+  metaLabelWide: { width: '100%' },
   metaLabel: {
     width: 108,
     fontFamily: fonts.mono,

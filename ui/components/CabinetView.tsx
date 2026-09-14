@@ -81,11 +81,17 @@ export function RoomView({ state, reduceMotion, onOpenFigure }: RoomProps) {
         </Text>
         <Text style={styles.criterionLarge}>{state.room.criterion}</Text>
       </Reveal>
+      <View style={styles.grid}>
       {state.figures.map((figure, index) => (
-        <Reveal key={figure.id} index={index + 1} reduceMotion={reduceMotion}>
-          <FigureRow figure={figure} onPress={() => onOpenFigure(figure.id)} />
-        </Reveal>
+        // El hueco de la rejilla va fuera del Reveal: si fuera dentro, la
+        // celda sería la vista animada y no heredaría el ancho.
+        <View key={figure.id} style={styles.cell}>
+          <Reveal index={index + 1} reduceMotion={reduceMotion}>
+            <FigureRow figure={figure} onPress={() => onOpenFigure(figure.id)} />
+          </Reveal>
+        </View>
       ))}
+      </View>
     </View>
   );
 }
@@ -147,6 +153,9 @@ const styles = StyleSheet.create({
     marginBottom: space.lg,
   },
 
+  // Rejilla solo para las figuras: son filas cortas y se benefician de ir en
+  // dos columnas. Las salas no: su criterio es texto, y estrecharlo lo alarga.
+  grid: { flexDirection: 'row', flexWrap: 'wrap', columnGap: space.lg },
   room: {
     minHeight: HIT_SIZE,
     paddingVertical: space.sm,
@@ -175,6 +184,7 @@ const styles = StyleSheet.create({
     marginTop: space.xs,
   },
 
+  cell: { flexGrow: 1, flexBasis: 260 },
   figure: {
     minHeight: HIT_SIZE,
     flexDirection: 'row',

@@ -132,6 +132,8 @@ export function SpiderScene({
     let frame = 0;
     let last = performance.now();
     let onScreen = true;
+    let drawnAt = 0;
+    let settle = 0;
     let pageVisible = document.visibilityState !== 'hidden';
 
     const request = () => {
@@ -140,6 +142,7 @@ export function SpiderScene({
 
     function draw(now: number) {
       frame = 0;
+      drawnAt = now;
       if (disposed) return;
       const dt = Math.min(0.05, Math.max(0, (now - last) / 1000));
       last = now;
@@ -259,6 +262,23 @@ export function SpiderScene({
         scene.add(rig.object);
         last = performance.now();
         request();
+        /**
+         * La araña entra descolgándose, y esa entrada la mueve el bucle de
+         * render. Donde `requestAnimationFrame` no dispara —una pestaña de
+         * fondo, el ahorro de energía, una captura— el bucle no corre nunca y
+         * el animal se queda fuera del encuadre: no es que falte la animación,
+         * es que no hay araña. Este plazo la deja en su sitio de todas formas,
+         * igual que hacen el contador del identificador y la aparición del
+         * texto. La animación puede faltar; lo que se mira, no.
+         */
+        const espera = live.current.options.entranceDuration * 1000 + 600;
+        settle = window.setTimeout(() => {
+          const ahora = performance.now();
+          // Si el bucle sigue vivo no hay nada que arreglar: se está animando.
+          if (disposed || !rig || ahora - drawnAt < 400) return;
+          rig.update(ahora / 1000, 0, true);
+          renderer.render(scene, camera);
+        }, espera);
       })
       .catch(() => {
         if (!disposed) live.current.onFailure();
@@ -269,6 +289,7 @@ export function SpiderScene({
       controls.current = null;
       if (__DEV__) delete debug.__aracneSpider;
       cancelAnimationFrame(frame);
+      clearTimeout(settle);
       resizeObserver.disconnect();
       intersection.disconnect();
       document.removeEventListener('visibilitychange', onVisibility);

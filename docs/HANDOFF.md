@@ -214,6 +214,42 @@ porque ya se dibuja con `react-native-svg`, y hace el trabajo portátil.
 
 ---
 
+## 6bis. Economía cognitiva: lo que ya se hizo y lo que falta
+
+El área de lectura eran **254 px de una pantalla de 720**: el resto se lo comían
+la tela, el encabezado y los botones, mientras media pantalla de ancho quedaba
+vacía. Medido antes y después, en pantallas de scroll:
+
+| | antes | ahora |
+|---|---|---|
+| alto útil de lectura | 254 px | **520 px** |
+| entrada | 3,92 | **1,45** |
+| figura | 2,95 | **1,38** |
+| sala del gabinete | 6,40 | **1,44** |
+| gabinete | 4,42 | **2,06** |
+| archivo | 21,44 | **6,65** |
+| portada | — | **cabe entera** |
+
+Cómo, sin encoger ni una letra: la tela salió del flujo vertical al fondo del
+escenario; el escenario cedió ancho a la columna de lectura; los metadatos de la
+ficha pasaron a una banda estrecha **al lado** del texto, que es la disposición
+del catálogo de museo; y las listas de figuras y de resultados van en dos
+columnas.
+
+Una lección que conviene no perder: **dos columnas no siempre ahorran**. Las
+salas del gabinete empeoraron al partirlas, porque su contenido es un criterio
+en prosa y estrechar la caja lo alarga. Se dejaron a una columna. La rejilla
+sirve para filas cortas, no para párrafos.
+
+Lo que queda por hacer en esta línea:
+
+- El archivo sigue en 6,65 pantallas. Es una lista de 44 resultados, así que
+  algo de scroll es legítimo, pero los filtros podrían quedarse fijos mientras
+  solo scrollean los resultados.
+- La entrada está en 1,45. Lo que sobra es el final del cuerpo; con la ficha
+  dividida en dos columnas de altura desigual hay hueco bajo los metadatos que
+  todavía no se aprovecha.
+
 ## 7. Lo que se descartó, y por qué
 
 Para que nadie lo vuelva a proponer sin saber que ya se pensó.
@@ -275,10 +311,18 @@ que quedó pendiente.
 Cosas que ya costaron una sesión y no hace falta redescubrir.
 
 - **`requestAnimationFrame` no siempre dispara** (pestaña de fondo, ahorro de
-  energía, captura). Dos componentes dependían de él y dejaban la pantalla sin
-  contenido o con un número de catálogo falso. Los dos se asientan ahora con un
-  plazo. Si añades animación, haz lo mismo: **la animación puede faltar, el
-  contenido no**.
+  energía, captura). Ha mordido **tres veces**: el contador del identificador
+  mostraba un número de catálogo falso, la aparición del texto lo dejaba a
+  opacidad cero, y la araña se queda fuera del encuadre porque su descenso lo
+  mueve el bucle de render. Los tres se asientan ahora con un plazo. Si añades
+  animación, haz lo mismo: **la animación puede faltar, lo que se mira no**.
+- **El plazo de la araña está sin verificar.** La corrección está aplicada en
+  `SpiderScene.web.tsx` y comprueba si el bucle se paró, no si nunca arrancó
+  —que era el error de la primera versión—. No se pudo confirmar en el panel de
+  vista previa porque ahí tampoco se repinta el canvas a demanda, así que no se
+  distingue «no funciona» de «no se muestra». **Compruébalo en un navegador real**
+  abriendo la app en una pestaña de fondo y volviendo a ella pasados diez
+  segundos: la araña tiene que estar colgando en su sitio.
 - **`@vercel/og` no arranca fuera del runtime de Vercel.** `og.mjs` usa `satori`
   —su motor— y `sharp` directamente.
 - **Los archivos del repo están en CRLF.** Un script que busque `\n` no casa
