@@ -13,7 +13,8 @@
 | 3 | Vista de entrada, permalink `/e/<id>`, títulos cliqueables, Open Graph en build | `143570d` |
 | 6 | El gabinete: siete salas, treinta figuras, seis emblemas, invocar desde una sala | `2b0e0f0` |
 | 7 | `/archivo` con filtros combinables en la URL, búsqueda local y paleta ⌘K | `b76a397` |
-| — | Arreglos: llegar al gabinete en un teléfono | pendiente de commit |
+| — | Arreglos: llegar al gabinete en un teléfono | `fb13d7c` |
+| 4 | Primeras siete entradas del material de investigación. **Las once patas encendidas** | `205447f` … `5c401dd` |
 
 En curso: una revisión adversarial de las fases 0–2.
 
@@ -21,6 +22,27 @@ Las fases 6 y 7 se adelantaron a la 4 y la 5 por decisión del usuario: el conte
 estaba escrito (`figures.json` y `rooms.json`) y la 7 es la estructura que hará
 navegable el archivo cuando crezca. Ninguna de las dos dependía del material que
 el usuario estaba reuniendo.
+
+## Sobre el material de investigación aportado
+
+Diego y Paola entregaron siete archivos, que son cinco documentos distintos
+(dos pares son duplicados exactos). **No se importan en bloque.** Parte de las
+bibliografías contiene atribuciones que no resisten una comprobación —un libro
+de Carol Clover que no existe, un ensayo sobre Burroughs atribuido a Silvia
+Federici, un título de 2011 firmado por Spengler, muerto en 1936—, y la regla 4
+de CLAUDE.md prohíbe fabricar un autor, un año, una cita o una URL.
+
+El procedimiento es: el informe sirve de mapa de temas, cada fuente se verifica
+por separado antes de escribir la entrada, y lo que no se pueda verificar entra
+como `unverified` con `sources: []`. Cada entrada declara en `captureNote` qué
+se comprobó.
+
+`ARAÑA.FUENTE1.md` es la excepción y conviene tratarlo aparte: avisa por su
+cuenta de que el fragmento de la araña atribuido a Heráclito (DK 22 B67a) solo
+se conserva en una paráfrasis del siglo XII y que su autenticidad está
+discutida. Queda material sin explotar en él —Aracne y Minerva, las tarántulas
+de Nietzsche, la araña de Deleuze, la aracnología de Nancy K. Miller, los
+diagramas de Wigmore— y también en el `.docx` de paneles de datos.
 
 ## Decisiones tomadas sin confirmación explícita
 
@@ -92,18 +114,33 @@ el usuario estaba reuniendo.
 
 ## Pendiente
 
-- Fases 4, 5, 8 y 9 de `docs/PROMPTS.md`.
+- Fases 5, 8 y 9 de `docs/PROMPTS.md`. La 4 está empezada, no cerrada: faltan
+  las vías de incorporación (`npm run capture`, el issue form, `/pendientes`).
+- La rama `diseno-denso` tiene el rediseño a medias: tipografía unificada en
+  siete cuerpos (eso sí está terminado y con prueba), más `Rail` y `Context`
+  sin verificar en pantalla.
+- Ninguna de las siete entradas nuevas tiene figura en el gabinete: Ginzburg,
+  Diderot, Carrington y Schreber no están en `figures.json`.
 - **24 figuras siguen sin emblema.** Muestran el hueco marcado que pide
   `docs/MUSEO.md`, que es el estado correcto, no un error. Los seis dibujados
   son los que pedía la fase: Borges, Kafka, Euler, Spinoza, Pessoa y Bourgeois.
 - **21 de las 30 figuras no tienen ninguna entrada ligada**, y la sala «Los que
   firmaron con otro» no tiene ninguna: no se puede invocar desde ella todavía.
 
-- **El archivo está por debajo de su masa crítica.** Con 17 entradas, 60
-  pulsaciones devuelven cada entrada 5,6 veces de media y *Tlön* sale 14; cuatro
-  de las 17 llevan el tag `borges`. El grado medio del grafo es 4,9 vecinos de
-  16 posibles, pero solo 1,8 vínculos fuertes, y `delyra-0013` no tiene ninguno.
-  Ninguna funcionalidad arregla esto: hacen falta entradas.
+- **El archivo sigue siendo pequeño, pero ya no está por debajo de su masa
+  crítica.** De 17 a 24 entradas, medido antes y después:
+
+  | | 17 entradas | 24 entradas |
+  |---|---|---|
+  | patas encendidas | 7 de 11 | **11 de 11** |
+  | grado medio del grafo | 4,9 | **7,4** |
+  | vínculos fuertes por entrada | 1,8 | **2,4** |
+  | entradas huérfanas | 2 | **0** |
+  | máximo en 60 pulsaciones | 14 (*Tlön*) | **8** |
+  | concentración del tag `borges` | 24 % | **17 %** |
+
+  Con 24 el archivo entero se sigue viendo en pocas decenas de pulsaciones. El
+  objetivo razonable sigue siendo ~70.
 - Probar el rendimiento en un teléfono real y `prefers-reduced-motion` en un
   navegador real.
 - Conectar el repositorio a Vercel y definir `SITE_URL` para las imágenes Open
