@@ -1,0 +1,45 @@
+{
+  "id": "delyra-0012",
+  "title": "Una oreja en el antebrazo",
+  "type": "work",
+  "categories": [
+    "cuerpo-y-horror",
+    "ciencia-y-arte"
+  ],
+  "tags": [
+    "stelarc",
+    "protesis",
+    "biomecanica",
+    "oreja"
+  ],
+  "content": "Stelarc, artista australiano que lleva décadas usando su cuerpo como material de trabajo, empezó en 2006 un proyecto para tener una oreja en el antebrazo izquierdo. Una primera cirugía generó piel sobrante; otra introdujo un armazón biocompatible con forma de oreja, que su propio tejido fue ocupando. La intención no era oír mejor, sino conectar: incorporar un micrófono que transmitiera por internet lo que captara, para que alguien en otro lugar escuchara a través de un cuerpo que no es el suyo. En una de las intervenciones llegó a colocarse un micrófono diminuto. Guinness lo registra como la primera persona con una oreja implantada en el brazo.",
+  "question": "Si una parte de tu cuerpo escuchara para otra persona, ¿seguiría siendo tuya?",
+  "sources": [
+    {
+      "label": "Stelarc, Ear on Arm",
+      "author": "Stelarc",
+      "work": "Ear on Arm",
+      "year": 2006,
+      "url": "http://stelarc.org/_activity-20242.php",
+      "kind": "primary"
+    },
+    {
+      "label": "Guinness World Records, «First person with an ear implanted in their arm»",
+      "url": "https://www.guinnessworldrecords.com/world-records/460624-first-person-with-an-ear-implanted-in-their-arm",
+      "kind": "reference"
+    }
+  ],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 5,
+    "darkness": 3,
+    "fictionality": 1
+  },
+  "sensitive": true,
+  "related": [],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude para completar el anillo; no tiene figura en el gabinete. Autoría provisional: revisar texto y autoría."
+}
