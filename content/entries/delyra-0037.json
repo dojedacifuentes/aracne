@@ -1,0 +1,35 @@
+{
+  "id": "delyra-0037",
+  "title": "Aviones que dicen dónde están",
+  "type": "portal",
+  "categories": [
+    "estado-del-mundo",
+    "psicopolitica"
+  ],
+  "tags": [
+    "avion",
+    "tiempo-real",
+    "emision",
+    "rastreo",
+    "cielo"
+  ],
+  "content": "Casi todas las aeronaves emiten varias veces por segundo su identificador, su posición, su altitud y su rumbo, sin cifrar y sin dirigirse a nadie en particular. Cualquiera con una antena barata puede oírlas, y hay redes de aficionados que agregan lo que reciben y lo publican en mapas abiertos. El resultado es un cielo legible: se ven los vuelos comerciales, los aviones privados, los de vigilancia y los que apagan el transpondedor. Nada de eso se filtró; el sistema fue diseñado para que cada aparato anuncie su presencia a los demás, y esa cortesía técnica produjo, de rebote, un archivo público de los movimientos de casi todo el mundo que vuela.",
+  "question": "¿Cuántas cosas se volvieron públicas sin que nadie decidiera publicarlas?",
+  "sources": [],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "unverified",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 3,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0019",
+    "delyra-0024"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Del material de investigación aportado por Diego y Paola. Pendiente de verificar: funcionamiento del ADS-B y los agregadores públicos (Flightradar24, ADS-B Exchange). Sin URL hasta comprobarla."
+}

@@ -1,0 +1,35 @@
+{
+  "id": "delyra-0040",
+  "title": "Una página que se rompe a propósito",
+  "type": "work",
+  "categories": [
+    "ciencia-y-arte",
+    "maquinas-que-imaginan"
+  ],
+  "tags": [
+    "glitch",
+    "net-art",
+    "error",
+    "codigo",
+    "interfaz"
+  ],
+  "content": "A mediados de los noventa, un dúo de artistas publicó una web que parecía un fallo: caracteres verdes sobre negro, parpadeos, texto que no significaba nada. Quien mirase el código fuente encontraba, dibujado con caracteres, el esquema de una bomba. La obra no simulaba un error. Usaba el navegador exactamente como está hecho y dejaba a la vista lo que normalmente se esconde: que una página es una instrucción antes que una imagen, y que la capa que llamamos interfaz existe para que no tengamos que verlo. El glitch, en ese linaje, no es un adorno: es el momento en que el soporte deja de ser transparente.",
+  "question": "¿Qué se ve de una herramienta justo cuando deja de funcionar?",
+  "sources": [],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "unverified",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 2,
+    "fictionality": 2
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0012",
+    "delyra-0041"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Del material de investigación aportado por Diego y Paola. Pendiente de verificar: JODI (Joan Heemskerk y Dirk Paesmans), wwwwwwwww.jodi.org y el esquema oculto en el código fuente."
+}

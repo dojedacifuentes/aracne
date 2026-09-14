@@ -1,0 +1,35 @@
+{
+  "id": "delyra-0042",
+  "title": "La nueva carne",
+  "type": "work",
+  "categories": [
+    "cuerpo-y-horror",
+    "maquinas-que-imaginan"
+  ],
+  "tags": [
+    "cronenberg",
+    "cuerpo",
+    "pantalla",
+    "mutacion",
+    "medio"
+  ],
+  "content": "En una película de 1983 un hombre encuentra una señal de televisión que emite tortura sin argumento ni pausa. Mirarla le produce un tumor, el tumor le produce alucinaciones, y en el abdomen se le abre una ranura por la que se introducen cintas de vídeo. La película no trata de una pantalla peligrosa: trata de una pantalla que deja de estar enfrente. El cuerpo no es invadido desde fuera, sino que se reorganiza para alojar el medio, y a partir de cierto momento ya no hay manera de saber qué parte de lo que vemos ocurre. El director resumió su tema diciendo que el cuerpo es la realidad.",
+  "question": "¿Qué le pasa a un cuerpo cuando el medio deja de estar enfrente?",
+  "sources": [],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "unverified",
+  "scores": {
+    "strangeness": 5,
+    "darkness": 5,
+    "fictionality": 4
+  },
+  "sensitive": true,
+  "related": [
+    "delyra-0012",
+    "delyra-0043"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Del material de investigación aportado por Diego y Paola. Pendiente de verificar: David Cronenberg, Videodrome (1983), y la cita «el cuerpo es la realidad», que en el material aparece atribuida a una entrevista sin referencia comprobable."
+}

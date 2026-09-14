@@ -1,0 +1,35 @@
+{
+  "id": "delyra-0041",
+  "title": "Datos que se oyen",
+  "type": "work",
+  "categories": [
+    "ciencia-y-arte",
+    "estado-del-mundo"
+  ],
+  "tags": [
+    "ikeda",
+    "sonificacion",
+    "dato",
+    "escala",
+    "percepcion"
+  ],
+  "content": "Hay una obra que proyecta datos a una velocidad a la que nadie puede leerlos, acompañados de tonos en los límites de lo audible. El propósito no es informar. Es hacer perceptible algo que por tamaño y por velocidad queda fuera de la percepción: la sustancia invisible de la que está hecha una infraestructura de información. Al convertir números en luz y en sonido, la obra hace evidente que también convertirlos en un gráfico legible es una decisión, y que esa decisión elige qué parte del dato sobrevive. Un gráfico claro no es más verdadero que un destello ilegible: es otra traducción, hecha para otra cosa.",
+  "question": "¿Qué se pierde cada vez que un dato se vuelve legible?",
+  "sources": [],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "unverified",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 2,
+    "fictionality": 2
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0038",
+    "delyra-0040"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Del material de investigación aportado por Diego y Paola. Pendiente de verificar: Ryoji Ikeda, serie datamatics (desde 2006) y la formulación sobre percibir la sustancia invisible de los datos."
+}
