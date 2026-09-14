@@ -11,13 +11,15 @@
 | 1 | La araña 3D como oráculo (`docs/ARANA-3D.md`) | `28e0a1d` |
 | 2 | Pulsar invoca; `/i/<semilla>?patas=…`; propósito; hilos de las patas; pruebas de la fase | `c498ba0` |
 | 3 | Vista de entrada, permalink `/e/<id>`, títulos cliqueables, Open Graph en build | `143570d` |
-| 6 | El gabinete: siete salas, treinta figuras, seis emblemas, invocar desde una sala | pendiente de commit |
+| 6 | El gabinete: siete salas, treinta figuras, seis emblemas, invocar desde una sala | `2b0e0f0` |
+| 7 | `/archivo` con filtros combinables en la URL, búsqueda local y paleta ⌘K | pendiente de commit |
 
 En curso: una revisión adversarial de las fases 0–2.
 
-La fase 6 se adelantó a la 4 y la 5 por decisión del usuario: es la única cuyo
-contenido ya estaba escrito (`figures.json` y `rooms.json`), así que no dependía
-del material que el usuario estaba reuniendo para el archivo.
+Las fases 6 y 7 se adelantaron a la 4 y la 5 por decisión del usuario: el contenido de la 6 ya
+estaba escrito (`figures.json` y `rooms.json`) y la 7 es la estructura que hará
+navegable el archivo cuando crezca. Ninguna de las dos dependía del material que
+el usuario estaba reuniendo.
 
 ## Decisiones tomadas sin confirmación explícita
 
@@ -44,7 +46,12 @@ del material que el usuario estaba reuniendo para el archivo.
    dibujo vive en `scripts/sprites.mjs` (`npm run sprites`) porque así se
    corrige una figura cambiando dos líneas en vez de doscientos rectángulos,
    y porque el repositorio ya tenía tres scripts de assets con esa forma.
-9. **satori en lugar de `@vercel/og`.** La fase 3 pedía `@vercel/og`, que no
+9. **El filtro por tag solo ofrece los que tienen dos entradas o más.** Un tag
+   con una sola entrada *es* esa entrada: como filtro no separa nada. Los demás
+   se siguen encontrando con la búsqueda.
+10. **«Saltar a pata» apoya la pata y vuelve a la araña, no invoca.** La fase no
+   lo precisaba. Pulsar sigue siendo una decisión de quien mira.
+11. **satori en lugar de `@vercel/og`.** La fase 3 pedía `@vercel/og`, que no
    arranca fuera del runtime de Vercel: su bundle hace un `require` dinámico
    que Node rechaza, y la entrada CommonJS falla también. `scripts/og.mjs` usa
    directamente satori —el motor que `@vercel/og` lleva dentro— y sharp, que ya
@@ -74,7 +81,7 @@ del material que el usuario estaba reuniendo para el archivo.
 
 ## Pendiente
 
-- Fases 4, 5, 7, 8 y 9 de `docs/PROMPTS.md`.
+- Fases 4, 5, 8 y 9 de `docs/PROMPTS.md`.
 - **24 figuras siguen sin emblema.** Muestran el hueco marcado que pide
   `docs/MUSEO.md`, que es el estado correcto, no un error. Los seis dibujados
   son los que pedía la fase: Borges, Kafka, Euler, Spinoza, Pessoa y Bourgeois.

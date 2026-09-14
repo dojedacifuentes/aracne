@@ -1,3 +1,5 @@
+import { NO_FILTERS, type ArchiveFilters } from '../../lib/archive/filter';
+import { ENTRY_TYPES, EPISTEMIC_STATUS, type EntryType, type EpistemicStatus } from '../../lib/schema';
 import { isSeed } from '../../lib/oracle/rng';
 
 /**
@@ -10,10 +12,12 @@ export type Route =
   | { name: 'entry'; id: string }
   | { name: 'cabinet' }
   | { name: 'room'; id: string }
-  | { name: 'figure'; id: string };
+  | { name: 'figure'; id: string }
+  | { name: 'archive'; filters: ArchiveFilters };
 
 export const HOME: Route = { name: 'home' };
 export const CABINET: Route = { name: 'cabinet' };
+export const ARCHIVE: Route = { name: 'archive', filters: NO_FILTERS };
 
 const SLUG = /^[a-z0-9-]+$/;
 /** El mismo formato que `EntrySchema`: aquí solo decide si la ruta existe. */
@@ -35,6 +39,8 @@ export function parseRoute(pathname: string, search: string): Route {
   if (/^\/gabinete\/?$/.test(pathname)) return CABINET;
   const room = /^\/gabinete\/([^/]+)\/?$/.exec(pathname);
   if (room) return SLUG.test(room[1]) ? { name: 'room', id: room[1] } : CABINET;
+
+  if (/^\/archivo\/?$/.test(pathname)) return { name: 'archive', filters: parseFilters(search) };
 
   const match = /^\/i\/([^/]+)\/?$/.exec(pathname);
   if (!match || !isSeed(match[1])) return HOME;
@@ -63,6 +69,10 @@ export function routeToUrl(route: Route): string {
       return `/gabinete/${route.id}`;
     case 'figure':
       return `/figura/${route.id}`;
+    case 'archive': {
+      const query = filtersToQuery(route.filters);
+      return query ? `/archivo?${query}` : '/archivo';
+    }
     case 'invocation': {
       const query = new URLSearchParams();
       if (route.legs.length > 0) query.set('patas', [...route.legs].sort().join(','));
@@ -72,4 +82,44 @@ export function routeToUrl(route: Route): string {
       return `/i/${route.seed}${search ? `?${search.replace(/%2C/g, ',')}` : ''}`;
     }
   }
+}
+
+/** Una lista separada por comas, limpia y sin repetir. */
+function list(params: URLSearchParams, key: string): string[] {
+  const raw = params.get(key) ?? '';
+  return [...new Set(raw.split(',').map((v) => v.trim()).filter((v) => SLUG.test(v)))];
+}
+
+/**
+ * Los filtros viajan en la URL, como pide la fase: una selección compartida se
+ * abre igual en otra máquina. Lo que no sea un valor del esquema se descarta
+ * en silencio; un filtro inventado no debe vaciar el archivo.
+ */
+export function parseFilters(search: string): ArchiveFilters {
+  const params = new URLSearchParams(search);
+  const types = ENTRY_TYPES as readonly string[];
+  const statuses = EPISTEMIC_STATUS as readonly string[];
+  return {
+    categories: list(params, 'categorias'),
+    types: list(params, 'tipos').filter((v): v is EntryType => types.includes(v)),
+    tags: list(params, 'tags'),
+    statuses: list(params, 'estado').filter((v): v is EpistemicStatus => statuses.includes(v)),
+    contributors: list(params, 'quien'),
+    query: (params.get('q') ?? '').slice(0, 120),
+  };
+}
+
+/** El orden es fijo para que los mismos filtros den siempre la misma URL. */
+export function filtersToQuery(filters: ArchiveFilters): string {
+  const params = new URLSearchParams();
+  const add = (key: string, values: readonly string[]) => {
+    if (values.length > 0) params.set(key, [...values].sort().join(','));
+  };
+  add('categorias', filters.categories);
+  add('tipos', filters.types);
+  add('tags', filters.tags);
+  add('estado', filters.statuses);
+  add('quien', filters.contributors);
+  if (filters.query.trim()) params.set('q', filters.query.trim());
+  return params.toString().replace(/%2C/g, ',');
 }

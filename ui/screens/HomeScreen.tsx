@@ -1,14 +1,17 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 
+import type { ArchiveFilters } from '../../lib/archive/filter';
 import { usableLegs } from '../../lib/content/corpus';
 import { loadArchive } from '../../lib/content/loader';
 import { pressSeed } from '../../lib/oracle';
 import { pushHistory } from '../../lib/oracle/history';
 import { entriesOfRoom, roomStates } from '../../lib/museum/rooms';
 import { invoke } from '../../lib/oracle/invoke';
+import { ArchiveView } from '../components/ArchiveView';
 import { RoomsView, RoomView } from '../components/CabinetView';
+import { CommandPalette, type Command } from '../components/CommandPalette';
 import { EntryView } from '../components/EntryView';
 import { FigureView } from '../components/FigureView';
 import { InvocationView } from '../components/InvocationView';
@@ -18,7 +21,7 @@ import { Spider } from '../components/spider/Spider';
 import { TextButton } from '../components/TextButton';
 import { useRoute } from '../hooks/useRoute';
 import { getLayoutMode, MAX_CONTENT_WIDTH } from '../lib/layout';
-import { CABINET, HOME } from '../lib/route';
+import { ARCHIVE, CABINET, HOME } from '../lib/route';
 import { readHistory, rememberEntries } from '../lib/storedHistory';
 import { colors, fonts, space } from '../theme';
 
@@ -47,6 +50,7 @@ export function HomeScreen({ reduceMotion }: Props) {
   const [panel, setPanel] = useState<Panel>('patas');
   const [history, setHistory] = useState<readonly string[]>(NONE);
   const presses = useRef(0);
+  const [palette, setPalette] = useState(false);
 
   useEffect(() => {
     let alive = true;
@@ -68,6 +72,18 @@ export function HomeScreen({ reduceMotion }: Props) {
     () => (route.name === 'figure' ? (corpus.figures.find((f) => f.id === route.id) ?? null) : null),
     [route, corpus.figures],
   );
+
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof window === 'undefined') return;
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key.toLowerCase() === 'k' && (event.metaKey || event.ctrlKey)) {
+        event.preventDefault();
+        setPalette((open) => !open);
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
 
   // La invocación sale de la URL, nunca del historial: la misma URL da lo mismo en cualquier parte.
   const invocationLegs = useMemo(
@@ -135,6 +151,34 @@ export function HomeScreen({ reduceMotion }: Props) {
   const openRoom = useCallback((id: string) => navigate({ name: 'room', id }), [navigate]);
   const openFigure = useCallback((id: string) => navigate({ name: 'figure', id }), [navigate]);
   const openCabinet = useCallback(() => navigate(CABINET), [navigate]);
+
+  const openArchive = useCallback(() => navigate(ARCHIVE), [navigate]);
+  const setFilters = useCallback(
+    (filters: ArchiveFilters) => navigate({ name: 'archive', filters }),
+    [navigate],
+  );
+
+  const run = useCallback(
+    (command: Command) => {
+      setPalette(false);
+      switch (command.kind) {
+        case 'invoke':
+          return press();
+        case 'archive':
+          return navigate(ARCHIVE);
+        case 'entry':
+          return navigate({ name: 'entry', id: command.id });
+        case 'room':
+          return navigate({ name: 'room', id: command.id });
+        case 'leg':
+          // Saltar a una pata es apoyarla y volver a la araña, no invocar:
+          // la decisión de pulsar sigue siendo de quien mira.
+          setSelected((current) => (current.includes(command.id) ? current : [...current, command.id]));
+          return navigate(HOME);
+      }
+    },
+    [press, navigate],
+  );
 
   const back = useCallback(() => {
     setSelected(active);
@@ -233,6 +277,14 @@ export function HomeScreen({ reduceMotion }: Props) {
       ) : (
         <Text style={styles.missing}>no hay ninguna figura con ese nombre. vuelve al gabinete.</Text>
       )
+    ) : route.name === 'archive' ? (
+      <ArchiveView
+        corpus={corpus}
+        legs={legs}
+        filters={route.filters}
+        onChange={setFilters}
+        onOpen={openEntry}
+      />
     ) : panel === 'proposito' ? (
       <PurposeView legs={legs} selected={selected} reduceMotion={reduceMotion} />
     ) : null;
@@ -269,11 +321,17 @@ export function HomeScreen({ reduceMotion }: Props) {
         <TextButton label="gabinete" onPress={openCabinet} />
         <TextButton label="volver" onPress={back} />
       </View>
+    ) : route.name === 'archive' ? (
+      <View style={styles.buttons}>
+        <TextButton label="invocar" onPress={press} />
+        <TextButton label="volver" onPress={back} />
+      </View>
     ) : (
       <View style={styles.buttons}>
         <TextButton label="invocar" onPress={press} />
         <TextButton label={panel === 'proposito' ? 'patas' : 'propósito'} onPress={togglePanel} />
         <TextButton label="gabinete" onPress={openCabinet} />
+        <TextButton label="archivo" onPress={openArchive} />
       </View>
     );
 
@@ -294,6 +352,9 @@ export function HomeScreen({ reduceMotion }: Props) {
             {buttons}
           </View>
         </View>
+        {palette ? (
+          <CommandPalette corpus={corpus} legs={legs} onRun={run} onClose={() => setPalette(false)} />
+        ) : null}
       </SafeAreaView>
     );
   }
@@ -325,6 +386,9 @@ export function HomeScreen({ reduceMotion }: Props) {
         )}
         <View style={styles.panelButtons}>{buttons}</View>
       </View>
+        {palette ? (
+          <CommandPalette corpus={corpus} legs={legs} onRun={run} onClose={() => setPalette(false)} />
+        ) : null}
     </SafeAreaView>
   );
 }
