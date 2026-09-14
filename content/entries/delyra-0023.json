@@ -1,0 +1,44 @@
+{
+  "id": "delyra-0023",
+  "title": "El juez que ganó su propio caso",
+  "type": "case",
+  "categories": [
+    "umbral-del-sueno",
+    "derecho-de-lo-imposible"
+  ],
+  "tags": [
+    "schreber",
+    "tutela",
+    "psiquiatria",
+    "capacidad",
+    "delirio"
+  ],
+  "content": "Daniel Paul Schreber presidía una sala de la audiencia de Dresde cuando enfermó por segunda vez y quedó internado. En marzo de 1900 un tribunal declaró permanente su tutela. Schreber, desde dentro del sanatorio, redactó punto por punto la impugnación de esa resolución y la defendió en persona. En julio de 1902 el tribunal superior la revocó. La sentencia no afirmó que sus creencias fueran ciertas ni que hubieran desaparecido: sostuvo que no le impedían administrar sus asuntos y que conservaba el derecho a la libertad aunque persistieran. Al año siguiente publicó el relato de todo aquello. Es uno de los primeros lugares donde el derecho separa tener delirios de ser incapaz.",
+  "question": "¿Desde cuándo hace falta estar de acuerdo con el mundo para poder disponer de la propia vida?",
+  "sources": [
+    {
+      "label": "Schreber, «Denkwürdigkeiten eines Nervenkranken», 1903",
+      "author": "Daniel Paul Schreber",
+      "work": "Denkwürdigkeiten eines Nervenkranken",
+      "year": 1903,
+      "url": "http://www.zeno.org/Kulturgeschichte/M/Schreber,+Daniel+Paul/Denkw%C3%BCrdigkeiten+eines+Nervenkranken",
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 4,
+    "fictionality": 1
+  },
+  "sensitive": true,
+  "related": [
+    "delyra-0017",
+    "delyra-0022"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Redactada por Claude a partir del material aportado. Comprobado: resolución del Amtsgericht de Dresde de marzo de 1900, revocación del tribunal de apelación el 14 de julio de 1902, publicación en 1903. La entrada no presenta como hechos los contenidos del delirio."
+}
