@@ -1,0 +1,39 @@
+{
+  "id": "delyra-0017",
+  "title": "Un río que es alguien",
+  "type": "case",
+  "categories": [
+    "derecho-de-lo-imposible"
+  ],
+  "tags": [
+    "personalidad",
+    "rio",
+    "ficcion-juridica",
+    "maori"
+  ],
+  "content": "En 2017 el Parlamento de Nueva Zelanda aprobó una ley que declara al río Whanganui, desde las montañas hasta el mar y con todo lo que lo compone, un todo indivisible y vivo llamado Te Awa Tupua, y le reconoce personalidad jurídica: los derechos, poderes, deberes y responsabilidades de una persona. Como un río no puede firmar ni comparecer, la ley crea una figura que habla en su nombre, formada por dos personas, una propuesta por la Corona y otra por las tribus del río. La norma cerró una reclamación maorí de más de un siglo. No dice que el río sea humano. Dice que, ante la ley, es alguien.",
+  "question": "¿Qué cambia en un lugar el día en que deja de ser propiedad de alguien para ser alguien?",
+  "sources": [
+    {
+      "label": "Te Awa Tupua (Whanganui River Claims Settlement) Act 2017",
+      "author": "Parlamento de Nueva Zelanda",
+      "work": "Te Awa Tupua (Whanganui River Claims Settlement) Act 2017",
+      "year": 2017,
+      "url": "https://www.legislation.govt.nz/act/public/2017/0007/latest/whole.html",
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 4,
+    "darkness": 1,
+    "fictionality": 2
+  },
+  "sensitive": false,
+  "related": [],
+  "addedAt": "2026-09-14",
+  "captureNote": "Semilla de la fase 0, redactada por Claude para completar el anillo; no tiene figura en el gabinete. Autoría provisional: revisar texto y autoría."
+}
