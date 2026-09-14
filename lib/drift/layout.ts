@@ -148,6 +148,79 @@ export function buildWeb(
   return { nodes, edges };
 }
 
+export interface Vertex {
+  x: number;
+  y: number;
+}
+
+/**
+ * La rejilla sobre la que se quiebran las trazas. No la usan los nodos —su
+ * sitio lo manda la pata y eso no se toca—, solo los codos: que todos los
+ * giros caigan en las mismas líneas es lo que hace que veinte hilos sueltos
+ * se lean como un circuito y no como veinte hilos sueltos.
+ */
+export const TRACE_GRID = 1 / 22;
+
+const snap = (v: number) => Math.round(v / TRACE_GRID) * TRACE_GRID;
+
+/**
+ * La traza entre dos entradas, en ángulo recto.
+ *
+ * Sale del punto, corre por un canal propio y entra en el otro: tres tramos y
+ * dos codos, como una pista de placa. El canal se elige con el PRNG sembrado a
+ * partir de los dos extremos, así que la misma pareja se encamina siempre
+ * igual —una traza que cambiara de recorrido en cada visita no sería un mapa—
+ * y dos trazas vecinas rara vez se solapan.
+ *
+ * Los extremos no se llevan a la rejilla: los codos sí. La posición de una
+ * entrada la sigue mandando su categoría.
+ */
+export function traceRoute(from: Vertex, to: Vertex, key: string): Vertex[] {
+  const rng = rngFromString(`traza:${key}`);
+  const lane = (Math.floor(rng() * 5) - 2) * TRACE_GRID;
+  const horizontal = rng() < 0.5;
+
+  if (horizontal) {
+    const x = snap((from.x + to.x) / 2 + lane);
+    return [from, { x, y: from.y }, { x, y: to.y }, to];
+  }
+  const y = snap((from.y + to.y) / 2 + lane);
+  return [from, { x: from.x, y }, { x: to.x, y }, to];
+}
+
+/** Longitud de una polilínea, para repartir lo que viaje por encima. */
+export function routeLength(route: readonly Vertex[]): number {
+  let total = 0;
+  for (let i = 1; i < route.length; i += 1) {
+    total += Math.abs(route[i].x - route[i - 1].x) + Math.abs(route[i].y - route[i - 1].y);
+  }
+  return total;
+}
+
+/**
+ * Dónde está, en 0..1, algo que recorre la traza. Fuera de ese rango se
+ * devuelve el extremo: nada se sale nunca de la pista.
+ */
+export function pointOnRoute(route: readonly Vertex[], t: number): Vertex {
+  if (t <= 0) return route[0];
+  if (t >= 1) return route[route.length - 1];
+  const total = routeLength(route);
+  if (total === 0) return route[0];
+  let left = t * total;
+  for (let i = 1; i < route.length; i += 1) {
+    const a = route[i - 1];
+    const b = route[i];
+    const step = Math.abs(b.x - a.x) + Math.abs(b.y - a.y);
+    if (step === 0) continue;
+    if (left <= step) {
+      const k = left / step;
+      return { x: a.x + (b.x - a.x) * k, y: a.y + (b.y - a.y) * k };
+    }
+    left -= step;
+  }
+  return route[route.length - 1];
+}
+
 /** Las aristas que cruzan de un lado al otro del anillo: los cruces raros. */
 export function farCrossings(web: Web, ring: Ring): Edge[] {
   const far = Math.floor(ring.legs / 2);

@@ -361,6 +361,7 @@ export function HomeScreen({ reduceMotion }: Props) {
         focus={route.focus}
         skin={route.skin}
         size={portrait ? Math.min(width - space.md * 2, 420) : webSize}
+        reduceMotion={reduceMotion}
         onFocus={weave}
         onSkin={setSkin}
         onOpen={openEntry}

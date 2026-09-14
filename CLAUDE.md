@@ -123,6 +123,15 @@ metadatos, no para párrafos ni para titulares.
 Un solo momento de movimiento: la aparición de la entrada, 320 ms.
 `prefers-reduced-motion` lo reduce a un fundido.
 
+**Una excepción, y solo una**: la piel `flujo` de `/tela` está viva. Por sus
+trazas corren pulsos y el nodo del centro respira, porque ahí el dibujo no
+ilustra el archivo, **es** el archivo leído como circuito. Decisión expresa de
+quien dirige el proyecto, tomada sabiendo lo que dice el párrafo anterior. Las
+condiciones: no sale de esa piel —la de seda está quieta y hay una comprobación
+de que lo está—, no usa más color que el acento de siempre, se apaga entera con
+`prefers-reduced-motion`, y si el bucle no corre el diagrama se ve igual. No la
+borres por doctrina: la doctrina ya la contempla aquí.
+
 ## Cómo trabajas
 
 Una fase por sesión. Las fases están en `docs/PROMPTS.md`.

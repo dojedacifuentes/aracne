@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 
 import { loadArchive } from '../lib/content/loader';
 import { withinSteps, neighbours } from '../lib/drift/graph';
+import { pointOnRoute, routeLength, TRACE_GRID, traceRoute } from '../lib/drift/layout';
 import { legSigil, markSigil, sigil, type Point } from '../ui/lib/sigil';
 import { parseRoute, routeToUrl, WEB } from '../ui/lib/route';
 
@@ -114,5 +115,80 @@ describe('la ruta de la tela', () => {
   it('un foco que no tiene forma de identificador se descarta, y la tela sigue abriéndose', () => {
     expect(parseRoute('/tela/no-existe', '')).toEqual(WEB);
     expect(parseRoute('/tela/<script>', '')).toEqual(WEB);
+  });
+});
+
+describe('las trazas del flujo', () => {
+  const a = { x: 0.2, y: 0.3 };
+  const b = { x: 0.8, y: 0.7 };
+
+  it('empieza y acaba en los puntos que se le dan', () => {
+    // Los codos van a la rejilla; los extremos no. La posición de una entrada
+    // la manda su categoría, y una traza no puede moverla de sitio.
+    for (const clave of ['a|b', 'delyra-0001|delyra-0020', 'x']) {
+      const ruta = traceRoute(a, b, clave);
+      expect(ruta[0]).toEqual(a);
+      expect(ruta[ruta.length - 1]).toEqual(b);
+    }
+  });
+
+  it('todos sus tramos son rectos: nunca hay una diagonal', () => {
+    for (let i = 0; i < 60; i += 1) {
+      const from = { x: (i % 7) / 10, y: (i % 5) / 10 };
+      const to = { x: 1 - (i % 4) / 10, y: 1 - (i % 6) / 10 };
+      const ruta = traceRoute(from, to, `traza${i}`);
+      for (let j = 1; j < ruta.length; j += 1) {
+        const mismoX = Math.abs(ruta[j].x - ruta[j - 1].x) < 1e-12;
+        const mismoY = Math.abs(ruta[j].y - ruta[j - 1].y) < 1e-12;
+        expect(mismoX || mismoY, `tramo ${j} de traza${i}`).toBe(true);
+      }
+    }
+  });
+
+  it('los codos caen en la rejilla, que es lo que hace que parezca un circuito', () => {
+    for (let i = 0; i < 40; i += 1) {
+      const ruta = traceRoute(a, b, `codo${i}`);
+      for (const codo of ruta.slice(1, -1)) {
+        const enRejilla =
+          Math.abs(codo.x / TRACE_GRID - Math.round(codo.x / TRACE_GRID)) < 1e-9 ||
+          Math.abs(codo.y / TRACE_GRID - Math.round(codo.y / TRACE_GRID)) < 1e-9;
+        expect(enRejilla, `codo de ${i}`).toBe(true);
+      }
+    }
+  });
+
+  it('la misma pareja se encamina siempre igual', () => {
+    // Si el recorrido cambiara entre visitas, el dibujo dejaría de ser un mapa.
+    expect(traceRoute(a, b, 'delyra-0001|delyra-0020')).toEqual(traceRoute(a, b, 'delyra-0001|delyra-0020'));
+    expect(traceRoute(a, b, 'otra')).not.toEqual(traceRoute(a, b, 'distinta'));
+  });
+
+  it('lo que viaja por la traza no se sale de ella', () => {
+    for (let i = 0; i < 12; i += 1) {
+      const ruta = traceRoute(a, b, `pulso${i}`);
+      const largo = routeLength(ruta);
+      expect(largo).toBeGreaterThan(0);
+      expect(pointOnRoute(ruta, 0)).toEqual(a);
+      expect(pointOnRoute(ruta, 1)).toEqual(b);
+      // Fuera de 0..1 se devuelve el extremo: nada se escapa de la pista.
+      expect(pointOnRoute(ruta, -3)).toEqual(a);
+      expect(pointOnRoute(ruta, 9)).toEqual(b);
+      for (let t = 0; t <= 1.0001; t += 0.05) {
+        const punto = pointOnRoute(ruta, t);
+        const sobre = ruta.some((v, j) => {
+          if (j === 0) return false;
+          const u = ruta[j - 1];
+          const enX = Math.abs(u.x - v.x) < 1e-12 && Math.abs(punto.x - v.x) < 1e-9;
+          const enY = Math.abs(u.y - v.y) < 1e-12 && Math.abs(punto.y - v.y) < 1e-9;
+          return enX || enY;
+        });
+        expect(sobre, `t=${t.toFixed(2)}`).toBe(true);
+      }
+    }
+  });
+
+  it('avanza: dos instantes distintos no dan el mismo punto', () => {
+    const ruta = traceRoute(a, b, 'avance');
+    expect(pointOnRoute(ruta, 0.25)).not.toEqual(pointOnRoute(ruta, 0.75));
   });
 });

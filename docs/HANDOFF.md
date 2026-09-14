@@ -205,7 +205,16 @@ falla, el dibujo ha dejado de significar algo.
 tenue detrás de la araña en todas las rutas; molestaba, y por decisión expresa
 se mudó a `/tela`, que se abre con un botón pequeño. Ahí se dibuja con más
 hilos, se reteje alrededor de la entrada que se pulse y se puede leer con dos
-pieles: seda o traza de circuito.
+pieles: seda o circuito.
+
+**La piel `flujo` está viva** (fase 13, también por decisión expresa). Las
+trazas van en ángulo recto, los codos caen en una rejilla —eso es lo que la
+hace parecer una placa y no veinte líneas sueltas—, por las más fuertes corre
+un pulso con estela y el nodo del centro respira. La velocidad del pulso es
+proporcional a la fuerza del vínculo, así que **el movimiento también dice
+algo**. Es la única excepción a «un solo momento de movimiento» y está escrita
+en `CLAUDE.md`: no se borra por doctrina. La piel de seda sigue quieta, con una
+comprobación de que lo está.
 
 Lo que **no** cambió y no debe cambiar: la semilla sigue fija —si cambiara en
 cada visita los puntos saltarían de sitio y dejaría de ser un mapa—, la posición
