@@ -11,8 +11,8 @@ export type Route =
   | { name: 'home' }
   | { name: 'invocation'; seed: string; legs: string[]; room?: string }
   | { name: 'entry'; id: string }
-  | { name: 'cabinet' }
-  | { name: 'room'; id: string }
+  | { name: 'lives' }
+  | { name: 'theme'; id: string }
   | { name: 'figure'; id: string }
   | { name: 'archive'; filters: ArchiveFilters }
   | { name: 'drift'; seed: string; mode: DriftMode; leg: string | null }
@@ -22,7 +22,7 @@ export type Route =
   | { name: 'shape' };
 
 export const HOME: Route = { name: 'home' };
-export const CABINET: Route = { name: 'cabinet' };
+export const LIVES: Route = { name: 'lives' };
 export const ARCHIVE: Route = { name: 'archive', filters: NO_FILTERS };
 export const SHAPE: Route = { name: 'shape' };
 export const WEB: Route = { name: 'web', focus: null, skin: 'tela' };
@@ -31,6 +31,9 @@ const SLUG = /^[a-z0-9-]+$/;
 /** El mismo formato que `EntrySchema`: aquí solo decide si la ruta existe. */
 /** `/deriva/<semilla>`: se construye con RegExp para no escapar cada barra. */
 const DRIFT_PATH = new RegExp('^/deriva/([^/]+)/?$');
+/** `/biografias`, y `/gabinete` por compatibilidad con lo ya compartido. */
+const LIVES_PATH = new RegExp('^/(?:biografias|gabinete)/?$');
+const THEME_PATH = new RegExp('^/(?:biografias|gabinete)/([^/]+)/?$');
 /** `/tela` y `/tela/<id>`, por el mismo motivo que la anterior. */
 const WEB_PATH = new RegExp('^/tela(?:/([^/]+))?/?$');
 const ENTRY_ID = /^delyra-\d{4}$/;
@@ -48,9 +51,12 @@ export function parseRoute(pathname: string, search: string): Route {
   const figure = /^\/figura\/([^/]+)\/?$/.exec(pathname);
   if (figure) return SLUG.test(figure[1]) ? { name: 'figure', id: figure[1] } : HOME;
 
-  if (/^\/gabinete\/?$/.test(pathname)) return CABINET;
-  const room = /^\/gabinete\/([^/]+)\/?$/.exec(pathname);
-  if (room) return SLUG.test(room[1]) ? { name: 'room', id: room[1] } : CABINET;
+  // Las biografías vivían en /gabinete hasta que las salas se cambiaron por
+  // temas. La ruta vieja sigue entendiéndose: una URL compartida no se rompe
+  // porque aquí dentro se haya cambiado de idea.
+  if (LIVES_PATH.test(pathname)) return LIVES;
+  const theme = THEME_PATH.exec(pathname);
+  if (theme) return SLUG.test(theme[1]) ? { name: 'theme', id: theme[1] } : LIVES;
 
   const drift = DRIFT_PATH.exec(pathname);
   if (drift) {
@@ -97,10 +103,10 @@ export function routeToUrl(route: Route): string {
       return '/';
     case 'entry':
       return `/e/${route.id}`;
-    case 'cabinet':
-      return '/gabinete';
-    case 'room':
-      return `/gabinete/${route.id}`;
+    case 'lives':
+      return '/biografias';
+    case 'theme':
+      return `/biografias/${route.id}`;
     case 'figure':
       return `/figura/${route.id}`;
     case 'drift': {

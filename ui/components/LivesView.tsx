@@ -2,42 +2,54 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Figure } from '../../lib/content/corpus';
-import type { RoomState } from '../../lib/museum/rooms';
+import type { ThemeState } from '../../lib/museum/themes';
 import { useFocusRing } from '../hooks/useFocusRing';
 import { colors, fonts, HIT_SIZE, space } from '../theme';
 import { Emblem } from './Emblem';
 import { Reveal } from './Reveal';
 
-type RoomsProps = {
-  rooms: RoomState[];
+type LivesProps = {
+  themes: ThemeState[];
   reduceMotion: boolean;
-  onOpenRoom: (id: string) => void;
+  onOpenTheme: (id: string) => void;
 };
 
 /**
- * Las siete salas. El criterio va siempre junto al nombre, sin desplegar y sin
- * abreviar, porque en este gabinete **el criterio es el contenido**: la lista
- * de quién está dentro vale mucho menos que la razón por la que está.
+ * Las biografías, por temas.
+ *
+ * Antes eran siete salas que agrupaban por circunstancia —quién se quedó
+ * ciego, quién tuvo un empleo administrativo—. Eso decía cosas de sus vidas y
+ * ninguna de sus ideas. Ahora el criterio es el problema en el que cada uno se
+ * metió, y por eso una figura está en un tema y en uno solo: la sección se lee
+ * en orden, de arriba abajo, como un índice y no como una rejilla.
+ *
+ * El criterio va siempre junto al nombre, sin desplegar: **el criterio es el
+ * contenido**, y la lista de quién está dentro vale mucho menos que la razón
+ * por la que está.
  */
-export function RoomsView({ rooms, reduceMotion, onOpenRoom }: RoomsProps) {
+export function LivesView({ themes, reduceMotion, onOpenTheme }: LivesProps) {
+  const total = themes.reduce((sum, state) => sum + state.figures.length, 0);
+
   return (
     <View>
       <Reveal index={0} reduceMotion={reduceMotion}>
-        <Text style={styles.section}>el gabinete</Text>
+        <Text style={styles.section}>biografías</Text>
         <Text style={styles.lead}>
-          treinta figuras en siete salas. ninguna se representa por su cara: cada una tiene un objeto.
+          {total} vidas en {themes.length} temas. ninguna se representa por su cara: cada una tiene un objeto. de
+          cada una se cuenta una idea poco citada, un hecho comprobable y, cuando la hay, una obra que se puede
+          abrir.
         </Text>
       </Reveal>
-      {rooms.map((state, index) => (
-        <Reveal key={state.room.id} index={index + 1} reduceMotion={reduceMotion}>
-          <RoomRow state={state} onPress={() => onOpenRoom(state.room.id)} />
+      {themes.map((state, index) => (
+        <Reveal key={state.theme.id} index={index + 1} reduceMotion={reduceMotion}>
+          <ThemeRow state={state} onPress={() => onOpenTheme(state.theme.id)} />
         </Reveal>
       ))}
     </View>
   );
 }
 
-function RoomRow({ state, onPress }: { state: RoomState; onPress: () => void }) {
+function ThemeRow({ state, onPress }: { state: ThemeState; onPress: () => void }) {
   const { focusVisible, onFocus, onBlur } = useFocusRing();
   const [hovered, setHovered] = useState(false);
   const count = state.figures.length;
@@ -45,57 +57,59 @@ function RoomRow({ state, onPress }: { state: RoomState; onPress: () => void }) 
   return (
     <Pressable
       accessibilityRole="link"
-      accessibilityLabel={state.room.name}
-      accessibilityHint={`${count} figuras. ${state.room.criterion}`}
+      accessibilityLabel={state.theme.name}
+      accessibilityHint={`${count} biografías. ${state.theme.criterion}`}
       onPress={onPress}
       onHoverIn={() => setHovered(true)}
       onHoverOut={() => setHovered(false)}
       onFocus={onFocus}
       onBlur={onBlur}
-      style={[styles.room, focusVisible && styles.focus]}
+      style={[styles.theme, focusVisible && styles.focus]}
     >
-      <Text style={[styles.roomName, hovered && styles.underline]}>{state.room.name}</Text>
-      <Text style={styles.criterion}>{state.room.criterion}</Text>
+      <Text style={[styles.themeName, hovered && styles.underline]}>{state.theme.name}</Text>
+      <Text style={styles.criterion}>{state.theme.criterion}</Text>
       <Text style={styles.count}>
-        {count} figuras
+        {count} {count === 1 ? 'biografía' : 'biografías'}
         {state.entries.length > 0 ? ` · ${state.entries.length} entradas ligadas` : ' · sin entradas ligadas'}
+      </Text>
+      <Text style={styles.roster} numberOfLines={2}>
+        {state.figures.map((figure) => figure.name).join(' · ')}
       </Text>
     </Pressable>
   );
 }
 
-type RoomProps = {
-  state: RoomState;
+type ThemeProps = {
+  state: ThemeState;
   reduceMotion: boolean;
   onOpenFigure: (id: string) => void;
 };
 
-/** Una sala: su criterio arriba, y las figuras con su emblema y sus años. */
-export function RoomView({ state, reduceMotion, onOpenFigure }: RoomProps) {
+/** Un tema: su criterio arriba, y debajo las vidas que lo comparten. */
+export function ThemeView({ state, reduceMotion, onOpenFigure }: ThemeProps) {
   return (
     <View>
       <Reveal index={0} reduceMotion={reduceMotion}>
-        <Text style={styles.section}>sala</Text>
+        <Text style={styles.section}>tema</Text>
         <Text style={styles.title} accessibilityRole="header">
-          {state.room.name}
+          {state.theme.name}
         </Text>
-        <Text style={styles.criterionLarge}>{state.room.criterion}</Text>
+        <Text style={styles.criterionLarge}>{state.theme.criterion}</Text>
       </Reveal>
-      <View style={styles.grid}>
       {state.figures.map((figure, index) => (
-        // El hueco de la rejilla va fuera del Reveal: si fuera dentro, la
-        // celda sería la vista animada y no heredaría el ancho.
-        <View key={figure.id} style={styles.cell}>
-          <Reveal index={index + 1} reduceMotion={reduceMotion}>
-            <FigureRow figure={figure} onPress={() => onOpenFigure(figure.id)} />
-          </Reveal>
-        </View>
+        <Reveal key={figure.id} index={index + 1} reduceMotion={reduceMotion}>
+          <FigureRow figure={figure} onPress={() => onOpenFigure(figure.id)} />
+        </Reveal>
       ))}
-      </View>
     </View>
   );
 }
 
+/**
+ * Una vida en la lista: el emblema, el nombre, los años y el principio de su
+ * idea. Va a una columna y no a dos: lo que se lee aquí es prosa, y estrechar
+ * la caja no ahorra pantalla, la alarga.
+ */
 export function FigureRow({ figure, onPress }: { figure: Figure; onPress: () => void }) {
   const { focusVisible, onFocus, onBlur } = useFocusRing();
   const [hovered, setHovered] = useState(false);
@@ -117,6 +131,10 @@ export function FigureRow({ figure, onPress }: { figure: Figure; onPress: () => 
         <Text style={[styles.figureName, hovered && styles.underline]}>{figure.name}</Text>
         <Text style={styles.years}>
           {figure.years} · {figure.emblem}
+          {figure.works.length > 0 ? ' · con obra' : ''}
+        </Text>
+        <Text style={styles.idea} numberOfLines={2}>
+          {figure.idea}
         </Text>
       </View>
     </Pressable>
@@ -137,6 +155,7 @@ const styles = StyleSheet.create({
     lineHeight: 28,
     color: colors.dim,
     marginBottom: space.lg,
+    maxWidth: 640,
   },
   title: {
     fontFamily: fonts.serif,
@@ -151,19 +170,18 @@ const styles = StyleSheet.create({
     color: colors.dim,
     marginTop: space.sm,
     marginBottom: space.lg,
+    maxWidth: 640,
   },
 
-  // Rejilla solo para las figuras: son filas cortas y se benefician de ir en
-  // dos columnas. Las salas no: su criterio es texto, y estrecharlo lo alarga.
-  grid: { flexDirection: 'row', flexWrap: 'wrap', columnGap: space.lg },
-  room: {
+  theme: {
     minHeight: HIT_SIZE,
     paddingVertical: space.sm,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
     borderTopColor: colors.line,
     outlineWidth: 0,
+    maxWidth: 640,
   },
-  roomName: {
+  themeName: {
     fontFamily: fonts.serif,
     fontSize: 22,
     lineHeight: 29,
@@ -183,16 +201,23 @@ const styles = StyleSheet.create({
     color: colors.dim,
     marginTop: space.xs,
   },
+  roster: {
+    fontFamily: fonts.serif,
+    fontSize: 15,
+    lineHeight: 22,
+    color: colors.dim,
+    marginTop: 2,
+  },
 
-  cell: { flexGrow: 1, flexBasis: 260 },
   figure: {
     minHeight: HIT_SIZE,
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-start',
     paddingVertical: space.sm,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
     borderTopColor: colors.line,
     outlineWidth: 0,
+    maxWidth: 640,
   },
   figureText: { flex: 1, marginLeft: space.md },
   figureName: {
@@ -208,6 +233,13 @@ const styles = StyleSheet.create({
     letterSpacing: 0.72,
     color: colors.dim,
     marginTop: 2,
+  },
+  idea: {
+    fontFamily: fonts.serif,
+    fontSize: 16,
+    lineHeight: 24,
+    color: colors.dim,
+    marginTop: space.xs,
   },
 
   underline: { textDecorationLine: 'underline', textDecorationColor: colors.line },

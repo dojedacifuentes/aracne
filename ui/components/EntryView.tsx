@@ -3,7 +3,7 @@ import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Corpus } from '../../lib/content/corpus';
 import { catalogId, STATUS_LABEL, TYPE_LABEL } from '../../lib/labels';
-import { figuresOfEntry } from '../../lib/museum/rooms';
+import { figuresOfEntry } from '../../lib/museum/themes';
 import type { Entry } from '../../lib/schema';
 import { STATUS_BORDER, type StatusBorder } from '../lib/epistemic';
 import { colors, fonts, space } from '../theme';

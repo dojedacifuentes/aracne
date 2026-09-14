@@ -1,0 +1,47 @@
+[
+  {
+    "id": "el-sistema-que-se-mira",
+    "name": "El sistema que se mira",
+    "criterion": "Qué le ocurre a un sistema cuando se toma a sí mismo por objeto. Ninguno de los que están aquí esquiva el bucle: lo usan como herramienta."
+  },
+  {
+    "id": "la-forma-antes-que-la-cosa",
+    "name": "La forma antes que la cosa",
+    "criterion": "No importa de qué está hecho algo, sino qué toca con qué. En este tema la relación es el objeto y la materia es el decorado."
+  },
+  {
+    "id": "el-catalogo-imposible",
+    "name": "El catálogo imposible",
+    "criterion": "Quisieron ordenar el mundo entero y se encontraron con que el índice crece más deprisa que lo indexado."
+  },
+  {
+    "id": "la-firma-prestada",
+    "name": "La firma prestada",
+    "criterion": "Escribieron desde nombres que no eran el suyo, y no para esconderse. La autoría como problema, no como dato."
+  },
+  {
+    "id": "el-ojo-que-administra",
+    "name": "El ojo que administra",
+    "criterion": "El poder como procedimiento: un registro, un horario, la planta de un edificio. Aquí nadie levanta la voz y todo queda anotado."
+  },
+  {
+    "id": "la-averia-del-cuerpo",
+    "name": "La avería del cuerpo",
+    "criterion": "El cuerpo que falla, se abre o se vuelve máquina, contado desde dentro y sin tratarlo como metáfora."
+  },
+  {
+    "id": "el-mapa-de-lo-no-pisado",
+    "name": "El mapa de lo no pisado",
+    "criterion": "Describieron con exactitud sitios donde no estuvieron, o donde ya no podían volver. La precisión sin experiencia."
+  },
+  {
+    "id": "la-hora-del-buho",
+    "name": "La hora del búho",
+    "criterion": "Lo que solo se ve de noche o cuando ya ha pasado: el sueño, el duermevela y la comprensión que llega tarde."
+  },
+  {
+    "id": "la-huella-menor",
+    "name": "La huella menor",
+    "criterion": "El detalle que nadie vigila —una oreja, un lapsus, una colilla— leído como prueba de lo que no se declara."
+  }
+]

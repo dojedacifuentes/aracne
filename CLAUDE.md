@@ -77,14 +77,23 @@ como tag.
 
 No hardcodees categorías, ni su orden, ni su número, en ningún componente.
 
-## El gabinete
+## Las biografías
 
-`content/figures.json` y `content/rooms.json`: treinta figuras históricas en
-siete salas con criterios no obvios. Ninguna figura se representa por su cara:
-cada una tiene un emblema, un objeto. Reglas en `docs/MUSEO.md`.
+`content/figures.json` y `content/themes.json`: cuarenta y cuatro figuras
+históricas repartidas en nueve temas. Los temas no agrupan vidas sino
+**problemas**: no por siglo, ni por escuela, ni por circunstancia biográfica.
+Una figura está en un tema y en uno solo. Reglas en `docs/BIOGRAFIAS.md`.
 
-El campo `note` de una figura es un hecho verificable y poco citado, nunca una
-valoración de su obra. Si el dato se puede adivinar, busca otro.
+Cada figura lleva una `idea` —algo que pensó, dicho de manera que no se pueda
+adivinar—, una `note` —un hecho verificable y poco citado, nunca una valoración
+de su obra— y, si la hay, `works`: obras que se pueden abrir.
+
+**Una URL no se escribe de memoria.** Se busca en el catálogo de quien la
+sirve, se pide y solo entra si contesta con lo que se esperaba. Si no hay obra
+abierta y estable, `works: []` y la ficha lo dice.
+
+Ninguna figura se representa por su cara: cada una tiene un emblema, un objeto
+de 32×32. Se dibujan mirándolos, no solo escribiéndolos.
 
 ## Los dictámenes
 

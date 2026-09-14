@@ -18,17 +18,36 @@ export const RingCategorySchema = CategorySchema.extend({
   glyph: z.string().min(1),
 });
 
+/**
+ * Una obra que se puede abrir. La URL no se inventa nunca: entra solo si
+ * alguien la ha pedido y ha contestado (CLAUDE.md, regla 4). Cuando no hay
+ * nada verificado, la lista se queda vacía y la ficha lo dice.
+ */
+export const WorkSchema = z.object({
+  title: z.string().min(1),
+  url: z.string().url(),
+  /** Quién la sirve: Project Gutenberg, Internet Archive, un museo… */
+  where: z.string().min(1),
+  /** Qué hay al otro lado. */
+  kind: z.enum(["texto", "facsimil", "archivo", "ficha"]),
+});
+
 export const FigureSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   name: z.string().min(1),
   years: z.string().min(1),
   emblem: z.string().min(1),
-  rooms: z.array(z.string()).min(1),
+  /** Un solo tema: las biografías se leen en orden, no en rejilla. */
+  theme: z.string().min(1),
+  /** Una idea suya poco citada. No una valoración de su obra. */
+  idea: z.string().min(1),
+  /** Un hecho verificable y poco citado: la anécdota. */
   note: z.string().min(1),
+  works: z.array(WorkSchema).default([]),
   entries: z.array(z.string()).default([]),
 });
 
-export const RoomSchema = z.object({
+export const ThemeSchema = z.object({
   id: z.string().regex(/^[a-z0-9-]+$/),
   name: z.string().min(1),
   criterion: z.string().min(1),
@@ -36,21 +55,23 @@ export const RoomSchema = z.object({
 
 export type RingCategory = z.infer<typeof RingCategorySchema>;
 export type Figure = z.infer<typeof FigureSchema>;
-export type Room = z.infer<typeof RoomSchema>;
+export type Work = z.infer<typeof WorkSchema>;
+export type Theme = z.infer<typeof ThemeSchema>;
 
 export interface Corpus {
   entries: Entry[];
   /** Ordenadas por su posición en el anillo. */
   categories: RingCategory[];
   figures: Figure[];
-  rooms: Room[];
+  /** En el orden en que se leen. */
+  themes: Theme[];
 }
 
 export interface RawCorpus {
   entries: unknown[];
   categories: unknown;
   figures: unknown;
-  rooms: unknown;
+  themes: unknown;
 }
 
 function parseList<S extends z.ZodTypeAny>(
@@ -99,7 +120,7 @@ export function parseCorpus(raw: RawCorpus): { corpus: Corpus; issues: Validatio
     (a, b) => a.leg - b.leg,
   );
   const figures = parseList(FigureSchema, raw.figures, "figuras", issues);
-  const rooms = parseList(RoomSchema, raw.rooms, "salas", issues);
+  const themes = parseList(ThemeSchema, raw.themes, "temas", issues);
 
   // El anillo: posiciones 0..n-1, sin huecos ni repeticiones.
   categories.forEach((category, index) => {
@@ -110,7 +131,7 @@ export function parseCorpus(raw: RawCorpus): { corpus: Corpus; issues: Validatio
   for (const id of duplicates(categories.map((c) => c.id))) issues.push({ id, message: "categoría duplicada" });
   for (const glyph of duplicates(categories.map((c) => c.glyph))) issues.push({ id: glyph, message: "glifo repetido" });
   for (const id of duplicates(figures.map((f) => f.id))) issues.push({ id, message: "figura duplicada" });
-  for (const id of duplicates(rooms.map((r) => r.id))) issues.push({ id, message: "sala duplicada" });
+  for (const id of duplicates(themes.map((t) => t.id))) issues.push({ id, message: "tema duplicado" });
 
   issues.push(...validateCorpus(raw.entries, categories.map((c) => c.id)));
 
@@ -136,17 +157,23 @@ export function parseCorpus(raw: RawCorpus): { corpus: Corpus; issues: Validatio
     }
   }
 
-  const roomIds = new Set(rooms.map((r) => r.id));
+  const themeIds = new Set(themes.map((t) => t.id));
   for (const figure of figures) {
-    for (const room of figure.rooms) {
-      if (!roomIds.has(room)) issues.push({ id: figure.id, message: `sala inexistente: ${room}` });
+    if (!themeIds.has(figure.theme)) {
+      issues.push({ id: figure.id, message: `tema inexistente: ${figure.theme}` });
     }
     for (const id of figure.entries) {
       if (!byId.has(id)) issues.push({ id: figure.id, message: `entrada inexistente: ${id}` });
     }
+    for (const work of figure.works) {
+      // Una obra sin enlace no es una obra: es una cita de memoria.
+      if (!work.url.startsWith("http://") && !work.url.startsWith("https://")) {
+        issues.push({ id: figure.id, message: `obra sin URL utilizable: ${work.title}` });
+      }
+    }
   }
 
-  return { corpus: { entries, categories, figures, rooms }, issues };
+  return { corpus: { entries, categories, figures, themes }, issues };
 }
 
 export interface LegState {

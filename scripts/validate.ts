@@ -11,7 +11,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 import { legStates, parseCorpus } from "../lib/content/corpus";
-import { roomStates } from "../lib/museum/rooms";
+import { themeStates } from "../lib/museum/themes";
 import type { ValidationIssue } from "../lib/schema";
 
 const ROOT = process.cwd();
@@ -49,7 +49,7 @@ const { corpus, issues: corpusIssues } = parseCorpus({
   entries: rawEntries,
   categories: readJson(path.join(CONTENT, "categories.json")),
   figures: readJson(path.join(CONTENT, "figures.json")),
-  rooms: readJson(path.join(CONTENT, "rooms.json")),
+  themes: readJson(path.join(CONTENT, "themes.json")),
 });
 issues.push(...corpusIssues);
 
@@ -94,13 +94,14 @@ for (const leg of legs) {
 const drawn = corpus.figures.filter((figure) =>
   fs.existsSync(path.join(ROOT, "public", "figures", `${figure.id}.svg`)),
 ).length;
+const linked = corpus.figures.filter((figure) => figure.works.length > 0).length;
 console.log(
-  `${corpus.figures.length} figuras · ${corpus.rooms.length} salas · ${drawn} emblemas dibujados`,
+  `${corpus.figures.length} biografías · ${corpus.themes.length} temas · ${drawn} emblemas dibujados · ${linked} con obra enlazada`,
 );
-// Las salas se calculan desde las figuras, igual que las patas desde las entradas.
-for (const state of roomStates(corpus.figures, corpus.rooms)) {
-  const linked = state.entries.length > 0 ? `${state.entries.length} entradas` : "sin entradas ligadas";
-  console.log(`  ${state.room.name.padEnd(42)}${String(state.figures.length).padStart(3)}   ${linked}`);
+// Los temas se calculan desde las figuras, igual que las patas desde las entradas.
+for (const state of themeStates(corpus.figures, corpus.themes)) {
+  const ligadas = state.entries.length > 0 ? `${state.entries.length} entradas` : "sin entradas ligadas";
+  console.log(`  ${state.theme.name.padEnd(30)}${String(state.figures.length).padStart(3)}   ${ligadas}`);
 }
 
 for (const warning of warnings) console.warn(`aviso  ${warning.id}  ${warning.message}`);

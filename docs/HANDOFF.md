@@ -29,15 +29,15 @@ docs/
   ARANA.md             la metáfora del animal. Vinculante.
   ARANA-3D.md          por qué la araña es 3D y cómo se comporta
   DESIGN.md            paleta, tipografía, qué no se hace nunca
-  MUSEO.md             reglas del gabinete: emblemas, salas, notas
+  BIOGRAFIAS.md        reglas de las biografías: temas, ideas, enlaces, emblemas
   PROMPTS.md           las fases 0 a 9, en orden
   TAROT.md             qué se heredó del proyecto anterior
 
 content/               EL ARCHIVO. Sin base de datos: JSON versionado.
   entries/*.json       44 entradas, una por archivo
   categories.json      las once patas, con su posición en el anillo y glifo
-  figures.json         44 figuras del gabinete
-  rooms.json           las siete salas y su criterio
+  figures.json         44 biografías: tema, idea, hecho, obras, emblema
+  themes.json          los nueve temas y su criterio
   index.generated.ts   lo escribe `npm run validate`. No editar.
 
 lib/                   el motor. Puro, sin React, probable sin pantalla.
@@ -56,7 +56,7 @@ lib/                   el motor. Puro, sin React, probable sin pantalla.
   drift/modes.ts       dos mundos y distancia (diámetro del grafo)
   archive/filter.ts    filtros, facetas y búsqueda local con acentos plegados
   archive/shape.ts     la forma del archivo para /adn
-  museum/rooms.ts      salas calculadas desde las figuras
+  museum/themes.ts     temas calculados desde las figuras
 
 ui/
   theme.ts             los seis colores y las dos familias. No hay más.
@@ -64,18 +64,20 @@ ui/
   lib/route.ts         todas las rutas y su ida y vuelta a la URL
   lib/copy.ts          textos del resultado. Solo leen metadatos reales.
   lib/epistemic.ts     STATUS_BORDER y THREAD_STYLE: el trazo codifica certeza
-  components/          Tela, DriftView, EntryView, ArchiveView, CabinetView,
-                       FigureView, ShapeView, CommandPalette, Emblem, Reveal…
+  components/          Tela, Tejido, DriftView, EntryView, ArchiveView,
+                       LivesView, FigureView, ShapeView, CommandPalette,
+                       LegRing, Sigil, Emblem, Reveal…
+  lib/sigil.ts         los sellos: geometría simétrica, calculada y probada
   components/spider/   la araña 3D: rig, escena, seda, config, fallback SVG
 
 scripts/
   validate.ts          valida y genera el índice. Corre antes de todo.
   og.mjs               permalinks + imagen Open Graph por entrada, en build
-  sprites.mjs          dibuja los emblemas del gabinete
+  sprites.mjs          dibuja los emblemas de las biografías
   capture.mjs          alta de entrada por consola
 
-tests/                 11 archivos, 98 pruebas
-public/figures/        6 emblemas SVG de 44
+tests/                 12 archivos, 110 pruebas
+public/figures/        44 emblemas SVG de 44
 public/models/spider/  el GLB de la araña (87 000 triángulos)
 ```
 
@@ -83,11 +85,12 @@ public/models/spider/  el GLB de la araña (87 000 triángulos)
 
 | ruta | qué |
 |---|---|
-| `/` | la portada: la araña, la tela al fondo, las once patas |
+| `/` | la portada: la araña, y las once patas en órbita a su alrededor |
 | `/i/<semilla>?patas=…&sala=…` | una invocación, reproducible y compartible |
 | `/e/<id>` | una entrada. Tiene HTML propio con Open Graph. |
 | `/deriva/<semilla>?modo=…` | la red dibujada. Modos: deriva, dos-mundos, distancia. |
-| `/gabinete` · `/gabinete/<sala>` · `/figura/<id>` | el museo |
+| `/tela` · `/tela/<id>?vista=flujo` | la red entera, o tejida en torno a una entrada |
+| `/biografias` · `/biografias/<tema>` · `/figura/<id>` | las vidas (antes `/gabinete`, que sigue valiendo) |
 | `/archivo?categorias=…&tipos=…&q=…` | filtros y búsqueda, todo en la URL |
 | `/adn` | la forma del archivo |
 
@@ -120,11 +123,11 @@ diagnóstico de la sección 8.
 | grado medio del grafo | 18,2 vecinos |
 | hilos dibujados | 139, de los que 27 cruzan el anillo |
 | diámetro de la red | 3 pasos (*La habitación china* → *Un río que es alguien*) |
-| figuras del gabinete | 44, en 7 salas |
-| emblemas dibujados | 6 de 44 |
+| biografías | 44, en 9 temas · 31 con obra enlazada |
+| emblemas dibujados | 44 de 44 |
 | medias | extrañeza 3,8 · oscuridad 2,8 · ficción 2,0 |
 | estados epistémicos | 17 `fact` · 15 `unverified` · 6 `interpretation` · 5 `fiction` · 1 `controversial` |
-| pruebas | 98, en 11 archivos |
+| pruebas | 110, en 12 archivos |
 | bundle web | ~2 MB |
 
 **Las 15 `unverified` no son un descuido: son la cola editorial.** Cada una
@@ -147,6 +150,8 @@ definido que hay ahora mismo.
 | 6 | El gabinete: `/gabinete`, salas, figuras, `invocar desde esta sala`. |
 | 7 | `/archivo` con filtros en la URL, búsqueda local y paleta ⌘K. |
 | 8 | `/adn`: la forma del archivo. Repartos por pata, tipo y estado, medias y tags. |
+| 10 | Las once patas en órbita, los sellos geométricos y la tela con sitio propio en `/tela`. |
+| 11 | El gabinete deja de ser salas y pasa a biografías por temas, con idea, obra enlazada y los 44 emblemas. |
 
 **No está hecho:** fase 9 (`/hoy`, accesibilidad, repaso de microcopy).
 
@@ -196,10 +201,16 @@ Hay una prueba que lo protege: *dos entradas de la misma pata caen, de media,
 más cerca que dos de patas opuestas*. Si alguien cambia el layout y esa prueba
 falla, el dibujo ha dejado de significar algo.
 
-**La tela pequeña se queda visible en todas las rutas** menos en la de la red,
-que ya tiene la grande, y enciende lo que tengas delante. Su semilla es fija a
-propósito: si cambiara en cada pulsación los puntos saltarían de sitio y dejaría
-de ser un mapa. **No la quites de ahí.**
+**La tela ya no vive al fondo de la portada.** Hasta la fase 10 se dibujaba
+tenue detrás de la araña en todas las rutas; molestaba, y por decisión expresa
+se mudó a `/tela`, que se abre con un botón pequeño. Ahí se dibuja con más
+hilos, se reteje alrededor de la entrada que se pulse y se puede leer con dos
+pieles: seda o traza de circuito.
+
+Lo que **no** cambió y no debe cambiar: la semilla sigue fija —si cambiara en
+cada visita los puntos saltarían de sitio y dejaría de ser un mapa—, la posición
+la sigue mandando la pata, y la prueba del layout sigue en verde. Las dos pieles
+dibujan el hilo de otra manera **entre los mismos puntos**.
 
 ---
 
@@ -208,50 +219,36 @@ de ser un mapa. **No la quites de ahí.**
 Por orden. Las tres primeras son las que más cambian la experiencia y ninguna
 necesita servicios externos.
 
-### 6.1 Portada V2: las once patas en órbita — *lo primero*
+### 6.0 Lo que se hizo en las fases 10 y 11
 
-Hoy la araña está a un lado y la lista de patas al otro. La lista es texto, y la
-metáfora no se ve.
+Tres cosas que estaban aquí como pendientes y ya no lo están:
 
-Poner **los once glifos en órbita alrededor de la araña**, en el ángulo que
-`legAngle` ya calcula. Al pasar por encima, el nombre de la pata, tres o cuatro
-palabras de su descripción y el número de entradas. Al pulsar, **se tensa un
-hilo** hacia la araña.
+- **Las once patas en órbita** (era 6.1). Cada pata está en el ángulo que
+  `legAngle` calcula para la física, apoyarla tensa un hilo hacia el animal y la
+  araña se desplaza hacia las que se apoyan. En vertical no cabe un anillo de
+  once, así que ahí siguen en fila.
+- **La red contextual** (era 6.2, `/tejido`). Vive en `/tela`. Pulsar un nodo lo
+  pone en el centro, enciende a sus vecinos directos y deja el resto en sombra
+  —no borrado: se puede saltar lejos—. A dos pasos no se recortaba nada: con
+  grado medio 18 sobre 44, a dos pasos está el archivo entero.
+- **Los 44 emblemas** (era 6.3). Están los 44. Cuatro hubo que tirarlos después
+  de verlos: el nudo de Gödel parecía un reloj de pared, el guante de Deleuze un
+  peine, las sillas de montar un borrón y la torre sin ventanas tenía una
+  ventana. **Se dibujan mirándolos**, en `public/figures/`, no leyendo el código.
 
-Buena parte del lenguaje ya existe: `lib/aleph/tension.ts` desplaza la araña
-según qué patas se apoyan, `SpiderSilk` dibuja hilos bézier con holgura y
-`LegButton` ya tiende un hilo corto. Falta llevar eso al espacio.
+### 6.3 Lo que le falta a las biografías
 
-Eso hace comprensible de un vistazo que **seleccionar ideas es tirar de las
-patas del animal**, sin escribir una sola línea de instrucciones.
+El gabinete de siete salas ya no existe: las figuras se agrupan por nueve temas
+—problemas, no circunstancias— y cada una lleva idea, hecho y, si la hay, obra
+enlazada. Reglas en `docs/BIOGRAFIAS.md`. Lo que queda:
 
-### 6.2 `/tejido`: la red contextual — *la novedad grande*
-
-`/deriva` dibuja el archivo entero. Con 44 entradas todavía se lee; con 200 será
-una bola de pelos.
-
-Lo que falta es la red **contextual**: eliges un nodo y aparece él en el centro
-con solo uno o dos grados de separación. Pulsas otro y la tela **se reteje** en
-torno al nuevo centro. Cada navegación es literalmente un tejido nuevo.
-
-`neighbours()` ya devuelve los vecinos ordenados por fuerza y `linkText()` ya
-sabe nombrar la razón de cada hilo. El trabajo es de recorte y de transición, no
-de cálculo.
-
-### 6.3 Gabinete V2: las salas como vitrinas
-
-La decisión editorial del gabinete es su mejor activo: **ninguna figura se
-representa por su cara**, sino por un objeto. Borges es un tigre, Kafka un
-formulario sellado, Euler un puente sin orilla, Spinoza una lente.
-
-**Solo 6 de 44 emblemas están dibujados.** Los otros 38 muestran el hueco
-marcado, que es correcto pero desaprovecha la idea. Con las 44 vitrinas llenas,
-una sala sería una pared de objetos pequeños en la oscuridad, y esa pantalla
-sería irrepetible.
-
-`scripts/sprites.mjs` (`npm run sprites`) ya hace el trabajo: primitivas de
-dibujo, paleta de seis tokens y un aviso automático si el acento se pasa del 5%.
-Añadir un emblema son diez o quince líneas.
+- **Trece figuras sin obra que abrir**, todas de autores vivos o recientes. Si
+  aparece una edición abierta y estable, entra; si no, la ficha sigue diciendo
+  que no la hay. Una URL no se escribe de memoria: se comprueba pidiéndola.
+- **Las entradas ligadas están mal repartidas**: *La hora del búho* tiene una
+  sola. Ligar entradas a figuras es trabajo de contenido, no de código.
+- Los temas son nueve y las patas once, y no se corresponden a propósito. Si
+  alguien los alinea, que sea por una razón escrita.
 
 ### 6.3bis Lo que ya se aplicó de la literatura de UX
 
@@ -404,7 +401,7 @@ npm run validate   # valida el contenido y escribe content/index.generated.ts
 npm run web        # servidor de desarrollo
 npm test           # 88 pruebas
 npm run build      # validate + expo export + permalinks con Open Graph
-npm run sprites    # redibuja los emblemas del gabinete
+npm run sprites    # redibuja los emblemas de las biografías
 ```
 
 `validate` es obligatorio antes de `typecheck` y `test`: escribe el índice que

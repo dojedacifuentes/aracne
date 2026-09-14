@@ -143,4 +143,4 @@ scroll horizontal contenido y el nombre solo de la pata activa.
 
 El museo de figuras cuelga de la red, no es una sección aparte. Una figura se
 alcanza desde cualquier entrada en la que aparezca su autor, y desde ella se
-vuelve al archivo. Ver `docs/MUSEO.md`.
+vuelve al archivo. Ver `docs/BIOGRAFIAS.md`.

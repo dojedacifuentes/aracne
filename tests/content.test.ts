@@ -45,12 +45,12 @@ describe('el archivo', () => {
     }
   });
 
-  it('las figuras apuntan a entradas y salas que existen', () => {
+  it('las figuras apuntan a entradas y temas que existen', () => {
     const ids = new Set(corpus.entries.map((e) => e.id));
-    const rooms = new Set(corpus.rooms.map((r) => r.id));
+    const temas = new Set(corpus.themes.map((t) => t.id));
     for (const figure of corpus.figures) {
       for (const id of figure.entries) expect(ids.has(id)).toBe(true);
-      for (const room of figure.rooms) expect(rooms.has(room)).toBe(true);
+      expect(temas.has(figure.theme), figure.id).toBe(true);
     }
   });
 });

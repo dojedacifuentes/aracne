@@ -7,12 +7,12 @@ import { usableLegs } from '../../lib/content/corpus';
 import { loadArchive } from '../../lib/content/loader';
 import { pressSeed } from '../../lib/oracle';
 import { pushHistory } from '../../lib/oracle/history';
-import { entriesOfRoom, roomStates } from '../../lib/museum/rooms';
+import { entriesOfTheme, themeStates } from '../../lib/museum/themes';
 import type { DriftMode, WebSkin } from '../../lib/drift/modes';
 import { invoke } from '../../lib/oracle/invoke';
 import { freshSeed } from '../../lib/oracle/rng';
 import { ArchiveView } from '../components/ArchiveView';
-import { RoomsView, RoomView } from '../components/CabinetView';
+import { LivesView, ThemeView } from '../components/LivesView';
 import { CommandPalette, type Command } from '../components/CommandPalette';
 import { DriftView } from '../components/DriftView';
 import { ShapeView } from '../components/ShapeView';
@@ -27,7 +27,7 @@ import { Spider } from '../components/spider/Spider';
 import { TextButton } from '../components/TextButton';
 import { useRoute } from '../hooks/useRoute';
 import { getLayoutMode, MAX_CONTENT_WIDTH } from '../lib/layout';
-import { ARCHIVE, CABINET, HOME, SHAPE, WEB } from '../lib/route';
+import { ARCHIVE, HOME, LIVES, SHAPE, WEB } from '../lib/route';
 import { readHistory, rememberEntries } from '../lib/storedHistory';
 import { colors, fonts, space } from '../theme';
 
@@ -78,11 +78,11 @@ export function HomeScreen({ reduceMotion }: Props) {
     };
   }, []);
 
-  // Las salas salen de las figuras: rooms.json no lista a nadie.
-  const rooms = useMemo(() => roomStates(corpus.figures, corpus.rooms), [corpus.figures, corpus.rooms]);
-  const roomState = useMemo(
-    () => (route.name === 'room' ? (rooms.find((r) => r.room.id === route.id) ?? null) : null),
-    [route, rooms],
+  // Los temas salen de las figuras: themes.json no lista a nadie.
+  const themes = useMemo(() => themeStates(corpus.figures, corpus.themes), [corpus.figures, corpus.themes]);
+  const themeState = useMemo(
+    () => (route.name === 'theme' ? (themes.find((t) => t.theme.id === route.id) ?? null) : null),
+    [route, themes],
   );
   const figure = useMemo(
     () => (route.name === 'figure' ? (corpus.figures.find((f) => f.id === route.id) ?? null) : null),
@@ -107,15 +107,15 @@ export function HomeScreen({ reduceMotion }: Props) {
     [route, legs],
   );
   /**
-   * Invocar desde una sala no añade una categoría: recorta el corpus a las
+   * Invocar desde un tema no añade una categoría: recorta el corpus a las
    * entradas ligadas a sus figuras y se lo pasa al motor. El motor no sabe que
-   * el gabinete existe.
+   * las biografías existen.
    */
   const pool = useMemo(() => {
     if (route.name !== 'invocation' || !route.room) return corpus.entries;
-    const state = rooms.find((r) => r.room.id === route.room);
-    return state ? entriesOfRoom(state, corpus.entries) : corpus.entries;
-  }, [route, rooms, corpus.entries]);
+    const state = themes.find((t) => t.theme.id === route.room);
+    return state ? entriesOfTheme(state, corpus.entries) : corpus.entries;
+  }, [route, themes, corpus.entries]);
 
   const invocation = useMemo(
     () => (route.name === 'invocation' && invocationLegs ? invoke(pool, route.seed, invocationLegs) : null),
@@ -141,8 +141,8 @@ export function HomeScreen({ reduceMotion }: Props) {
   const pressWith = useCallback(
     (room?: string) => {
       const patas = usableLegs(active, legs);
-      const state = room ? rooms.find((r) => r.room.id === room) : undefined;
-      const from = state ? entriesOfRoom(state, corpus.entries) : corpus.entries;
+      const state = room ? themes.find((t) => t.theme.id === room) : undefined;
+      const from = state ? entriesOfTheme(state, corpus.entries) : corpus.entries;
       presses.current += 1;
       const { seed, invocation: next } = pressSeed(from, patas, Date.now(), presses.current, history);
       setSelected(patas);
@@ -152,7 +152,7 @@ export function HomeScreen({ reduceMotion }: Props) {
       setHistory((current) => pushHistory(current, ids));
       void rememberEntries(ids);
     },
-    [active, legs, rooms, corpus.entries, history, navigate],
+    [active, legs, themes, corpus.entries, history, navigate],
   );
 
   const press = useCallback(() => pressWith(), [pressWith]);
@@ -164,9 +164,9 @@ export function HomeScreen({ reduceMotion }: Props) {
     [navigate],
   );
 
-  const openRoom = useCallback((id: string) => navigate({ name: 'room', id }), [navigate]);
+  const openTheme = useCallback((id: string) => navigate({ name: 'theme', id }), [navigate]);
   const openFigure = useCallback((id: string) => navigate({ name: 'figure', id }), [navigate]);
-  const openCabinet = useCallback(() => navigate(CABINET), [navigate]);
+  const openLives = useCallback(() => navigate(LIVES), [navigate]);
 
   const openArchive = useCallback(() => navigate(ARCHIVE), [navigate]);
   const openWeb = useCallback(() => navigate(WEB), [navigate]);
@@ -223,8 +223,8 @@ export function HomeScreen({ reduceMotion }: Props) {
           return navigate(ARCHIVE);
         case 'entry':
           return navigate({ name: 'entry', id: command.id });
-        case 'room':
-          return navigate({ name: 'room', id: command.id });
+        case 'theme':
+          return navigate({ name: 'theme', id: command.id });
         case 'leg':
           // Saltar a una pata es apoyarla y volver a la araña, no invocar:
           // la decisión de pulsar sigue siendo de quien mira.
@@ -323,13 +323,13 @@ export function HomeScreen({ reduceMotion }: Props) {
       ) : (
         <Text style={styles.missing}>no hay ninguna entrada con ese identificador. vuelve y pulsa.</Text>
       )
-    ) : route.name === 'cabinet' ? (
-      <RoomsView rooms={rooms} reduceMotion={reduceMotion} onOpenRoom={openRoom} />
-    ) : route.name === 'room' ? (
-      roomState ? (
-        <RoomView state={roomState} reduceMotion={reduceMotion} onOpenFigure={openFigure} />
+    ) : route.name === 'lives' ? (
+      <LivesView themes={themes} reduceMotion={reduceMotion} onOpenTheme={openTheme} />
+    ) : route.name === 'theme' ? (
+      themeState ? (
+        <ThemeView state={themeState} reduceMotion={reduceMotion} onOpenFigure={openFigure} />
       ) : (
-        <Text style={styles.missing}>no hay ninguna sala con ese nombre. vuelve al gabinete.</Text>
+        <Text style={styles.missing}>no hay ningún tema con ese nombre. vuelve a las biografías.</Text>
       )
     ) : route.name === 'figure' ? (
       figure ? (
@@ -339,10 +339,10 @@ export function HomeScreen({ reduceMotion }: Props) {
           corpus={corpus}
           reduceMotion={reduceMotion}
           onOpenEntry={openEntry}
-          onOpenRoom={openRoom}
+          onOpenTheme={openTheme}
         />
       ) : (
-        <Text style={styles.missing}>no hay ninguna figura con ese nombre. vuelve al gabinete.</Text>
+        <Text style={styles.missing}>no hay ninguna figura con ese nombre. vuelve a las biografías.</Text>
       )
     ) : route.name === 'drift' ? (
       <DriftView
@@ -392,25 +392,25 @@ export function HomeScreen({ reduceMotion }: Props) {
         <TextButton label="invocar" onPress={press} hint="una invocación nueva con las patas apoyadas" />
         <TextButton label="volver" onPress={back} />
       </View>
-    ) : route.name === 'cabinet' ? (
+    ) : route.name === 'lives' ? (
       <View style={styles.buttons}>
         <TextButton label="invocar" onPress={press} />
         <TextButton label="volver" onPress={back} />
       </View>
-    ) : route.name === 'room' ? (
+    ) : route.name === 'theme' ? (
       <View style={styles.buttons}>
-        {roomState && roomState.entries.length > 0 ? (
+        {themeState && themeState.entries.length > 0 ? (
           <TextButton
-            label="invocar desde esta sala"
-            onPress={() => pressWith(roomState.room.id)}
-            hint={`solo las ${roomState.entries.length} entradas ligadas a esta sala`}
+            label="invocar desde este tema"
+            onPress={() => pressWith(themeState.theme.id)}
+            hint={`solo las ${themeState.entries.length} entradas ligadas a este tema`}
           />
         ) : null}
-        <TextButton label="gabinete" onPress={openCabinet} />
+        <TextButton label="biografías" onPress={openLives} />
       </View>
     ) : route.name === 'figure' ? (
       <View style={styles.buttons}>
-        <TextButton label="gabinete" onPress={openCabinet} />
+        <TextButton label="biografías" onPress={openLives} />
         <TextButton label="volver" onPress={back} />
       </View>
     ) : route.name === 'archive' ? (
@@ -432,7 +432,7 @@ export function HomeScreen({ reduceMotion }: Props) {
       <View style={styles.buttons}>
         <TextButton label="invocar" onPress={press} />
         <TextButton label="la tela" onPress={openWeb} hint="la red entera, y los mapas que la leen" />
-        <TextButton label="gabinete" onPress={openCabinet} />
+        <TextButton label="biografías" onPress={openLives} />
         <TextButton label="archivo" onPress={openArchive} />
         <TextButton label={panel === 'proposito' ? 'patas' : 'propósito'} onPress={togglePanel} />
         <TextButton label="la forma" onPress={openShape} />

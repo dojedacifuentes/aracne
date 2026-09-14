@@ -1,123 +1,20 @@
 [
   {
-    "id": "borges",
-    "name": "Jorge Luis Borges",
-    "years": "1899–1986",
-    "emblem": "un tigre rayado de perfil",
-    "rooms": [
-      "despues-de-la-vista",
-      "en-horario-de-oficina"
-    ],
-    "note": "Fue nombrado director de la Biblioteca Nacional cuando ya casi no veía. Años antes, tras negarse a apoyar al gobierno, lo habían destinado a inspeccionar aves y conejos en un mercado municipal.",
-    "entries": [
-      "delyra-0002",
-      "delyra-0003",
-      "delyra-0004"
-    ]
-  },
-  {
-    "id": "milton",
-    "name": "John Milton",
-    "years": "1608–1674",
-    "emblem": "una vela consumida",
-    "rooms": [
-      "despues-de-la-vista"
-    ],
-    "note": "Dictó El paraíso perdido completamente ciego, a quien estuviera disponible en la casa, incluidas sus hijas.",
-    "entries": []
-  },
-  {
-    "id": "euler",
-    "name": "Leonhard Euler",
-    "years": "1707–1783",
-    "emblem": "un puente sin orilla",
-    "rooms": [
-      "despues-de-la-vista"
-    ],
-    "note": "Ciego los últimos años de su vida, produjo en ese periodo una parte enorme de su obra dictando a sus asistentes.",
-    "entries": []
-  },
-  {
-    "id": "kafka",
-    "name": "Franz Kafka",
-    "years": "1883–1924",
-    "emblem": "un formulario sellado",
-    "rooms": [
-      "en-horario-de-oficina",
-      "el-baul",
-      "lugares-no-visitados"
-    ],
-    "note": "Abogado en el Instituto de Seguros de Accidentes de Trabajo de Praga. Redactaba informes sobre máquinas que amputaban dedos. Pidió que quemaran lo demás.",
-    "entries": []
-  },
-  {
-    "id": "einstein",
-    "name": "Albert Einstein",
-    "years": "1879–1955",
-    "emblem": "un reloj de estación",
-    "rooms": [
-      "en-horario-de-oficina"
-    ],
-    "note": "Examinador de tercera clase en la Oficina de Patentes de Berna durante el año en que publicó cuatro artículos que reorganizaron la física.",
-    "entries": []
-  },
-  {
-    "id": "leibniz",
-    "name": "Gottfried Wilhelm Leibniz",
-    "years": "1646–1716",
-    "emblem": "una escalera de biblioteca",
-    "rooms": [
-      "en-horario-de-oficina",
-      "el-enemigo-elegido"
-    ],
-    "note": "Bibliotecario y consejero de corte. Pasó años en genealogías dinásticas por encargo mientras inventaba, en los márgenes, media lógica moderna.",
-    "entries": []
-  },
-  {
-    "id": "stevens",
-    "name": "Wallace Stevens",
-    "years": "1879–1955",
-    "emblem": "un mirlo posado",
-    "rooms": [
-      "en-horario-de-oficina"
-    ],
-    "note": "Vicepresidente de una compañía de seguros en Hartford hasta su muerte. Componía versos caminando al trabajo y los dictaba al llegar.",
-    "entries": []
-  },
-  {
-    "id": "spinoza",
-    "name": "Baruch Spinoza",
-    "years": "1632–1677",
-    "emblem": "una lente pulida",
-    "rooms": [
-      "el-baul",
-      "empezaron-en-otra-cosa"
-    ],
-    "note": "Pulía lentes para vivir y rechazó una cátedra para no deberle nada a nadie. La Ética se publicó el año de su muerte y fue prohibida enseguida.",
-    "entries": []
-  },
-  {
     "id": "wittgenstein",
     "name": "Ludwig Wittgenstein",
     "years": "1889–1951",
     "emblem": "una escalera que se retira",
-    "rooms": [
-      "el-baul",
-      "empezaron-en-otra-cosa"
-    ],
+    "theme": "el-sistema-que-se-mira",
+    "idea": "El Tractatus traza el límite de lo que puede decirse y, al llegar al final, declara sin sentido sus propias proposiciones: pide que se tire la escalera por la que se ha subido. El libro se deja a sí mismo fuera de lo que admite.",
     "note": "Estudió ingeniería aeronáutica y patentó una hélice. En vida publicó un solo libro de filosofía, y luego dedicó décadas a desmontarlo.",
-    "entries": []
-  },
-  {
-    "id": "pessoa",
-    "name": "Fernando Pessoa",
-    "years": "1888–1935",
-    "emblem": "un baúl entreabierto",
-    "rooms": [
-      "el-baul",
-      "firmaron-con-otro"
+    "works": [
+      {
+        "title": "Tractatus Logico-Philosophicus (1921)",
+        "url": "https://www.gutenberg.org/ebooks/5740",
+        "where": "Project Gutenberg",
+        "kind": "texto"
+      }
     ],
-    "note": "Dejó un baúl con decenas de miles de papeles firmados por autores que inventó, con biografías, horóscopos y opiniones contrarias entre sí.",
     "entries": []
   },
   {
@@ -125,10 +22,17 @@
     "name": "Kurt Gödel",
     "years": "1906–1978",
     "emblem": "un nudo que se muerde",
-    "rooms": [
-      "el-baul"
-    ],
+    "theme": "el-sistema-que-se-mira",
+    "idea": "Numeró las fórmulas de un sistema formal para que el sistema pudiera hablar de sus propias fórmulas. Con ese cambio de nivel construyó una que afirma que no es demostrable: si la aritmética es consistente, no puede demostrar que lo es.",
     "note": "No publicó en vida su prueba ontológica de la existencia de Dios. La mostró a un colega por miedo a que se pensara que la creía.",
+    "works": [
+      {
+        "title": "Sobre proposiciones formalmente indecidibles de Principia Mathematica (1931)",
+        "url": "https://archive.org/details/onformallyundeci0000kurt_q0y9",
+        "where": "Internet Archive",
+        "kind": "facsimil"
+      }
+    ],
     "entries": []
   },
   {
@@ -136,63 +40,20 @@
     "name": "Alan Turing",
     "years": "1912–1954",
     "emblem": "una cinta perforada",
-    "rooms": [
-      "el-baul",
-      "en-horario-de-oficina"
-    ],
+    "theme": "el-sistema-que-se-mira",
+    "idea": "La máquina universal no es una máquina más: es la que imita a cualquier otra si se le entrega su descripción. Por eso el problema de la parada no tiene solución, porque una máquina que lo resolviera podría aplicarse a su propia descripción.",
     "note": "Su trabajo en Bletchley Park permaneció clasificado durante décadas: buena parte de lo que hizo no pudo leerse mientras vivió ni mucho después.",
+    "works": [
+      {
+        "title": "On Computable Numbers, with an Application to the Entscheidungsproblem (1936)",
+        "url": "https://archive.org/details/turing-paper-1936",
+        "where": "Internet Archive",
+        "kind": "facsimil"
+      }
+    ],
     "entries": [
       "delyra-0005",
       "delyra-0014"
-    ]
-  },
-  {
-    "id": "schopenhauer",
-    "name": "Arthur Schopenhauer",
-    "years": "1788–1860",
-    "emblem": "un reloj de aula parado",
-    "rooms": [
-      "el-enemigo-elegido"
-    ],
-    "note": "Programó sus clases en Berlín exactamente a la misma hora que las de Hegel. Se quedó sin alumnos y no cambió el horario.",
-    "entries": []
-  },
-  {
-    "id": "hegel",
-    "name": "G. W. F. Hegel",
-    "years": "1770–1831",
-    "emblem": "un búho al anochecer",
-    "rooms": [
-      "el-enemigo-elegido"
-    ],
-    "note": "El adversario que Schopenhauer eligió, y que probablemente nunca supo que había sido elegido.",
-    "entries": []
-  },
-  {
-    "id": "newton",
-    "name": "Isaac Newton",
-    "years": "1643–1727",
-    "emblem": "un prisma",
-    "rooms": [
-      "el-enemigo-elegido",
-      "en-horario-de-oficina"
-    ],
-    "note": "Dirigió la Casa de la Moneda y persiguió falsificadores en persona. Su disputa con Leibniz la arbitró una comisión que él mismo redactó.",
-    "entries": []
-  },
-  {
-    "id": "foucault",
-    "name": "Michel Foucault",
-    "years": "1926–1984",
-    "emblem": "una torre sin ventanas",
-    "rooms": [
-      "el-enemigo-elegido"
-    ],
-    "note": "Su discusión con Derrida sobre tres páginas de Descartes duró años y terminó en silencio entre ambos.",
-    "entries": [
-      "delyra-0006",
-      "delyra-0009",
-      "delyra-0032"
     ]
   },
   {
@@ -200,10 +61,10 @@
     "name": "Jacques Derrida",
     "years": "1930–2004",
     "emblem": "una nota al margen",
-    "rooms": [
-      "el-enemigo-elegido"
-    ],
+    "theme": "el-sistema-que-se-mira",
+    "idea": "No hay un texto y luego sus márgenes: el prefacio, la nota y la firma trabajan dentro. Leer consiste en seguir lo que un texto necesita dejar fuera para poder sostenerse.",
     "note": "Atacó la lectura que Foucault hacía de un pasaje mínimo. El desacuerdo sobre una coma se convirtió en una ruptura de una década.",
+    "works": [],
     "entries": []
   },
   {
@@ -211,37 +72,182 @@
     "name": "John Searle",
     "years": "1932–2025",
     "emblem": "una ranura en una pared",
-    "rooms": [
-      "el-enemigo-elegido"
-    ],
+    "theme": "el-sistema-que-se-mira",
+    "idea": "La habitación china no niega que una máquina calcule: niega que manipular símbolos según reglas baste para entenderlos. El argumento apunta a la sintaxis, y por eso no lo desactiva ninguna mejora de velocidad.",
     "note": "Cuarenta años discutiendo con los mismos interlocutores sobre si un sistema que responde bien entiende algo.",
+    "works": [],
     "entries": [
       "delyra-0001"
     ]
   },
   {
-    "id": "ovidio",
-    "name": "Ovidio",
-    "years": "43 a.C.–17 d.C.",
-    "emblem": "un ancla en tierra firme",
-    "rooms": [
-      "el-enemigo-elegido",
-      "lugares-no-visitados"
+    "id": "euler",
+    "name": "Leonhard Euler",
+    "years": "1707–1783",
+    "emblem": "un puente sin orilla",
+    "theme": "la-forma-antes-que-la-cosa",
+    "idea": "Para resolver lo de los puentes de Königsberg tiró el plano: las distancias no intervenían, solo qué orilla tocaba con cuál. Fue el primer problema resuelto contando conexiones, y de ahí sale la teoría de grafos que dibuja esta tela.",
+    "note": "Ciego los últimos años de su vida, produjo en ese periodo una parte enorme de su obra dictando a sus asistentes.",
+    "works": [
+      {
+        "title": "Solutio problematis ad geometriam situs pertinentis (1736)",
+        "url": "https://scholarlycommons.pacific.edu/euler-works/53/",
+        "where": "The Euler Archive",
+        "kind": "facsimil"
+      }
     ],
-    "note": "Desterrado al mar Negro por un poema y un error que nunca especificó. Escribió el resto de su obra sobre una Roma a la que no volvió.",
+    "entries": []
+  },
+  {
+    "id": "spinoza",
+    "name": "Baruch Spinoza",
+    "years": "1632–1677",
+    "emblem": "una lente pulida",
+    "theme": "la-forma-antes-que-la-cosa",
+    "idea": "Escribió una ética con la forma de un tratado de geometría —definiciones, axiomas, proposiciones, corolarios— porque si las pasiones siguen leyes, entonces se demuestran en lugar de predicarse.",
+    "note": "Pulía lentes para vivir y rechazó una cátedra para no deberle nada a nadie. La Ética se publicó el año de su muerte y fue prohibida enseguida.",
+    "works": [
+      {
+        "title": "Ética demostrada según el orden geométrico (1677)",
+        "url": "https://www.gutenberg.org/ebooks/3800",
+        "where": "Project Gutenberg",
+        "kind": "texto"
+      }
+    ],
+    "entries": []
+  },
+  {
+    "id": "deleuze",
+    "name": "Gilles Deleuze",
+    "years": "1925–1995",
+    "emblem": "un guante que no se quita",
+    "theme": "la-forma-antes-que-la-cosa",
+    "idea": "Contra la historia de la filosofía entendida como respeto, leía a otro autor hasta hacerle decir algo que no dijo pero que se sigue de lo suyo. Un concepto, para él, no describe: sirve, y se juzga por con qué se deja conectar.",
+    "note": "Se dejó las uñas largas toda la vida porque decía carecer de las huellas protectoras normales en las yemas de los dedos.",
+    "works": [],
     "entries": [
-      "delyra-0016"
+      "delyra-0028",
+      "delyra-0033"
     ]
+  },
+  {
+    "id": "latour",
+    "name": "Bruno Latour",
+    "years": "1947–2022",
+    "emblem": "un cuaderno de campo en un laboratorio",
+    "theme": "la-forma-antes-que-la-cosa",
+    "idea": "Estudió un laboratorio como quien estudia una tribu, tomando notas de campo. Lo que llamamos un hecho es, visto así, lo que queda cuando una red de instrumentos, textos y personas deja de discutirlo.",
+    "note": "Su primer trabajo de campo como antropólogo no fue en una aldea remota sino dentro de un laboratorio de California, observando a los científicos como a una tribu.",
+    "works": [
+      {
+        "title": "Archivo de artículos y libros del autor",
+        "url": "http://www.bruno-latour.fr/",
+        "where": "bruno-latour.fr",
+        "kind": "archivo"
+      }
+    ],
+    "entries": [
+      "delyra-0031"
+    ]
+  },
+  {
+    "id": "borges",
+    "name": "Jorge Luis Borges",
+    "years": "1899–1986",
+    "emblem": "un tigre rayado de perfil",
+    "theme": "el-catalogo-imposible",
+    "idea": "Un catálogo total es inservible: una biblioteca que contenga todos los libros posibles contiene también todos los falsos, y entonces no informa de nada. La erudición le sirve de material de ficción, no de respaldo.",
+    "note": "Fue nombrado director de la Biblioteca Nacional cuando ya casi no veía. Años antes, tras negarse a apoyar al gobierno, lo habían destinado a inspeccionar aves y conejos en un mercado municipal.",
+    "works": [],
+    "entries": [
+      "delyra-0002",
+      "delyra-0003",
+      "delyra-0004"
+    ]
+  },
+  {
+    "id": "leibniz",
+    "name": "Gottfried Wilhelm Leibniz",
+    "years": "1646–1716",
+    "emblem": "una escalera de biblioteca",
+    "theme": "el-catalogo-imposible",
+    "idea": "Buscó una lengua en la que razonar fuese calcular, y una máquina capaz de operar con ella, de modo que una discusión se resolviera diciendo «calculemos». Su aritmética binaria y su calculadora de cilindros escalonados salen de ese mismo proyecto.",
+    "note": "Bibliotecario y consejero de corte. Pasó años en genealogías dinásticas por encargo mientras inventaba, en los márgenes, media lógica moderna.",
+    "works": [
+      {
+        "title": "Teodicea (1710)",
+        "url": "https://www.gutenberg.org/ebooks/17147",
+        "where": "Project Gutenberg",
+        "kind": "texto"
+      }
+    ],
+    "entries": []
+  },
+  {
+    "id": "eco",
+    "name": "Umberto Eco",
+    "years": "1932–2016",
+    "emblem": "un plano de biblioteca",
+    "theme": "el-catalogo-imposible",
+    "idea": "La lista no es un recurso pobre sino lo que se usa cuando no se puede definir: se enumera aquello que no cabe en un concepto, y la enumeración deja ver dónde falla el concepto.",
+    "note": "Construyó una abadía medieval completa, con su biblioteca laberíntica, antes de escribir una sola línea de la novela. Decía que primero hay que hacer habitable el mundo.",
+    "works": [],
+    "entries": []
+  },
+  {
+    "id": "diderot",
+    "name": "Denis Diderot",
+    "years": "1713–1784",
+    "emblem": "un pliego doblado sin abrir",
+    "theme": "el-catalogo-imposible",
+    "idea": "La Enciclopedia lleva un sistema de remisiones que enfrenta unos artículos con otros: lo que no se podía decir en el artículo vigilado se decía en el que lo citaba. El índice es el argumento.",
+    "note": "Dirigió veinte años una enciclopedia mientras el impresor, sin decírselo, censuraba los artículos ya corregidos. Sus diálogos filosóficos más audaces no se publicaron en vida.",
+    "works": [
+      {
+        "title": "Le neveu de Rameau (escrito hacia 1761, publicado en 1805)",
+        "url": "https://www.gutenberg.org/ebooks/13862",
+        "where": "Project Gutenberg",
+        "kind": "texto"
+      }
+    ],
+    "entries": [
+      "delyra-0020"
+    ]
+  },
+  {
+    "id": "pessoa",
+    "name": "Fernando Pessoa",
+    "years": "1888–1935",
+    "emblem": "un baúl entreabierto",
+    "theme": "la-firma-prestada",
+    "idea": "Los heterónimos no son seudónimos: tienen biografía, estilo propio y desacuerdos entre ellos, y llegan a reseñarse unos a otros. La obra es una discusión entre personas que no existen.",
+    "note": "Dejó un baúl con decenas de miles de papeles firmados por autores que inventó, con biografías, horóscopos y opiniones contrarias entre sí.",
+    "works": [
+      {
+        "title": "Obra édita e inédita, en portugués",
+        "url": "http://arquivopessoa.net/",
+        "where": "Arquivo Pessoa",
+        "kind": "texto"
+      }
+    ],
+    "entries": []
   },
   {
     "id": "bourbaki",
     "name": "Nicolas Bourbaki",
     "years": "1935–",
     "emblem": "una silla vacía con placa",
-    "rooms": [
-      "firmaron-con-otro"
-    ],
+    "theme": "la-firma-prestada",
+    "idea": "Un matemático inventado por un grupo para firmar un tratado sin estilo personal: el nombre garantiza que ningún teorema dependa de quién lo escribió, y que el texto se pueda reescribir sin pedir permiso a nadie.",
     "note": "Matemático francés inexistente, inventado por un grupo que publicó bajo su nombre durante décadas y llegó a pedir su ingreso en sociedades científicas.",
+    "works": [
+      {
+        "title": "Archivos del grupo, digitalizados",
+        "url": "http://archives-bourbaki.ahp-numerique.fr/",
+        "where": "Archives Bourbaki",
+        "kind": "archivo"
+      }
+    ],
     "entries": []
   },
   {
@@ -249,10 +255,17 @@
     "name": "Søren Kierkegaard",
     "years": "1813–1855",
     "emblem": "una máscara de papel",
-    "rooms": [
-      "firmaron-con-otro"
-    ],
+    "theme": "la-firma-prestada",
+    "idea": "Publicó bajo nombres que defendían posturas que él no firmaba y luego los rebatió con otro nombre. El lector se queda sin autoridad a la que agarrarse y tiene que elegir por su cuenta, que era el punto.",
     "note": "Publicó bajo seudónimos que se criticaban entre sí, y algunos reseñaron los libros de los otros.",
+    "works": [
+      {
+        "title": "Selections from the Writings of Kierkegaard",
+        "url": "https://www.gutenberg.org/ebooks/60333",
+        "where": "Project Gutenberg",
+        "kind": "texto"
+      }
+    ],
     "entries": []
   },
   {
@@ -260,10 +273,17 @@
     "name": "CCRU",
     "years": "1995–2003",
     "emblem": "un sello numérico",
-    "rooms": [
-      "firmaron-con-otro"
-    ],
+    "theme": "la-firma-prestada",
+    "idea": "Escribían teoría con el aparato de la ficción —fechas, entidades, numerologías, citas de libros inexistentes— y no marcaban dónde acababa una cosa y empezaba la otra. El lector tiene que verificar o aceptar.",
     "note": "Unidad de investigación de existencia administrativa dudosa dentro de una universidad real. Publicó textos sin autor individual y disolvió deliberadamente la frontera entre teoría y ficción.",
+    "works": [
+      {
+        "title": "Textos del colectivo",
+        "url": "http://www.ccru.net/",
+        "where": "ccru.net",
+        "kind": "archivo"
+      }
+    ],
     "entries": [
       "delyra-0036"
     ]
@@ -273,21 +293,274 @@
     "name": "Luther Blissett",
     "years": "1994–1999",
     "emblem": "una camiseta con dorsal",
-    "rooms": [
-      "firmaron-con-otro"
-    ],
+    "theme": "la-firma-prestada",
+    "idea": "Un nombre que cualquiera podía usar y que nadie podía reclamar: la misma firma aparece en bulos de prensa, acciones y novelas, sin manera de atribuirlas. En 1999 el nombre se retiró por acuerdo de quienes lo usaban.",
     "note": "Nombre múltiple que cualquiera podía usar. Cientos de personas firmaron con él libros, sabotajes y engaños a la prensa durante cinco años.",
+    "works": [
+      {
+        "title": "Archivo del proyecto",
+        "url": "https://www.lutherblissett.net/",
+        "where": "lutherblissett.net",
+        "kind": "archivo"
+      }
+    ],
     "entries": []
+  },
+  {
+    "id": "burroughs",
+    "name": "William S. Burroughs",
+    "years": "1914–1997",
+    "emblem": "unas tijeras sobre una columna de texto",
+    "theme": "la-firma-prestada",
+    "idea": "Cortar un texto y recomponerlo no era para él un juego formal: sostenía que el corte deja ver lo que la frase escondía, y que el lenguaje se comporta como un virus que usa al hablante para reproducirse.",
+    "note": "Publicó su primera novela bajo el seudónimo de William Lee, el apellido de soltera de su madre.",
+    "works": [],
+    "entries": [
+      "delyra-0043"
+    ]
+  },
+  {
+    "id": "kafka",
+    "name": "Franz Kafka",
+    "years": "1883–1924",
+    "emblem": "un formulario sellado",
+    "theme": "el-ojo-que-administra",
+    "idea": "Trabajó de jurista en un instituto de seguros de accidentes: sus informes tratan de miembros amputados y de cálculo de riesgo. Sus novelas no describen una tiranía sino un procedimiento que funciona correctamente y del que no se sale.",
+    "note": "Abogado en el Instituto de Seguros de Accidentes de Trabajo de Praga. Redactaba informes sobre máquinas que amputaban dedos. Pidió que quemaran lo demás.",
+    "works": [
+      {
+        "title": "El proceso (escrito en 1915, publicado en 1925)",
+        "url": "https://www.gutenberg.org/ebooks/7849",
+        "where": "Project Gutenberg",
+        "kind": "texto"
+      }
+    ],
+    "entries": []
+  },
+  {
+    "id": "einstein",
+    "name": "Albert Einstein",
+    "years": "1879–1955",
+    "emblem": "un reloj de estación",
+    "theme": "el-ojo-que-administra",
+    "idea": "En la oficina de patentes de Berna pasaban por su mesa dispositivos para sincronizar relojes a distancia por señal eléctrica. Su artículo de 1905 empieza justamente por ahí: define la simultaneidad como un procedimiento de sincronización, no como un hecho del mundo.",
+    "note": "Examinador de tercera clase en la Oficina de Patentes de Berna durante el año en que publicó cuatro artículos que reorganizaron la física.",
+    "works": [
+      {
+        "title": "Sobre la teoría de la relatividad especial y general (1916)",
+        "url": "https://www.gutenberg.org/ebooks/5001",
+        "where": "Project Gutenberg",
+        "kind": "texto"
+      }
+    ],
+    "entries": []
+  },
+  {
+    "id": "newton",
+    "name": "Isaac Newton",
+    "years": "1643–1727",
+    "emblem": "un prisma",
+    "theme": "el-ojo-que-administra",
+    "idea": "Que la misma ley sirva para una manzana y para la Luna obliga a suponer un espacio absoluto donde medirlo todo. Al frente de la Casa de la Moneda hizo lo mismo con el dinero: fijar un patrón y perseguir en persona a quien lo alterara.",
+    "note": "Dirigió la Casa de la Moneda y persiguió falsificadores en persona. Su disputa con Leibniz la arbitró una comisión que él mismo redactó.",
+    "works": [
+      {
+        "title": "Opticks (1704)",
+        "url": "https://www.gutenberg.org/ebooks/33504",
+        "where": "Project Gutenberg",
+        "kind": "texto"
+      }
+    ],
+    "entries": []
+  },
+  {
+    "id": "foucault",
+    "name": "Michel Foucault",
+    "years": "1926–1984",
+    "emblem": "una torre sin ventanas",
+    "theme": "el-ojo-que-administra",
+    "idea": "El panóptico no necesita vigilante: basta con que el vigilado no pueda saber si lo están mirando. El poder deja de ser un acto que alguien comete y pasa a ser una disposición del edificio.",
+    "note": "Su discusión con Derrida sobre tres páginas de Descartes duró años y terminó en silencio entre ambos.",
+    "works": [],
+    "entries": [
+      "delyra-0006",
+      "delyra-0009",
+      "delyra-0032"
+    ]
+  },
+  {
+    "id": "han",
+    "name": "Byung-Chul Han",
+    "years": "1959–",
+    "emblem": "un crisol",
+    "theme": "el-ojo-que-administra",
+    "idea": "No hace falta quien vigile si uno se explota a sí mismo creyéndose libre: la coacción se presenta como iniciativa propia, y el agotamiento resultante no tiene a quién acusar.",
+    "note": "Estudió metalurgia en Seúl antes de irse a Alemania a estudiar filosofía sin saber alemán.",
+    "works": [],
+    "entries": [
+      "delyra-0008"
+    ]
+  },
+  {
+    "id": "agamben",
+    "name": "Giorgio Agamben",
+    "years": "1942–",
+    "emblem": "una puerta entreabierta",
+    "theme": "el-ojo-que-administra",
+    "idea": "El estado de excepción no es la ley suspendida sino la forma en que la ley se conserva suspendiéndose. Lo que se presenta como medida provisional funciona como técnica de gobierno.",
+    "note": "Renunció a dar clases en Estados Unidos por negarse al registro biométrico de visitantes, y escribió por qué.",
+    "works": [],
+    "entries": [
+      "delyra-0007"
+    ]
+  },
+  {
+    "id": "velazquez",
+    "name": "Diego Velázquez",
+    "years": "1599–1660",
+    "emblem": "una llave de aposentador",
+    "theme": "el-ojo-que-administra",
+    "idea": "Las meninas coloca al que mira en el sitio de los reyes y deja de espaldas el cuadro que se está pintando: quien observa queda incluido en la escena y no puede comprobar lo que el pintor está haciendo.",
+    "note": "Pasó buena parte de su vida en cargos palaciegos de intendencia: se ocupaba de alojamientos, mudanzas y obras de la corte, y eso le dejaba poco tiempo para pintar.",
+    "works": [
+      {
+        "title": "Las meninas (1656), en alta resolución",
+        "url": "https://commons.wikimedia.org/wiki/File:Las_Meninas,_by_Diego_Vel%C3%A1zquez,_from_Prado_in_Google_Earth.jpg",
+        "where": "Wikimedia Commons",
+        "kind": "facsimil"
+      }
+    ],
+    "entries": [
+      "delyra-0030"
+    ]
+  },
+  {
+    "id": "bourgeois",
+    "name": "Louise Bourgeois",
+    "years": "1911–2010",
+    "emblem": "una pata de acero",
+    "theme": "la-averia-del-cuerpo",
+    "idea": "La araña de nueve metros es un retrato de su madre, que restauraba tapices: tejedora, reparadora y protectora. El animal que se lee como amenaza está puesto ahí como elogio.",
+    "note": "Estudió matemáticas en la Sorbona y las dejó por el arte. Dijo que buscaba en la geometría una estabilidad que no encontró.",
+    "works": [
+      {
+        "title": "Maman (1999), ficha de la obra",
+        "url": "https://www.tate.org.uk/art/artworks/bourgeois-maman-t12625",
+        "where": "Tate",
+        "kind": "ficha"
+      }
+    ],
+    "entries": [
+      "delyra-0015"
+    ]
+  },
+  {
+    "id": "nietzsche",
+    "name": "Friedrich Nietzsche",
+    "years": "1844–1900",
+    "emblem": "una silla de montar vacía",
+    "theme": "la-averia-del-cuerpo",
+    "idea": "Pensó desde la enfermedad y no a pesar de ella: la convalecencia como puesto de observación desde el que se desconfía de las ideas que solo se sostienen mientras uno está sano.",
+    "note": "Fue catedrático de filología clásica a los veinticuatro años, antes de doctorarse. Renunció diez años después por la salud y escribió casi todo lo suyo sin puesto ni sueldo fijo.",
+    "works": [
+      {
+        "title": "Más allá del bien y del mal (1886)",
+        "url": "https://www.gutenberg.org/ebooks/4363",
+        "where": "Project Gutenberg",
+        "kind": "texto"
+      }
+    ],
+    "entries": [
+      "delyra-0029"
+    ]
+  },
+  {
+    "id": "schreber",
+    "name": "Daniel Paul Schreber",
+    "years": "1842–1911",
+    "emblem": "una toga colgada",
+    "theme": "la-averia-del-cuerpo",
+    "idea": "Un juez redactó el informe de su propia locura con la precisión de un expediente, para demostrar ante un tribunal que estaba en condiciones de administrar sus bienes. Ganó el pleito y publicó el informe.",
+    "note": "Era presidente de sala de un tribunal de apelación. Redactó desde el sanatorio la impugnación de su propia tutela, la defendió en persona y la ganó.",
+    "works": [
+      {
+        "title": "Memorias de un enfermo de nervios (1903)",
+        "url": "https://archive.org/details/memoirs-of-my-nervous-illness-2006",
+        "where": "Internet Archive",
+        "kind": "facsimil"
+      }
+    ],
+    "entries": [
+      "delyra-0023"
+    ]
+  },
+  {
+    "id": "cronenberg",
+    "name": "David Cronenberg",
+    "years": "1943–",
+    "emblem": "una ranura en un abdomen",
+    "theme": "la-averia-del-cuerpo",
+    "idea": "La mutación no llega de fuera: el cuerpo fabrica sus propios órganos nuevos y la máquina entra por una ranura que ya estaba ahí. El horror no está en la invasión sino en la continuidad.",
+    "note": "Empezó la carrera de bioquímica antes de cambiarse a literatura, y rodó sus primeras películas con financiación pública para cine experimental.",
+    "works": [],
+    "entries": [
+      "delyra-0042"
+    ]
+  },
+  {
+    "id": "milton",
+    "name": "John Milton",
+    "years": "1608–1674",
+    "emblem": "una vela consumida",
+    "theme": "el-mapa-de-lo-no-pisado",
+    "idea": "Ciego, dictó un poema cuyo escenario no ha visto nadie. El infierno tiene geografía, distancias y clima porque hace falta todo eso para poder recorrerlo con la sintaxis.",
+    "note": "Dictó El paraíso perdido completamente ciego, a quien estuviera disponible en la casa, incluidas sus hijas.",
+    "works": [
+      {
+        "title": "Paradise Lost (1667)",
+        "url": "https://www.gutenberg.org/ebooks/26",
+        "where": "Project Gutenberg",
+        "kind": "texto"
+      }
+    ],
+    "entries": []
+  },
+  {
+    "id": "ovidio",
+    "name": "Ovidio",
+    "years": "43 a.C.–17 d.C.",
+    "emblem": "un ancla en tierra firme",
+    "theme": "el-mapa-de-lo-no-pisado",
+    "idea": "Desterrado al mar Negro, escribió Roma de memoria y en verso, dirigiéndose a una ciudad que ya no podía pisar. El destinatario de esas cartas es un sitio, no una persona.",
+    "note": "Desterrado al mar Negro por un poema y un error que nunca especificó. Escribió el resto de su obra sobre una Roma a la que no volvió.",
+    "works": [
+      {
+        "title": "Las metamorfosis (año 8)",
+        "url": "https://www.gutenberg.org/ebooks/28621",
+        "where": "Project Gutenberg",
+        "kind": "texto"
+      }
+    ],
+    "entries": [
+      "delyra-0016"
+    ]
   },
   {
     "id": "lovecraft",
     "name": "H. P. Lovecraft",
     "years": "1890–1937",
     "emblem": "una llave de plata",
-    "rooms": [
-      "lugares-no-visitados"
-    ],
+    "theme": "el-mapa-de-lo-no-pisado",
+    "idea": "El miedo no lo produce el monstruo sino el aparato: la nota al pie, el nombre del libro que no existe y la fecha exacta hacen creíble aquello que el texto se cuida de no describir.",
     "note": "Escribió la Antártida con detalle topográfico sin salir apenas de Nueva Inglaterra, apoyándose en informes de expediciones que leía obsesivamente.",
+    "works": [
+      {
+        "title": "Obras en dominio público",
+        "url": "https://en.wikisource.org/wiki/Author:Howard_Phillips_Lovecraft",
+        "where": "Wikisource",
+        "kind": "texto"
+      }
+    ],
     "entries": [
       "delyra-0010"
     ]
@@ -297,114 +570,115 @@
     "name": "Emilio Salgari",
     "years": "1862–1911",
     "emblem": "un ancla sin barco",
-    "rooms": [
-      "lugares-no-visitados"
-    ],
+    "theme": "el-mapa-de-lo-no-pisado",
+    "idea": "Escribió Borneo y el Caribe con atlas, diccionarios y enciclopedias, sin moverse de Italia, mientras sus editores lo anunciaban como capitán curtido en esos mares. La exactitud del detalle era la coartada.",
     "note": "Escribió decenas de novelas de mares tropicales sin haber navegado casi nunca. Firmaba como capitán.",
+    "works": [
+      {
+        "title": "Obras en italiano",
+        "url": "https://it.wikisource.org/wiki/Autore:Emilio_Salgari",
+        "where": "Wikisource",
+        "kind": "texto"
+      }
+    ],
     "entries": []
   },
   {
-    "id": "eco",
-    "name": "Umberto Eco",
-    "years": "1932–2016",
-    "emblem": "un plano de biblioteca",
-    "rooms": [
-      "lugares-no-visitados",
-      "firmaron-con-otro"
+    "id": "saramago",
+    "name": "José Saramago",
+    "years": "1922–2010",
+    "emblem": "un torno de cerrajero",
+    "theme": "el-mapa-de-lo-no-pisado",
+    "idea": "Separó la península ibérica del continente y la echó a navegar. El mapa no le sirve de decorado: es el argumento, y la novela consiste en ver qué hacen las personas cuando la geografía deja de estar quieta.",
+    "note": "Trabajó de cerrajero mecánico antes que de nada literario, y pasó casi veinte años sin publicar narrativa entre su primera novela y la siguiente.",
+    "works": [],
+    "entries": [
+      "delyra-0044"
+    ]
+  },
+  {
+    "id": "stevens",
+    "name": "Wallace Stevens",
+    "years": "1879–1955",
+    "emblem": "un mirlo posado",
+    "theme": "la-hora-del-buho",
+    "idea": "La imaginación no adorna lo real: es lo que lo hace habitable, y sin ella el mundo queda correcto e invivible. Publicó su primer libro a los cuarenta y cuatro años, mientras dirigía reclamaciones en una aseguradora.",
+    "note": "Vicepresidente de una compañía de seguros en Hartford hasta su muerte. Componía versos caminando al trabajo y los dictaba al llegar.",
+    "works": [
+      {
+        "title": "Harmonium (1923)",
+        "url": "https://www.gutenberg.org/ebooks/78743",
+        "where": "Project Gutenberg",
+        "kind": "texto"
+      }
     ],
-    "note": "Construyó una abadía medieval completa, con su biblioteca laberíntica, antes de escribir una sola línea de la novela. Decía que primero hay que hacer habitable el mundo.",
     "entries": []
   },
   {
-    "id": "han",
-    "name": "Byung-Chul Han",
-    "years": "1959–",
-    "emblem": "un crisol",
-    "rooms": [
-      "empezaron-en-otra-cosa"
+    "id": "schopenhauer",
+    "name": "Arthur Schopenhauer",
+    "years": "1788–1860",
+    "emblem": "un reloj de aula parado",
+    "theme": "la-hora-del-buho",
+    "idea": "El mundo que se percibe es representación, y la voluntad es lo que queda cuando se apaga la escena. De ahí que el sueño y la vigilia no se distingan por la clase de materia, sino por la coherencia con que siguen enlazándose.",
+    "note": "Programó sus clases en Berlín exactamente a la misma hora que las de Hegel. Se quedó sin alumnos y no cambió el horario.",
+    "works": [
+      {
+        "title": "El mundo como voluntad y representación (1818)",
+        "url": "https://www.gutenberg.org/ebooks/38427",
+        "where": "Project Gutenberg",
+        "kind": "texto"
+      }
     ],
-    "note": "Estudió metalurgia en Seúl antes de irse a Alemania a estudiar filosofía sin saber alemán.",
-    "entries": [
-      "delyra-0008"
-    ]
+    "entries": []
   },
   {
-    "id": "bourgeois",
-    "name": "Louise Bourgeois",
-    "years": "1911–2010",
-    "emblem": "una pata de acero",
-    "rooms": [
-      "empezaron-en-otra-cosa"
+    "id": "hegel",
+    "name": "G. W. F. Hegel",
+    "years": "1770–1831",
+    "emblem": "un búho al anochecer",
+    "theme": "la-hora-del-buho",
+    "idea": "El búho de Minerva levanta el vuelo al anochecer: una época solo se deja entender cuando ya ha terminado, de modo que la filosofía llega siempre tarde y no puede dar instrucciones.",
+    "note": "El adversario que Schopenhauer eligió, y que probablemente nunca supo que había sido elegido.",
+    "works": [
+      {
+        "title": "Hegel's Philosophy of Mind (1817)",
+        "url": "https://www.gutenberg.org/ebooks/39064",
+        "where": "Project Gutenberg",
+        "kind": "texto"
+      }
     ],
-    "note": "Estudió matemáticas en la Sorbona y las dejó por el arte. Dijo que buscaba en la geometría una estabilidad que no encontró.",
-    "entries": [
-      "delyra-0015"
-    ]
-  },
-  {
-    "id": "agamben",
-    "name": "Giorgio Agamben",
-    "years": "1942–",
-    "emblem": "una puerta entreabierta",
-    "rooms": [
-      "el-enemigo-elegido"
-    ],
-    "note": "Renunció a dar clases en Estados Unidos por negarse al registro biométrico de visitantes, y escribió por qué.",
-    "entries": [
-      "delyra-0007"
-    ]
+    "entries": []
   },
   {
     "id": "murakami",
     "name": "Haruki Murakami",
     "years": "1949–",
     "emblem": "un pozo seco",
-    "rooms": [
-      "empezaron-en-otra-cosa"
-    ],
+    "theme": "la-hora-del-buho",
+    "idea": "Los pozos, los ascensores y las habitaciones de hotel funcionan como pasos: se baja a otro plano por un sitio doméstico, y volver no deshace lo que allí ocurrió.",
     "note": "Regentó un club de jazz en Tokio durante años y empezó a escribir a los veintinueve, según él, en mitad de un partido de béisbol.",
+    "works": [],
     "entries": []
   },
   {
-    "id": "diderot",
-    "name": "Denis Diderot",
-    "years": "1713–1784",
-    "emblem": "un pliego doblado sin abrir",
-    "rooms": [
-      "el-baul",
-      "en-horario-de-oficina"
+    "id": "carrington",
+    "name": "Leonora Carrington",
+    "years": "1917–2011",
+    "emblem": "una silla de montar del revés",
+    "theme": "la-hora-del-buho",
+    "idea": "Escribió el relato de su internamiento como quien entrega un informe: sin tratarlo de delirio ni de metáfora, sino como un viaje del que se vuelve con datos que hay que anotar antes de olvidarlos.",
+    "note": "Su familia la envió a un sanatorio en Santander en 1940. Escapó de sus cuidadores en Lisboa entrando en una embajada y salió de Europa con un matrimonio de conveniencia.",
+    "works": [
+      {
+        "title": "The House of Fear: Notes from Down Below",
+        "url": "https://archive.org/details/houseoffear00leon",
+        "where": "Internet Archive",
+        "kind": "facsimil"
+      }
     ],
-    "note": "Dirigió veinte años una enciclopedia mientras el impresor, sin decírselo, censuraba los artículos ya corregidos. Sus diálogos filosóficos más audaces no se publicaron en vida.",
     "entries": [
-      "delyra-0020"
-    ]
-  },
-  {
-    "id": "nietzsche",
-    "name": "Friedrich Nietzsche",
-    "years": "1844–1900",
-    "emblem": "una silla de montar vacía",
-    "rooms": [
-      "el-enemigo-elegido",
-      "el-baul"
-    ],
-    "note": "Fue catedrático de filología clásica a los veinticuatro años, antes de doctorarse. Renunció diez años después por la salud y escribió casi todo lo suyo sin puesto ni sueldo fijo.",
-    "entries": [
-      "delyra-0029"
-    ]
-  },
-  {
-    "id": "deleuze",
-    "name": "Gilles Deleuze",
-    "years": "1925–1995",
-    "emblem": "un guante que no se quita",
-    "rooms": [
-      "el-enemigo-elegido"
-    ],
-    "note": "Se dejó las uñas largas toda la vida porque decía carecer de las huellas protectoras normales en las yemas de los dedos.",
-    "entries": [
-      "delyra-0028",
-      "delyra-0033"
+      "delyra-0022"
     ]
   },
   {
@@ -412,81 +686,19 @@
     "name": "Carlo Ginzburg",
     "years": "1939–",
     "emblem": "una lupa sobre un lóbulo",
-    "rooms": [
-      "empezaron-en-otra-cosa"
-    ],
+    "theme": "la-huella-menor",
+    "idea": "Morelli atribuía cuadros por la forma de las orejas, Freud escuchaba los lapsus y Holmes miraba las colillas: los tres leen lo que el autor no controla. A ese método lo llamó paradigma indiciario.",
     "note": "Reconstruyó la cosmología de un molinero del siglo XVI a partir de las actas de los dos procesos inquisitoriales que acabaron con él.",
+    "works": [
+      {
+        "title": "Clues, Myths, and the Historical Method (1986)",
+        "url": "https://archive.org/details/cluesmythshistor0000ginz",
+        "where": "Internet Archive",
+        "kind": "facsimil"
+      }
+    ],
     "entries": [
       "delyra-0018"
-    ]
-  },
-  {
-    "id": "carrington",
-    "name": "Leonora Carrington",
-    "years": "1917–2011",
-    "emblem": "una silla de montar del revés",
-    "rooms": [
-      "el-baul",
-      "lugares-no-visitados"
-    ],
-    "note": "Su familia la envió a un sanatorio en Santander en 1940. Escapó de sus cuidadores en Lisboa entrando en una embajada y salió de Europa con un matrimonio de conveniencia.",
-    "entries": [
-      "delyra-0022"
-    ]
-  },
-  {
-    "id": "schreber",
-    "name": "Daniel Paul Schreber",
-    "years": "1842–1911",
-    "emblem": "una toga colgada",
-    "rooms": [
-      "el-baul",
-      "en-horario-de-oficina"
-    ],
-    "note": "Era presidente de sala de un tribunal de apelación. Redactó desde el sanatorio la impugnación de su propia tutela, la defendió en persona y la ganó.",
-    "entries": [
-      "delyra-0023"
-    ]
-  },
-  {
-    "id": "velazquez",
-    "name": "Diego Velázquez",
-    "years": "1599–1660",
-    "emblem": "una llave de aposentador",
-    "rooms": [
-      "en-horario-de-oficina"
-    ],
-    "note": "Pasó buena parte de su vida en cargos palaciegos de intendencia: se ocupaba de alojamientos, mudanzas y obras de la corte, y eso le dejaba poco tiempo para pintar.",
-    "entries": [
-      "delyra-0030"
-    ]
-  },
-  {
-    "id": "saramago",
-    "name": "José Saramago",
-    "years": "1922–2010",
-    "emblem": "un torno de cerrajero",
-    "rooms": [
-      "empezaron-en-otra-cosa",
-      "el-baul"
-    ],
-    "note": "Trabajó de cerrajero mecánico antes que de nada literario, y pasó casi veinte años sin publicar narrativa entre su primera novela y la siguiente.",
-    "entries": [
-      "delyra-0044"
-    ]
-  },
-  {
-    "id": "burroughs",
-    "name": "William S. Burroughs",
-    "years": "1914–1997",
-    "emblem": "unas tijeras sobre una columna de texto",
-    "rooms": [
-      "firmaron-con-otro",
-      "el-enemigo-elegido"
-    ],
-    "note": "Publicó su primera novela bajo el seudónimo de William Lee, el apellido de soltera de su madre.",
-    "entries": [
-      "delyra-0043"
     ]
   },
   {
@@ -494,26 +706,19 @@
     "name": "Charles Sanders Peirce",
     "years": "1839–1914",
     "emblem": "un péndulo de gravimetría",
-    "rooms": [
-      "el-baul",
-      "en-horario-de-oficina"
-    ],
+    "theme": "la-huella-menor",
+    "idea": "Junto a la deducción y la inducción puso la abducción: la conjetura que explicaría un hecho raro y que hay que poder someter a prueba. Es la lógica de quien encuentra una huella y todavía no sabe de qué.",
     "note": "Se ganó la vida treinta años midiendo la gravedad terrestre con péndulos para el servicio geodésico de su país. Casi toda su obra filosófica quedó inédita al morir.",
+    "works": [
+      {
+        "title": "Chance, Love, and Logic (1923)",
+        "url": "https://www.gutenberg.org/ebooks/65274",
+        "where": "Project Gutenberg",
+        "kind": "texto"
+      }
+    ],
     "entries": [
       "delyra-0035"
-    ]
-  },
-  {
-    "id": "latour",
-    "name": "Bruno Latour",
-    "years": "1947–2022",
-    "emblem": "un cuaderno de campo en un laboratorio",
-    "rooms": [
-      "empezaron-en-otra-cosa"
-    ],
-    "note": "Su primer trabajo de campo como antropólogo no fue en una aldea remota sino dentro de un laboratorio de California, observando a los científicos como a una tribu.",
-    "entries": [
-      "delyra-0031"
     ]
   },
   {
@@ -521,10 +726,10 @@
     "name": "Nancy K. Miller",
     "years": "1941–",
     "emblem": "un hilo con el extremo a la vista",
-    "rooms": [
-      "el-enemigo-elegido"
-    ],
+    "theme": "la-huella-menor",
+    "idea": "Frente a la trama, el hilo: propuso leer lo que un texto hace con las mujeres que teje y con las que son tejidas, y llamó aracnología a esa manera de leer a contrapelo del tejido.",
     "note": "Construyó buena parte de su obra discutiendo con una sola tesis ajena, la de la muerte del autor, para señalar a quién le sale gratis.",
+    "works": [],
     "entries": [
       "delyra-0026"
     ]
@@ -534,25 +739,19 @@
     "name": "John Henry Wigmore",
     "years": "1863–1943",
     "emblem": "un árbol de líneas y símbolos",
-    "rooms": [
-      "en-horario-de-oficina"
-    ],
+    "theme": "la-huella-menor",
+    "idea": "Dibujó la prueba judicial como un diagrama de inferencias, con un símbolo para cada testimonio y flechas entre ellos, para que una cadena de indicios se pudiera revisar igual que se revisa una demostración.",
     "note": "Su método para diagramar la prueba era tan laborioso que quedó prácticamente olvidado durante décadas, hasta que aparecieron herramientas para dibujar redes.",
+    "works": [
+      {
+        "title": "The Principles of Judicial Proof (1913)",
+        "url": "https://archive.org/details/principlesofjudi00wigm",
+        "where": "Internet Archive",
+        "kind": "facsimil"
+      }
+    ],
     "entries": [
       "delyra-0027"
-    ]
-  },
-  {
-    "id": "cronenberg",
-    "name": "David Cronenberg",
-    "years": "1943–",
-    "emblem": "una ranura en un abdomen",
-    "rooms": [
-      "empezaron-en-otra-cosa"
-    ],
-    "note": "Empezó la carrera de bioquímica antes de cambiarse a literatura, y rodó sus primeras películas con financiación pública para cine experimental.",
-    "entries": [
-      "delyra-0042"
     ]
   }
 ]

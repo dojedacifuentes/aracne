@@ -1,7 +1,7 @@
 import categories from "../../content/categories.json";
 import figures from "../../content/figures.json";
 import { RAW_ENTRIES } from "../../content/index.generated";
-import rooms from "../../content/rooms.json";
+import themes from "../../content/themes.json";
 import { legStates, parseCorpus, type Corpus, type LegState } from "./corpus";
 
 export interface Archive {
@@ -19,7 +19,7 @@ let cached: Archive | null = null;
  */
 export function loadArchive(): Archive {
   if (cached) return cached;
-  const { corpus } = parseCorpus({ entries: RAW_ENTRIES, categories, figures, rooms });
+  const { corpus } = parseCorpus({ entries: RAW_ENTRIES, categories, figures, themes });
   cached = { corpus, legs: legStates(corpus.entries, corpus.categories) };
   return cached;
 }

@@ -11,7 +11,7 @@ export type Command =
   | { kind: 'invoke' }
   | { kind: 'archive' }
   | { kind: 'leg'; id: string }
-  | { kind: 'room'; id: string }
+  | { kind: 'theme'; id: string }
   | { kind: 'entry'; id: string };
 
 type Props = {
@@ -48,9 +48,9 @@ function rowsFor(corpus: Corpus, legs: LegState[], query: string): Row[] {
     });
   }
 
-  for (const room of corpus.rooms) {
-    if (!hit(room.name)) continue;
-    rows.push({ command: { kind: 'room', id: room.id }, label: room.name, meta: 'sala' });
+  for (const theme of corpus.themes) {
+    if (!hit(theme.name)) continue;
+    rows.push({ command: { kind: 'theme', id: theme.id }, label: theme.name, meta: 'tema' });
   }
 
   for (const entry of corpus.entries) {
