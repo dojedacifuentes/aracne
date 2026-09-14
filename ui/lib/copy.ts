@@ -81,3 +81,23 @@ export function linkText(link: Link, categoryName: CategoryName): string {
       return `ser ${TYPE_LABEL[link.label as EntryType] ?? link.label}`;
   }
 }
+
+/**
+ * Lo que dice una pata cuando se la mira sin verla: el mismo texto en el
+ * anillo de la portada y en la lista de móvil. Un vínculo no puede llamarse de
+ * dos maneras según dónde se lea, y una pata tampoco.
+ */
+export function legHint(count: number, lit: boolean, missing: number, selected: boolean): string {
+  if (!lit) return `retraída: faltan ${missing} ${missing === 1 ? 'entrada' : 'entradas'}`;
+  return `${count} ${count === 1 ? 'entrada' : 'entradas'}. ${selected ? 'apoyada' : 'en reposo'}`;
+}
+
+/**
+ * Las primeras palabras de una descripción, para el anillo: ahí no cabe la
+ * frase entera y cortarla por palabras es menos violento que por caracteres.
+ */
+export function firstWords(text: string, words: number): string {
+  const all = text.trim().split(/\s+/);
+  if (all.length <= words) return text.trim();
+  return `${all.slice(0, words).join(' ').replace(/[,.;:]$/, '')}…`;
+}

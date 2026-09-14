@@ -139,3 +139,38 @@ export function shortestPath(
   }
   return path;
 }
+
+/**
+ * A cuántos pasos queda cada entrada de una dada, hasta `depth`.
+ *
+ * Es lo que necesita la tela contextual: con 44 entradas el archivo entero
+ * todavía se lee, con doscientas será una bola de pelos, y lo que se quiere
+ * mirar casi nunca es el archivo entero sino **el barrio de una entrada**.
+ *
+ * Determinista y sin pesos: aquí solo importa si dos entradas se tocan, no
+ * cuánto. El orden de recorrido es el del archivo, así que dos llamadas con
+ * los mismos argumentos devuelven exactamente lo mismo.
+ */
+export function withinSteps(
+  start: Entry,
+  corpus: readonly Entry[],
+  depth: number,
+): Map<string, number> {
+  const byId = new Map(corpus.map((entry) => [entry.id, entry]));
+  const steps = new Map<string, number>([[start.id, 0]]);
+  let frontier: Entry[] = [start];
+  for (let d = 1; d <= depth; d += 1) {
+    const next: Entry[] = [];
+    for (const entry of frontier) {
+      for (const link of neighbours(entry, corpus)) {
+        if (steps.has(link.to)) continue;
+        steps.set(link.to, d);
+        const found = byId.get(link.to);
+        if (found) next.push(found);
+      }
+    }
+    if (next.length === 0) break;
+    frontier = next;
+  }
+  return steps;
+}

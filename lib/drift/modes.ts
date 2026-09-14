@@ -7,6 +7,15 @@ import { neighbours, shortestPath, type DriftStep } from "./graph";
 export type DriftMode = "deriva" | "dos-mundos" | "distancia";
 
 /**
+ * Las dos maneras de *dibujarla*, que no son dos grafos sino dos lecturas del
+ * mismo: `tela` curva los hilos como seda y `flujo` los quiebra en ángulo
+ * recto, como una traza de circuito. Las posiciones no cambian entre una y
+ * otra —las manda la pata, y eso es lo que hace informativo el dibujo—: lo
+ * único que cambia es por dónde va el hilo entre dos puntos fijos.
+ */
+export type WebSkin = "tela" | "flujo";
+
+/**
  * Los dos modos de lectura del grafo que pide la fase 5.
  *
  * Ninguno de los dos resuelve nada: uno devuelve un desajuste y el otro una

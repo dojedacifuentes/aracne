@@ -1,6 +1,6 @@
 import { NO_FILTERS, type ArchiveFilters } from '../../lib/archive/filter';
 import { ENTRY_TYPES, EPISTEMIC_STATUS, type EntryType, type EpistemicStatus } from '../../lib/schema';
-import type { DriftMode } from '../../lib/drift/modes';
+import type { DriftMode, WebSkin } from '../../lib/drift/modes';
 import { isSeed } from '../../lib/oracle/rng';
 
 /**
@@ -16,17 +16,23 @@ export type Route =
   | { name: 'figure'; id: string }
   | { name: 'archive'; filters: ArchiveFilters }
   | { name: 'drift'; seed: string; mode: DriftMode; leg: string | null }
+  // La tela tiene sitio propio: una entrada en el centro y el resto tejido a
+  // su alrededor. Sin foco, el archivo entero.
+  | { name: 'web'; focus: string | null; skin: WebSkin }
   | { name: 'shape' };
 
 export const HOME: Route = { name: 'home' };
 export const CABINET: Route = { name: 'cabinet' };
 export const ARCHIVE: Route = { name: 'archive', filters: NO_FILTERS };
 export const SHAPE: Route = { name: 'shape' };
+export const WEB: Route = { name: 'web', focus: null, skin: 'tela' };
 
 const SLUG = /^[a-z0-9-]+$/;
 /** El mismo formato que `EntrySchema`: aquí solo decide si la ruta existe. */
 /** `/deriva/<semilla>`: se construye con RegExp para no escapar cada barra. */
 const DRIFT_PATH = new RegExp('^/deriva/([^/]+)/?$');
+/** `/tela` y `/tela/<id>`, por el mismo motivo que la anterior. */
+const WEB_PATH = new RegExp('^/tela(?:/([^/]+))?/?$');
 const ENTRY_ID = /^delyra-\d{4}$/;
 
 /**
@@ -55,6 +61,17 @@ export function parseRoute(pathname: string, search: string): Route {
     const pata = params.get('pata') ?? '';
     return { name: 'drift', seed: drift[1], mode, leg: SLUG.test(pata) ? pata : null };
   }
+  // La tela: sin nada detrás es el archivo entero; con un identificador
+  // detrás, se teje alrededor de esa entrada. Un foco que no tenga forma de
+  // identificador se descarta y la tela se abre igual: una URL rota no debe
+  // mandar a la portada, que es justo donde no se quería ir.
+  const web = WEB_PATH.exec(pathname);
+  if (web) {
+    const skin: WebSkin = new URLSearchParams(search).get('vista') === 'flujo' ? 'flujo' : 'tela';
+    const focus = web[1] ?? '';
+    return { name: 'web', focus: ENTRY_ID.test(focus) ? focus : null, skin };
+  }
+
   if (/^\/adn\/?$/.test(pathname)) return SHAPE;
 
   if (/^\/archivo\/?$/.test(pathname)) return { name: 'archive', filters: parseFilters(search) };
@@ -92,6 +109,10 @@ export function routeToUrl(route: Route): string {
       if (route.leg) query.set('pata', route.leg);
       const search = query.toString();
       return search ? `/deriva/${route.seed}?${search}` : `/deriva/${route.seed}`;
+    }
+    case 'web': {
+      const path = route.focus ? `/tela/${route.focus}` : '/tela';
+      return route.skin === 'flujo' ? `${path}?vista=flujo` : path;
     }
     case 'shape':
       return '/adn';

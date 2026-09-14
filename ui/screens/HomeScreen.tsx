@@ -8,7 +8,7 @@ import { loadArchive } from '../../lib/content/loader';
 import { pressSeed } from '../../lib/oracle';
 import { pushHistory } from '../../lib/oracle/history';
 import { entriesOfRoom, roomStates } from '../../lib/museum/rooms';
-import type { DriftMode } from '../../lib/drift/modes';
+import type { DriftMode, WebSkin } from '../../lib/drift/modes';
 import { invoke } from '../../lib/oracle/invoke';
 import { freshSeed } from '../../lib/oracle/rng';
 import { ArchiveView } from '../components/ArchiveView';
@@ -16,17 +16,18 @@ import { RoomsView, RoomView } from '../components/CabinetView';
 import { CommandPalette, type Command } from '../components/CommandPalette';
 import { DriftView } from '../components/DriftView';
 import { ShapeView } from '../components/ShapeView';
-import { Tela } from '../components/Tela';
+import { Tejido } from '../components/Tejido';
 import { EntryView } from '../components/EntryView';
 import { FigureView } from '../components/FigureView';
 import { InvocationView } from '../components/InvocationView';
 import { LegButton } from '../components/LegButton';
+import { LegRing } from '../components/LegRing';
 import { PurposeView } from '../components/PurposeView';
 import { Spider } from '../components/spider/Spider';
 import { TextButton } from '../components/TextButton';
 import { useRoute } from '../hooks/useRoute';
 import { getLayoutMode, MAX_CONTENT_WIDTH } from '../lib/layout';
-import { ARCHIVE, CABINET, HOME, SHAPE } from '../lib/route';
+import { ARCHIVE, CABINET, HOME, SHAPE, WEB } from '../lib/route';
 import { readHistory, rememberEntries } from '../lib/storedHistory';
 import { colors, fonts, space } from '../theme';
 
@@ -38,6 +39,12 @@ type Props = {
 type Panel = 'patas' | 'proposito';
 
 const NONE: readonly string[] = [];
+
+/**
+ * Lo único que hay que saber para empezar. No es un tour ni una promesa: dice
+ * qué se puede tocar, que es el problema real de una interfaz callada.
+ */
+const LEAD = 'apoya las patas que quieras y pulsa la araña. lo que salga no lo estabas buscando.';
 
 /**
  * La portada. Una sola escena, como en el tarot: nunca se navega a otra
@@ -56,9 +63,10 @@ export function HomeScreen({ reduceMotion }: Props) {
   const [history, setHistory] = useState<readonly string[]>(NONE);
   const presses = useRef(0);
   const [palette, setPalette] = useState(false);
-  const telaSeed = 'aracne';
-  // La tela del fondo ocupa el escenario entero, sin pasarse de alto.
+  // El escenario: cuadrado, sin pasarse de alto, y con sitio para el anillo.
   const stageWeb = Math.min(Math.round(width * 0.38), height - 120);
+  // La tela, cuando tiene la pantalla para ella sola.
+  const webSize = Math.min(Math.round(width - space.lg * 4), height - 240, 720);
 
   useEffect(() => {
     let alive = true;
@@ -161,6 +169,29 @@ export function HomeScreen({ reduceMotion }: Props) {
   const openCabinet = useCallback(() => navigate(CABINET), [navigate]);
 
   const openArchive = useCallback(() => navigate(ARCHIVE), [navigate]);
+  const openWeb = useCallback(() => navigate(WEB), [navigate]);
+  const weave = useCallback(
+    (id: string | null) => {
+      if (route.name !== 'web') return;
+      navigate({ ...route, focus: id });
+    },
+    [route, navigate],
+  );
+  const setSkin = useCallback(
+    (skin: WebSkin) => {
+      if (route.name !== 'web') return;
+      navigate({ ...route, skin });
+    },
+    [route, navigate],
+  );
+  /** Desde la tela se salta a un mapa con una semilla nueva. */
+  const openMap = useCallback(
+    (mode: DriftMode) => {
+      presses.current += 1;
+      navigate({ name: 'drift', seed: freshSeed(Date.now(), presses.current), mode, leg: selected[0] ?? null });
+    },
+    [selected, navigate],
+  );
   const openShape = useCallback(() => navigate(SHAPE), [navigate]);
 
   /** La red se abre con la semilla de la invocación en curso, o con una nueva. */
@@ -223,19 +254,8 @@ export function HomeScreen({ reduceMotion }: Props) {
   const isReading = route.name !== 'invocation' && route.name !== 'home';
   const panelShare = isReading ? 0.78 : 0.5;
 
-  /**
-   * Lo que la tela enciende: siempre es lo que tienes delante. En una
-   * invocación, lo que salió; leyendo una entrada, ella y sus vecinas
-   * declaradas; en una sala o una figura, lo que tienen ligado; y en la
-   * portada, por dónde has pasado.
-   */
-  const spot = useMemo(() => {
-    if (route.name === 'invocation') return invocation?.entries.map((e) => e.id) ?? [];
-    if (route.name === 'entry') return entry ? [entry.id, ...entry.related] : [];
-    if (route.name === 'figure') return figure?.entries ?? [];
-    if (route.name === 'room') return roomState?.entries ?? [];
-    return history.slice(0, 6);
-  }, [route, invocation, entry, figure, roomState, history]);
+  /** La tela pide la pantalla entera: ahí el escenario se retira. */
+  const wide = route.name === 'web';
 
   const lit = legs.filter((leg) => leg.visible).length;
   const latest = legs.find((leg) => leg.category.id === selected[selected.length - 1]);
@@ -256,18 +276,18 @@ export function HomeScreen({ reduceMotion }: Props) {
       ringSize={legs.length}
       legs={spiderLegs}
       reduceMotion={reduceMotion}
-      position={portrait ? [0.5, 0.58] : [0.5, 0.52]}
+      position={portrait ? [0.5, 0.58] : [0.5, 0.5]}
       onPress={press}
       label="invocar"
       style={StyleSheet.absoluteFill}
     />
   );
 
-  const legButtons = (compact: boolean) =>
+  const legRow = () =>
     legs.map((leg) => (
       <LegButton
         key={leg.category.id}
-        compact={compact}
+        leg={leg.category.leg}
         glyph={leg.category.glyph}
         name={leg.category.name}
         count={leg.count}
@@ -335,6 +355,17 @@ export function HomeScreen({ reduceMotion }: Props) {
         onOpen={openEntry}
         onMode={setDriftMode}
       />
+    ) : route.name === 'web' ? (
+      <Tejido
+        corpus={corpus}
+        focus={route.focus}
+        skin={route.skin}
+        size={portrait ? Math.min(width - space.md * 2, 420) : webSize}
+        onFocus={weave}
+        onSkin={setSkin}
+        onOpen={openEntry}
+        onMap={openMap}
+      />
     ) : route.name === 'shape' ? (
       <ShapeView corpus={corpus} legs={legs} />
     ) : route.name === 'archive' ? (
@@ -387,6 +418,11 @@ export function HomeScreen({ reduceMotion }: Props) {
         <TextButton label="invocar" onPress={press} />
         <TextButton label="volver" onPress={back} />
       </View>
+    ) : route.name === 'web' ? (
+      <View style={styles.buttons}>
+        <TextButton label="invocar" onPress={press} />
+        <TextButton label="volver" onPress={back} />
+      </View>
     ) : route.name === 'drift' || route.name === 'shape' ? (
       <View style={styles.buttons}>
         <TextButton label="invocar" onPress={press} />
@@ -395,10 +431,10 @@ export function HomeScreen({ reduceMotion }: Props) {
     ) : (
       <View style={styles.buttons}>
         <TextButton label="invocar" onPress={press} />
-        <TextButton label={panel === 'proposito' ? 'patas' : 'propósito'} onPress={togglePanel} />
+        <TextButton label="la tela" onPress={openWeb} hint="la red entera, y los mapas que la leen" />
         <TextButton label="gabinete" onPress={openCabinet} />
         <TextButton label="archivo" onPress={openArchive} />
-        <TextButton label="la red" onPress={openDrift} />
+        <TextButton label={panel === 'proposito' ? 'patas' : 'propósito'} onPress={togglePanel} />
         <TextButton label="la forma" onPress={openShape} />
       </View>
     );
@@ -409,30 +445,34 @@ export function HomeScreen({ reduceMotion }: Props) {
         <View style={styles.columns}>
           {/* El escenario: la tela al fondo y la araña encima. Las dos son
               ambiente, no contenido, así que no ocupan altura de lectura. */}
-          <View style={styles.stageWide}>
-            {route.name !== 'drift' ? (
-              <View style={styles.telaAmbient} pointerEvents="none">
-                <Tela
-                  corpus={corpus}
-                  seed={telaSeed}
+          {/* La tela ya no vive aquí: tiene su propia pantalla. El
+              escenario es del animal y de sus once patas, que es lo único
+              que hay que entender para empezar. */}
+          {wide ? null : (
+            <View style={styles.stageWide}>
+              {/* La araña y el anillo comparten caja cuadrada: si no, el
+                  centro del anillo y el cuerpo del animal no coinciden y los
+                  hilos apuntan a cualquier parte. */}
+              <View style={{ width: stageWeb, height: stageWeb }}>
+                {spider}
+                <LegRing
+                  legs={legs}
+                  selected={active}
                   size={stageWeb}
-                  lit={spot}
-                  showCrossings={false}
-                  ambient
-                  onOpen={openEntry}
+                  center={{ x: 0.5, y: 0.5 }}
+                  onToggle={toggle}
                 />
               </View>
-            ) : null}
-            {spider}
-          </View>
-          <View style={[styles.side, { paddingTop: insets.top + space.lg }]}>
+            </View>
+          )}
+          <View style={[styles.side, wide && styles.sideWide, { paddingTop: insets.top + space.lg }]}>
             {header}
             <ScrollView
               style={styles.sideScroll}
               contentContainerStyle={styles.sideContent}
               showsVerticalScrollIndicator={false}
             >
-              {reading ?? <View>{legButtons(false)}</View>}
+              {reading ?? <Text style={styles.lead}>{LEAD}</Text>}
             </ScrollView>
             {buttons}
           </View>
@@ -462,7 +502,7 @@ export function HomeScreen({ reduceMotion }: Props) {
         ) : (
           <>
             <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.legRow}>
-              {legButtons(true)}
+              {legRow()}
             </ScrollView>
             <Text style={styles.latest} numberOfLines={1}>
               {latest ? latest.category.name : 'apoya una pata'}
@@ -495,7 +535,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: space.lg,
     paddingBottom: space.lg,
   },
+  sideWide: { flex: 1, maxWidth: MAX_CONTENT_WIDTH },
   sideScroll: { flex: 1, marginTop: space.md },
+  lead: {
+    fontFamily: fonts.serif,
+    fontSize: 19,
+    lineHeight: 30,
+    color: colors.dim,
+    maxWidth: 420,
+  },
   sideContent: { flexGrow: 1, justifyContent: 'center', paddingVertical: space.md },
 
   stagePortrait: { flex: 1 },
@@ -512,18 +560,7 @@ const styles = StyleSheet.create({
     marginTop: space.xs,
   },
 
-  // Cuatro botones no caben en 375 px: la fila envuelve antes que salirse.
-  // La tela permanente: pequeña, arriba del panel, en todas las rutas.
-  // La tela del fondo: centrada en el escenario, detrás de la araña.
-  telaAmbient: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+
   buttons: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginTop: space.md },
   missing: {
     fontFamily: fonts.serif,

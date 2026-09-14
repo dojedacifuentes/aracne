@@ -1,10 +1,14 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useFocusRing } from '../hooks/useFocusRing';
+import { legHint } from '../lib/copy';
 import { textGlyph } from '../lib/glyph';
 import { colors, fonts, HIT_SIZE, space } from '../theme';
+import { Sigil } from './Sigil';
 
 type Props = {
+  /** Posición en el anillo: de ella sale el sello. */
+  leg: number;
   glyph: string;
   name: string;
   count: number;
@@ -13,21 +17,17 @@ type Props = {
   /** Entradas que le faltan para encenderse. */
   missing: number;
   selected: boolean;
-  /** Solo el glifo, para la fila de móvil. */
-  compact?: boolean;
   onPress: () => void;
 };
 
 /**
- * Una pata: un botón real con tres estados. Retraída no se puede apoyar y dice
- * cuántas entradas le faltan; en reposo espera; apoyada tiende un hilo hacia la
- * araña. Ningún estado cambia de color: el acento está reservado al foco.
+ * Una pata en la fila de móvil, donde el anillo de la portada no cabe: once
+ * sellos de 44 px en una circunferencia pedirían una pantalla que no existe.
+ * Dice exactamente lo mismo que un nodo del anillo —mismo sello, mismo glifo,
+ * mismo texto de apoyo— y tiende su hilo hacia abajo al apoyarse.
  */
-export function LegButton({ glyph, name, count, lit, missing, selected, compact = false, onPress }: Props) {
+export function LegButton({ leg, glyph, name, count, lit, missing, selected, onPress }: Props) {
   const { focusVisible, onFocus, onBlur } = useFocusRing();
-  const hint = lit
-    ? `${count} entradas. ${selected ? 'apoyada' : 'en reposo'}`
-    : `retraída: faltan ${missing} ${missing === 1 ? 'entrada' : 'entradas'}`;
 
   return (
     <Pressable
@@ -37,78 +37,53 @@ export function LegButton({ glyph, name, count, lit, missing, selected, compact 
       disabled={!lit}
       accessibilityRole="button"
       accessibilityLabel={name}
-      accessibilityHint={hint}
+      accessibilityHint={legHint(count, lit, missing, selected)}
       accessibilityState={{ disabled: !lit, selected }}
       style={({ pressed }) => [
-        compact ? styles.compact : styles.row,
+        styles.node,
         styles.focusable,
         focusVisible && styles.focus,
         !lit && styles.retracted,
         pressed && styles.pressed,
       ]}
     >
-      <View
-        style={[
-          styles.thread,
-          compact
-            ? { width: StyleSheet.hairlineWidth * 2, height: selected ? 14 : 0 }
-            : { height: StyleSheet.hairlineWidth * 2, width: selected ? 22 : 0 },
-        ]}
-      />
-      <Text style={[styles.glyph, selected && styles.on]} maxFontSizeMultiplier={1.4}>
-        {textGlyph(glyph)}
-      </Text>
-      {compact ? null : (
-        <>
-          <Text style={[styles.name, selected && styles.on]} numberOfLines={1} maxFontSizeMultiplier={1.4}>
-            {name}
-          </Text>
-          <Text style={styles.meta} maxFontSizeMultiplier={1.4}>
-            {lit ? count : `faltan ${missing}`}
-          </Text>
-        </>
-      )}
+      <View style={styles.sello}>
+        <View style={styles.selloLayer} pointerEvents="none">
+          <Sigil leg={leg} size={HIT_SIZE} hollow strong={selected} />
+        </View>
+        <Text style={[styles.glyph, selected && styles.on]} maxFontSizeMultiplier={1.2}>
+          {textGlyph(glyph)}
+        </Text>
+      </View>
+      <View style={[styles.thread, { height: selected ? 10 : 0 }]} />
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  row: {
-    minHeight: HIT_SIZE,
-    flexDirection: 'row',
+  node: {
+    width: HIT_SIZE + 8,
+    minHeight: HIT_SIZE + 14,
     alignItems: 'center',
   },
-  compact: {
+  sello: {
     width: HIT_SIZE,
-    minHeight: HIT_SIZE + 16,
+    height: HIT_SIZE,
     alignItems: 'center',
-    justifyContent: 'flex-end',
-    paddingBottom: space.xs,
+    justifyContent: 'center',
   },
+  selloLayer: { position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 },
   thread: {
+    width: StyleSheet.hairlineWidth * 2,
     backgroundColor: colors.text,
-    marginRight: 6,
+    marginTop: space.xs,
   },
   glyph: {
-    width: 28,
-    fontFamily: fonts.serif,
-    fontSize: 19,
-    color: colors.dim,
-    textAlign: 'center',
-  },
-  name: {
-    flex: 1,
     fontFamily: fonts.serif,
     fontSize: 17,
+    lineHeight: 22,
     color: colors.dim,
-    marginLeft: space.xs,
-  },
-  meta: {
-    fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
-    color: colors.dim,
-    marginLeft: space.sm,
+    textAlign: 'center',
   },
   on: { color: colors.text },
   focusable: { outlineWidth: 0 },

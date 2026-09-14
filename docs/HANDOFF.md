@@ -443,13 +443,19 @@ Cosas que ya costaron una sesión y no hace falta redescubrir.
   opacidad cero, y la araña se queda fuera del encuadre porque su descenso lo
   mueve el bucle de render. Los tres se asientan ahora con un plazo. Si añades
   animación, haz lo mismo: **la animación puede faltar, lo que se mira no**.
-- **El plazo de la araña está sin verificar.** La corrección está aplicada en
-  `SpiderScene.web.tsx` y comprueba si el bucle se paró, no si nunca arrancó
-  —que era el error de la primera versión—. No se pudo confirmar en el panel de
-  vista previa porque ahí tampoco se repinta el canvas a demanda, así que no se
-  distingue «no funciona» de «no se muestra». **Compruébalo en un navegador real**
-  abriendo la app en una pestaña de fondo y volviendo a ella pasados diez
-  segundos: la araña tiene que estar colgando en su sitio.
+- **El plazo de la araña está verificado.** La corrección de
+  `SpiderScene.web.tsx` comprueba si el bucle se paró, no si nunca arrancó —que
+  era el error de la primera versión—. Medido el 2026-09-14 montando la app con
+  `requestAnimationFrame` neutralizado desde antes del arranque, que es la
+  condición exacta de una pestaña de fondo: la app pidió dos fotogramas, ninguno
+  se sirvió, y aun así el lienzo quedó pintado —el hilo de 2 px bajando desde el
+  borde superior y el cuerpo, de 114 a 165 px de ancho, entre el 44% y el 61%
+  del alto—. La araña queda en su sitio sin un solo fotograma.
+  Cómo repetirlo: el panel de vista previa **no sirve**, ni repinta el lienzo a
+  demanda ni marca como ocultas sus pestañas de fondo. La medida se toma
+  leyendo píxeles con `readPixels` sobre un iframe del mismo origen al que se le
+  mata `requestAnimationFrame` y se le fuerza `preserveDrawingBuffer`. Una
+  captura de pantalla no es prueba aquí: el WebGL no sale en ella.
 - **`@vercel/og` no arranca fuera del runtime de Vercel.** `og.mjs` usa `satori`
   —su motor— y `sharp` directamente.
 - **Los archivos del repo están en CRLF.** Un script que busque `\n` no casa
