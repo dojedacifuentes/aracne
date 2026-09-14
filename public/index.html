@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="%LANG_ISO_CODE%">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no, viewport-fit=cover"
+    />
+    <title>%WEB_TITLE%</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="color-scheme" content="dark" />
+
+    <style id="expo-reset">
+      html,
+      body {
+        height: 100%;
+      }
+      body {
+        overflow: hidden;
+        /* El soporte existe antes que React: nunca hay destello blanco. */
+        background-color: #0e0d0c;
+        margin: 0;
+      }
+      #root {
+        display: flex;
+        height: 100%;
+        flex: 1;
+        background-color: #0e0d0c;
+      }
+      /* El fondo cubre también el área bajo las barras del navegador móvil. */
+      html {
+        background-color: #0e0d0c;
+      }
+    </style>
+  </head>
+
+  <body>
+    <noscript>aracne necesita javascript.</noscript>
+    <div id="root"></div>
+  </body>
+</html>

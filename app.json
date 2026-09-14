@@ -1,0 +1,43 @@
+{
+  "expo": {
+    "name": "Aracne",
+    "slug": "aracne",
+    "version": "0.1.0",
+    "orientation": "default",
+    "icon": "./assets/icon.png",
+    "scheme": "aracne",
+    "userInterfaceStyle": "dark",
+    "backgroundColor": "#0E0D0C",
+    "primaryColor": "#B5432E",
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0E0D0C",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      },
+      "predictiveBackGestureEnabled": false
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "backgroundColor": "#0E0D0C",
+      "themeColor": "#0E0D0C",
+      "lang": "es",
+      "shortName": "Aracne",
+      "description": "Un archivo de anomalías con forma de araña. Se apoyan las patas, se pulsa, y sale algo que no se estaba buscando."
+    },
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "backgroundColor": "#0E0D0C",
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 148
+        }
+      ],
+      "expo-font"
+    ]
+  }
+}

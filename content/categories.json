@@ -1,0 +1,171 @@
+[
+  {
+    "id": "bibliotecas-imposibles",
+    "name": "Bibliotecas imposibles",
+    "description": "Archivos que no pueden existir, enciclopedias falsas, laberintos, espejos, catálogos infinitos. La tesis del propio artefacto, escrita antes por otros.",
+    "tags": [
+      "borges",
+      "eco",
+      "laberinto",
+      "espejo",
+      "infinito",
+      "catalogo",
+      "apocrifo"
+    ],
+    "leg": 0,
+    "glyph": "∞"
+  },
+  {
+    "id": "logica",
+    "name": "Lógica",
+    "description": "Aporías, paradojas, oxímoros, indecidibilidad, autorreferencia. Lo que se rompe cuando un sistema se mira a sí mismo.",
+    "tags": [
+      "paradoja",
+      "aporia",
+      "oximoron",
+      "autorreferencia",
+      "indecidibilidad",
+      "infinito"
+    ],
+    "leg": 1,
+    "glyph": "⊢"
+  },
+  {
+    "id": "maquinas-que-imaginan",
+    "name": "Máquinas que imaginan",
+    "description": "Cómputo, inteligencia artificial, autómatas, y el bestiario de entidades que no sabemos si piensan.",
+    "tags": [
+      "ia",
+      "computacion",
+      "automata",
+      "conciencia",
+      "algoritmo",
+      "bestiario"
+    ],
+    "leg": 2,
+    "glyph": "◫"
+  },
+  {
+    "id": "telaranas",
+    "name": "Telarañas",
+    "description": "Redes, tramas, hilos, trampas y grafos. Lo que se teje para atrapar y lo que se teje para orientarse. La categoría que tiene la forma del propio artefacto.",
+    "tags": [
+      "red",
+      "hilo",
+      "trampa",
+      "grafo",
+      "tejido",
+      "arana",
+      "laberinto",
+      "ariadna"
+    ],
+    "leg": 3,
+    "glyph": "⋔"
+  },
+  {
+    "id": "estado-del-mundo",
+    "name": "Estado del mundo en tiempo real",
+    "description": "Portales a datos vivos: sismos, incendios, tráfico aéreo y marítimo, viento, cielo. El planeta como panel de instrumentos.",
+    "tags": [
+      "portal",
+      "tiempo-real",
+      "datos",
+      "planeta",
+      "observatorio"
+    ],
+    "leg": 4,
+    "glyph": "◉"
+  },
+  {
+    "id": "epistemologia-forense",
+    "name": "Epistemología forense",
+    "description": "Cómo se construye una prueba: investigación criminal, diagnóstico médico, sesgo, error, evidencia. Qué cuenta como saber cuando algo está en juego.",
+    "tags": [
+      "evidencia",
+      "sesgo",
+      "diagnostico",
+      "criminalistica",
+      "error",
+      "probabilidad"
+    ],
+    "leg": 5,
+    "glyph": "⌗"
+  },
+  {
+    "id": "derecho-de-lo-imposible",
+    "name": "Derecho de lo imposible",
+    "description": "Personalidad jurídica de lo no humano, casos límite, vacíos, ficciones legales. El derecho como tecnología de lo irreal.",
+    "tags": [
+      "ficcion-juridica",
+      "personalidad",
+      "excepcion",
+      "vacio-legal",
+      "responsabilidad"
+    ],
+    "leg": 6,
+    "glyph": "§"
+  },
+  {
+    "id": "psicopolitica",
+    "name": "Psicopolítica",
+    "description": "Vigilancia, autoexplotación, industria de la conciencia, dataísmo, estados de excepción. Cómo el poder deja de necesitar coacción.",
+    "tags": [
+      "foucault",
+      "han",
+      "agamben",
+      "panoptico",
+      "vigilancia",
+      "autoexplotacion",
+      "dataismo",
+      "excepcion"
+    ],
+    "leg": 7,
+    "glyph": "▣"
+  },
+  {
+    "id": "cuerpo-y-horror",
+    "name": "Cuerpo y horror",
+    "description": "Body horror, biomecánica, cine surrealista, anatomía de lo anómalo. El cuerpo como territorio extraño.",
+    "tags": [
+      "body-horror",
+      "biomecanica",
+      "surrealismo",
+      "anatomia",
+      "cronenberg",
+      "arana"
+    ],
+    "leg": 8,
+    "glyph": "✕"
+  },
+  {
+    "id": "umbral-del-sueno",
+    "name": "Umbral del sueño",
+    "description": "Sueño, delirio, locura documentada, realidad alterada, literatura del umbral. Sin reforzar creencias persecutorias ni presentar lo sobrenatural como hecho.",
+    "tags": [
+      "sueno",
+      "locura",
+      "lovecraft",
+      "murakami",
+      "onirico",
+      "delirio",
+      "umbral"
+    ],
+    "leg": 9,
+    "glyph": "◐"
+  },
+  {
+    "id": "ciencia-y-arte",
+    "name": "Cruces ciencia-arte",
+    "description": "Net.art, glitch, música y estructura, barroco, obras que son también experimentos.",
+    "tags": [
+      "glitch",
+      "net-art",
+      "barroco",
+      "musica",
+      "estructura",
+      "recursividad"
+    ],
+    "leg": 10,
+    "glyph": "♒"
+  }
+]
