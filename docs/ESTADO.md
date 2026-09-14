@@ -23,8 +23,30 @@ el proyecto y qué conviene hacer. Este archivo es la historia de cada fase.
 | 9 | Economía cognitiva: el área de lectura pasa de 254 a 520 px | `adeea9d` |
 | 8 | `/adn`, la forma del archivo, y la gramática del hilo en la tela | `7528682` |
 | 4 | Veinte entradas más y catorce figuras: 44 entradas, 44 figuras, 63 vínculos anotados | `7f53881` … `f48b892` |
+| 10 | Las once patas en órbita alrededor de la araña, los sellos geométricos de patas y botones, y la tela fuera de la portada: `/tela`, con retejido y dos pieles | `b435d30` |
+| 11 | Las biografías sustituyen al gabinete: nueve temas en vez de siete salas, idea y hecho por figura, 31 obras enlazadas y comprobadas, los 44 emblemas dibujados | `d07f160` |
+| 12 | Fluidez: marca de arranque sin JavaScript, tope al escalonado de la aparición y los hilos de la tela fuera del camino del cursor | `0eb5c0e` |
 
 En curso: una revisión adversarial de las fases 0–2.
+
+### Lo que se decidió en la fase 11
+
+Las siete salas del gabinete agrupaban por circunstancia biográfica. Se
+cambiaron por nueve temas que agrupan por **el problema en el que cada figura
+se metió**, por decisión expresa de quien dirige el proyecto. Con ellas se fue
+el solapamiento —una figura está ahora en un tema y en uno solo— porque la
+sección se lee en orden y una lista con repeticiones no se lee, se consulta.
+`docs/MUSEO.md` pasó a ser `docs/BIOGRAFIAS.md`; `content/rooms.json`, a
+`content/themes.json`. Las URL de `/gabinete` siguen abriendo, con prueba.
+
+Las 31 obras enlazadas se comprobaron una a una pidiéndolas. Conviene recordar
+por qué: una URL de Project Gutenberg escrita de memoria, y dada por segura,
+devolvió una obra de Shakespeare en lugar de una de Diderot.
+
+También se fue la tela del fondo de la portada, que molestaba. Vive en
+`/tela`, con más hilos, retejido alrededor de la entrada que se pulse y dos
+maneras de dibujar el mismo grafo. Lo que no se movió: la semilla fija, la
+posición mandada por la pata y la prueba que lo protege.
 
 Las fases 6 y 7 se adelantaron a la 4 y la 5 por decisión de quien dirige el proyecto: el contenido de la 6 ya
 estaba escrito (`figures.json` y `rooms.json`) y la 7 es la estructura que hará
