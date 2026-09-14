@@ -1,0 +1,50 @@
+{
+  "id": "delyra-0027",
+  "title": "Un árbol para probar un hecho",
+  "type": "concept",
+  "categories": [
+    "epistemologia-forense",
+    "telaranas"
+  ],
+  "tags": [
+    "wigmore",
+    "prueba",
+    "diagrama",
+    "inferencia",
+    "grafo"
+  ],
+  "content": "En 1913 John Henry Wigmore publicó un método para dibujar la prueba de un juicio entero. Arriba, lo que hay que probar. Debajo, cada elemento probatorio unido por una línea a la proposición que sostiene, con símbolos distintos para el testimonio, la circunstancia, la explicación y la refutación. Las verticales llevan el argumento hacia arriba; las horizontales marcan lo que lo contradice. El dibujo obliga a declarar, trazo por trazo, qué inferencia justifica cada unión. Era tan laborioso que hacia los años sesenta estaba prácticamente olvidado, y se recuperó cuando aparecieron herramientas para dibujar redes y se hizo evidente que una línea entre dos nombres no dice qué afirma.",
+  "question": "¿Qué afirma exactamente una línea trazada entre dos nombres?",
+  "sources": [
+    {
+      "label": "Wigmore, «The Principles of Judicial Proof», 1913",
+      "author": "John Henry Wigmore",
+      "work": "The Principles of Judicial Proof",
+      "year": 1913,
+      "kind": "primary"
+    },
+    {
+      "label": "Anderson y Twining, «Analysis of Evidence», 1998",
+      "author": "Terence Anderson y William Twining",
+      "work": "Analysis of Evidence: How to Do Things with Facts Based on Wigmore's Science of Judicial Proof",
+      "year": 1998,
+      "kind": "secondary"
+    }
+  ],
+  "contributors": [
+    "diego"
+  ],
+  "epistemicStatus": "fact",
+  "scores": {
+    "strangeness": 3,
+    "darkness": 2,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0034",
+    "delyra-0035"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Comprobado: el libro es de 1913, el método cayó en desuso hacia los años sesenta y Anderson y Twining lo recuperaron en 1998."
+}
