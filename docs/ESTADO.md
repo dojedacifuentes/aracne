@@ -1,7 +1,9 @@
 # Estado
 
-Última actualización: 14 de septiembre de 2026. Para retomar en otra sesión:
-«lee docs/ESTADO.md».
+Última actualización: 14 de septiembre de 2026.
+
+Para retomar en otra sesión, lee antes **`docs/HANDOFF.md`**: dice dónde está
+el proyecto y qué conviene hacer. Este archivo es la historia de cada fase.
 
 ## Hecho
 
@@ -20,14 +22,14 @@
 
 En curso: una revisión adversarial de las fases 0–2.
 
-Las fases 6 y 7 se adelantaron a la 4 y la 5 por decisión del usuario: el contenido de la 6 ya
+Las fases 6 y 7 se adelantaron a la 4 y la 5 por decisión de quien dirige el proyecto: el contenido de la 6 ya
 estaba escrito (`figures.json` y `rooms.json`) y la 7 es la estructura que hará
 navegable el archivo cuando crezca. Ninguna de las dos dependía del material que
-el usuario estaba reuniendo.
+se estaba reuniendo.
 
 ## Sobre el material de investigación aportado
 
-Diego y Paola entregaron siete archivos, que son cinco documentos distintos
+Se entregaron siete archivos de investigación, que son cinco documentos distintos
 (dos pares son duplicados exactos). **No se importan en bloque.** Parte de las
 bibliografías contiene atribuciones que no resisten una comprobación —un libro
 de Carol Clover que no existe, un ensayo sobre Burroughs atribuido a Silvia
@@ -39,7 +41,7 @@ por separado antes de escribir la entrada, y lo que no se pueda verificar entra
 como `unverified` con `sources: []`. Cada entrada declara en `captureNote` qué
 se comprobó.
 
-**El usuario pidió después no detenerse a verificar.** La regla 4 no se puede
+**Se pidió después no detenerse a verificar.** La regla 4 no se puede
 saltar, pero sí tiene una salida prevista para justo este caso: lo no verificado
 va sin fuentes y marcado como pendiente. Por eso las veinte entradas del segundo
 lote entran como `unverified` con `sources: []` y con la referencia concreta
@@ -67,10 +69,9 @@ diagramas de Wigmore— y también en el `.docx` de paneles de datos.
 5. **Archivos del kit que no venían.** Reconstruidos: `rng`, `weighted` (con
    pesos provisionales), `history`, `index`, `lib/content/`,
    `scripts/validate.ts` y `content/contributors.json`.
-6. **Las 17 entradas.** Las redactó Claude a partir de las referencias de
-   `figures.json`, con fuentes comprobadas. La autoría sigue la afinidad de la
-   figura correspondiente; en las cuatro sin figura es provisional. Cada
-   entrada lo declara en `captureNote`.
+6. **Las 17 entradas iniciales.** Las redactó Claude a partir de las
+   referencias de `figures.json`, con fuentes comprobadas. Cada entrada lo
+   declara en `captureNote`.
 7. **Sin React Three Fiber.** three sin abstracción, como en el tarot.
 8. **Los emblemas se generan, no se dibujan a mano en el SVG.**
    `docs/MUSEO.md` pide un SVG por figura con rectángulos de 1×1, versionado y
@@ -161,3 +162,12 @@ diagramas de Wigmore— y también en el `.docx` de paneles de datos.
   Graph.
 - Iconos y splash: siguen siendo la luna del tarot.
 - Malla de la araña: 87 000 triángulos. Bajar más exige reproyectar la textura.
+
+
+## Archivo sin firma
+
+El campo `contributors`, `content/contributors.json`, el campo `affinity` de las
+figuras, el filtro «quién» y la línea «aportada por» se retiraron. El modo
+`contacto` del grafo, que era el camino más corto entre lo aportado por cada
+persona, se repuso como `distancia`: las dos entradas más lejanas que el archivo
+llega a unir, que es el diámetro del grafo y mide lo mismo que importaba.
