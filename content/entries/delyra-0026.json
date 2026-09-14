@@ -1,0 +1,44 @@
+{
+  "id": "delyra-0026",
+  "title": "La tela sin tejedora",
+  "type": "theory",
+  "categories": [
+    "telaranas",
+    "ciencia-y-arte"
+  ],
+  "tags": [
+    "miller",
+    "barthes",
+    "autoria",
+    "tejido",
+    "aracne"
+  ],
+  "content": "Roland Barthes propuso leer el texto como un tejido que se hace solo: una tela en la que el sujeto se deshace, igual que la araña se disolvería en las secreciones con las que construye su red. Nancy K. Miller respondió en 1986 volviendo a Aracne. Su objeción no es que la metáfora sea falsa, sino que borra algo: si el texto es una tela y la tela no tiene autora, desaparecen el trabajo, el cuerpo y la posición de quien tejió. Miller llamó aracnología a leer buscando otra vez a la tejedora dentro de la trama, y sostuvo que declarar muerto al autor sale más barato a quien nunca tuvo que pelear por que le reconocieran uno.",
+  "question": "¿A quién le conviene que una obra parezca haberse tejido sola?",
+  "sources": [
+    {
+      "label": "Miller, «Arachnologies: The Woman, the Text, and the Critic», 1986",
+      "author": "Nancy K. Miller",
+      "work": "The Poetics of Gender",
+      "year": 1986,
+      "url": "https://www.degruyterbrill.com/document/doi/10.7312/mill93000-006/html",
+      "kind": "primary"
+    }
+  ],
+  "contributors": [
+    "paola"
+  ],
+  "epistemicStatus": "interpretation",
+  "scores": {
+    "strangeness": 3,
+    "darkness": 2,
+    "fictionality": 1
+  },
+  "sensitive": false,
+  "related": [
+    "delyra-0016",
+    "delyra-0030"
+  ],
+  "addedAt": "2026-09-14",
+  "captureNote": "Comprobado: el ensayo aparece en The Poetics of Gender (Columbia University Press, 1986) y se recogió en Subject to Change (1988). La posición de Miller frente a la muerte del autor de Barthes está documentada."
+}
