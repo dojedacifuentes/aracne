@@ -13,10 +13,33 @@
     "rastreo",
     "cielo"
   ],
-  "content": "Casi todas las aeronaves emiten varias veces por segundo su identificador, su posición, su altitud y su rumbo, sin cifrar y sin dirigirse a nadie en particular. Cualquiera con una antena barata puede oírlas, y hay redes de aficionados que agregan lo que reciben y lo publican en mapas abiertos. El resultado es un cielo legible: se ven los vuelos comerciales, los aviones privados, los de vigilancia y los que apagan el transpondedor. Nada de eso se filtró; el sistema fue diseñado para que cada aparato anuncie su presencia a los demás, y esa cortesía técnica produjo, de rebote, un archivo público de los movimientos de casi todo el mundo que vuela.",
+  "content": "Un avión con ADS-B emite una vez por segundo su identificación, su posición, su altitud y su velocidad, sin dirigirse a nadie en particular. En Estados Unidos es obligatorio para volar en la mayor parte del espacio aéreo controlado. Cualquiera con un receptor puede oírlo, y hay redes de particulares que alojan receptores, juntan lo que captan y lo publican en un mapa; alguna se precia de no filtrar ni los vuelos militares. El resultado es un cielo legible. Nada de eso se filtró: el sistema fue diseñado para que cada aparato anuncie su presencia a las estaciones de tierra y a los demás aviones, y esa cortesía técnica permite, de rebote, seguir en tiempo real a un avión concreto. La propia autoridad aérea estadounidense ofrece direcciones temporales a quien prefiere que no lo reconozcan.",
   "question": "¿Cuántas cosas se volvieron públicas sin que nadie decidiera publicarlas?",
-  "sources": [],
-  "epistemicStatus": "unverified",
+  "sources": [
+    {
+      "label": "FAA, «Ins and Outs» de ADS-B",
+      "author": "Federal Aviation Administration",
+      "url": "https://www.faa.gov/air_traffic/technology/equipadsb/capabilities/ins_outs",
+      "kind": "reference"
+    },
+    {
+      "label": "FAA, «ADS-B Privacy»",
+      "author": "Federal Aviation Administration",
+      "url": "https://www.faa.gov/air_traffic/technology/equipadsb/privacy",
+      "kind": "reference"
+    },
+    {
+      "label": "ADS-B Exchange, mapa en vivo",
+      "url": "https://globe.adsbexchange.com/",
+      "kind": "portal"
+    },
+    {
+      "label": "Flightradar24, «Share your ADS-B data»",
+      "url": "https://www.flightradar24.com/share-your-data",
+      "kind": "portal"
+    }
+  ],
+  "epistemicStatus": "fact",
   "scores": {
     "strangeness": 4,
     "darkness": 3,
@@ -28,5 +51,5 @@
     "delyra-0024"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: funcionamiento del ADS-B y los agregadores públicos (Flightradar24, ADS-B Exchange). Sin URL hasta comprobarla."
+  "captureNote": "Comprobado en la FAA: ADS-B Out emite la posición GPS, la altitud, la velocidad sobre el terreno y otros datos a las estaciones de tierra y a otros aviones una vez por segundo, y es broadcast porque queda a disposición de cualquiera con el receptor adecuado; es obligatorio en la mayor parte del espacio aéreo controlado de Estados Unidos; y como transmite la dirección ICAO única del avión, cualquiera con un receptor puede identificarlo y seguirlo en tiempo real, por lo que la FAA ofrece direcciones ICAO temporales (programa PIA). ADS-B Exchange describe en su página «About» una red colaborativa de receptores y dice no filtrar vuelos ni tipos de aparato, civiles o militares; Flightradar24 opera su red con receptores que aportan particulares. Corregido: no es «varias veces por segundo» sino una; «casi todas las aeronaves», «sin cifrar», «una antena barata», que se vean «los que apagan el transpondedor» y «casi todo el mundo que vuela» no se pudieron sostener y salen."
 }
