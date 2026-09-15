@@ -13,10 +13,23 @@
     "datos",
     "tiempo-real"
   ],
-  "content": "Hay proyectos que no registran acontecimientos sino noticias sobre acontecimientos: rastrean medios en decenas de idiomas, extraen quién hizo qué a quién y dónde, y le asignan un tono. Lo que queda es una base de datos enorme y rara, porque su unidad no es el hecho sino su mención. Sirve para ver cómo se propaga un tema, qué países aparecen y con qué carga, y cuándo un asunto desaparece de la conversación. Confundir ese archivo con el mundo es un error específico: no mide lo que ocurre, mide lo que se cuenta, y el silencio de un país puede significar paz o significar censura.",
+  "content": "GDELT no registra acontecimientos sino noticias sobre acontecimientos: rastrea prensa, radio, televisión y web en más de cien idiomas, extrae quién hizo qué a quién y dónde, y le asigna un tono. Lo que queda es una base de datos enorme y rara: archiva cada acontecimiento por el día en que apareció en las noticias, no por el día en que ocurrió, y guarda aparte cada vez que se menciona. Sirve para ver cómo se propaga un tema, qué países aparecen y con qué carga, y cuándo un asunto desaparece de la conversación. Confundir ese archivo con el mundo es un error específico: no mide lo que ocurre, mide lo que se cuenta, y el silencio de un país puede significar paz o significar censura.",
   "question": "¿Qué se está midiendo cuando se mide la atención?",
-  "sources": [],
-  "epistemicStatus": "unverified",
+  "sources": [
+    {
+      "label": "The GDELT Project, «The GDELT Story»",
+      "url": "https://gdeltproject.org/about.html",
+      "kind": "portal"
+    },
+    {
+      "label": "GDELT, «The GDELT Event Database. Data Format Codebook V2.0», 2015",
+      "work": "The GDELT Event Database. Data Format Codebook V2.0",
+      "year": 2015,
+      "url": "http://data.gdeltproject.org/documentation/GDELT-Event_Codebook-V2.0.pdf",
+      "kind": "reference"
+    }
+  ],
+  "epistemicStatus": "fact",
   "scores": {
     "strangeness": 4,
     "darkness": 4,
@@ -28,5 +41,5 @@
     "delyra-0036"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: GDELT Project, cobertura en más de cien idiomas y codificación de eventos y tono."
+  "captureNote": "Comprobado: GDELT dice vigilar medios impresos, audiovisuales y web de casi todos los países en más de 100 idiomas, desde el 1 de enero de 1979. El libro de códigos v2.0 (19 de febrero de 2015): cada registro sigue el formato diádico CAMEO, con dos actores y la acción de uno sobre el otro, geolocalizados; una tabla aparte guarda cada mención del acontecimiento en las noticias; y AvgTone es el tono medio, de −100 a +100, de los documentos que lo mencionan. En la página de datos: desde abril de 2013 los registros se guardan por la fecha en que el acontecimiento apareció en los medios, no por la fecha en que ocurrió. Corregido: eran más de cien idiomas, no decenas; «su unidad no es el hecho sino su mención» se sustituye por lo que la documentación dice que hace; y la entrada ahora nombra el proyecto. La última frase es advertencia del archivo."
 }
