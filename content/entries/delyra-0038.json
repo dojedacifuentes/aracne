@@ -13,10 +13,24 @@
     "modelo",
     "visualizacion"
   ],
-  "content": "Hay mapas que muestran el viento del planeta entero como un tejido de líneas que se mueven. No son fotografías: ninguna cámara ve el viento. Lo que se dibuja es la salida de un modelo numérico que divide la atmósfera en celdas y calcula, cada pocas horas, qué hace el aire en cada una. La imagen es hipnótica y conviene recordar de qué está hecha: cada hebra que parece una corriente real es una interpolación entre puntos de una rejilla. El planeta no se ve así. Se ve así el cálculo con el que intentamos adelantarnos a él.",
+  "content": "Hay mapas que muestran el viento del planeta entero como un tejido de líneas que se mueven. No son fotografías: ninguna cámara ve el viento. Lo que se dibuja es la salida de un modelo numérico que reparte la atmósfera en una rejilla de puntos y calcula, cuatro veces al día, qué hará el aire en cada uno. La imagen es hipnótica y conviene recordar de qué está hecha: cada hebra que parece una corriente real es una interpolación entre puntos de esa rejilla. El planeta no se ve así. Se ve así el cálculo con el que intentamos adelantarnos a él.",
   "question": "¿Qué parte de lo que muestra un mapa del mundo es el mundo?",
-  "sources": [],
-  "epistemicStatus": "unverified",
+  "sources": [
+    {
+      "label": "Cameron Beccario, «earth»",
+      "author": "Cameron Beccario",
+      "url": "https://earth.nullschool.net/",
+      "kind": "portal"
+    },
+    {
+      "label": "Beccario, «earth», código y notas de implementación",
+      "author": "Cameron Beccario",
+      "work": "earth",
+      "url": "https://github.com/cambecc/earth",
+      "kind": "primary"
+    }
+  ],
+  "epistemicStatus": "fact",
   "scores": {
     "strangeness": 4,
     "darkness": 2,
@@ -28,5 +42,5 @@
     "delyra-0041"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: earth.nullschool.net (Cameron Beccario) y Ventusky; origen de los datos en modelos de predicción tipo GFS."
+  "captureNote": "Comprobado: earth.nullschool.net, de Cameron Beccario, se presenta como una visualización de las condiciones meteorológicas pronosticadas por superordenadores, actualizada cada tres horas, con datos del GFS (EMC / NCEP / NWS / NOAA). En el README del código publicado por su autor: el GFS lo opera el Servicio Meteorológico Nacional de Estados Unidos, produce pronósticos cuatro veces al día, su rejilla es de 1° y los puntos intermedios se interpolan en el navegador con interpolación bilineal; el README documenta la versión de código abierto, y el sitio es una instancia adaptada de ella. Corregido: «divide la atmósfera en celdas» y «cada pocas horas» se sustituyen por lo que dicen las fuentes. Ventusky no se comprobó porque la entrada no lo nombra."
 }
