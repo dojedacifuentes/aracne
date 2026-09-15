@@ -45,11 +45,12 @@ export function SpiderScene({
   reduceMotion,
   pressToken,
   hover,
+  handle,
   onFailure,
 }: SpiderSceneProps) {
   const hostRef = useRef<View | null>(null);
   const controls = useRef<Controls | null>(null);
-  const live = useRef({ options, legs, ringSize, reduceMotion, hover, onFailure });
+  const live = useRef({ options, legs, ringSize, reduceMotion, hover, handle, onFailure });
 
   useEffect(() => {
     live.current.options = options;
@@ -75,6 +76,10 @@ export function SpiderScene({
   useEffect(() => {
     live.current.onFailure = onFailure;
   }, [onFailure]);
+
+  useEffect(() => {
+    live.current.handle = handle;
+  }, [handle]);
 
   useEffect(() => {
     if (pressToken > 0) controls.current?.press();
@@ -221,6 +226,48 @@ export function SpiderScene({
     };
     canvas.addEventListener('webglcontextlost', onContextLost);
 
+    /**
+     * Del gesto al mundo, y nada más: la física está en el rig y la medida de
+     * la mano, en el gesto. Aquí solo se sabe una cosa que allí no se
+     * sabe —dónde cae el lienzo— y se usa para traducir.
+     *
+     * La caja se lee al agarrar y no en cada aviso del puntero: durante un
+     * arrastre la página no se mueve, y preguntarla sesenta veces por segundo
+     * obliga al navegador a rehacer el diseño otras tantas.
+     */
+    const box = { left: 0, top: 0, width: 1, height: 1 };
+    const worldX = (clientX: number) => ((clientX - box.left) / box.width - 0.5) * stage.width;
+    const worldY = (clientY: number) => (0.5 - (clientY - box.top) / box.height) * stage.height;
+
+    // La referencia la crea `Spider` con useRef: su identidad no cambia en toda la vida de la escena.
+    const outward = live.current.handle;
+    outward.current = {
+      beginGrab: (x, y) => {
+        const rect = host.getBoundingClientRect();
+        if (rect.width === 0 || rect.height === 0) return;
+        box.left = rect.left;
+        box.top = rect.top;
+        box.width = rect.width;
+        box.height = rect.height;
+        rig?.beginGrab(worldX(x), worldY(y));
+        request();
+      },
+      dragTo: (x, y) => {
+        rig?.dragTo(worldX(x), worldY(y));
+        request();
+      },
+      release: (vx, vy) => {
+        // Píxeles por segundo a mundo por segundo. La escala es la misma en los dos ejes.
+        const k = stage.height / box.height;
+        rig?.release(vx * k, -vy * k);
+        request();
+      },
+      cancel: () => {
+        rig?.release(0, 0);
+        request();
+      },
+    };
+
     controls.current = {
       options: () => {
         rig?.setOptions(live.current.options);
@@ -287,6 +334,7 @@ export function SpiderScene({
     return () => {
       disposed = true;
       controls.current = null;
+      outward.current = null;
       if (__DEV__) delete debug.__aracneSpider;
       cancelAnimationFrame(frame);
       clearTimeout(settle);

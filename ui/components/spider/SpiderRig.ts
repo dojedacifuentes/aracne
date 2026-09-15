@@ -1,10 +1,20 @@
 import { Group, Vector3, type Object3D } from 'three';
 
-import { alephState, impulse, legVector, RING, threadFrequency, type Ring } from '../../../lib/aleph/tension';
-import { MOTION, SCENE, SILK_ATTACH, THREAD, type SpiderOptions } from './spiderConfig';
+import {
+  alephState,
+  impulse,
+  legVector,
+  RING,
+  threadFrequency,
+  type Ring,
+  type Vec2,
+} from '../../../lib/aleph/tension';
+import { GRIP, MOTION, SCENE, SILK_ATTACH, THREAD, type SpiderOptions } from './spiderConfig';
 import {
   ambientAt,
+  clampSpeed,
   pupil,
+  resistInPlace,
   smoothDamp,
   springInPlace,
   stillAmbient,
@@ -31,6 +41,8 @@ interface LegThread {
   opacity: number;
 }
 
+const clamp = (value: number, low: number, high: number) => Math.min(high, Math.max(low, value));
+
 /**
  * Una araña colgada de su hilo: el modelo, la seda, los hilos de las patas y
  * el movimiento. No sabe nada de React ni del render; la escena la actualiza
@@ -38,6 +50,13 @@ interface LegThread {
  *
  * La física de las patas no se calcula aquí: sale de `alephState()`,
  * `impulse()` y `threadFrequency()` de lib/aleph/tension.ts.
+ *
+ * Sujetarla y tirar de ella entran por `beginGrab`, `dragTo` y `release`, en
+ * unidades de mundo. No hay muelle nuevo: el tirón es un destino más para el
+ * mismo muelle que ya mueve la tensión del anillo. Mientras la mano sujeta, el
+ * muelle se endurece hasta el amortiguamiento crítico y sigue al dedo sin
+ * temblar; al soltar vuelven las constantes del anillo, que están poco
+ * amortiguadas, y por eso el cuerpo pasa de largo, oscila y se para.
  */
 export class SpiderRig {
   readonly object = new Group();
@@ -51,8 +70,12 @@ export class SpiderRig {
 
   private readonly entrance: Damped = { value: 1, velocity: 0 };
   private readonly lift: Damped = { value: 0, velocity: 0 };
+  /** 0 suelta, 1 sujeta: la compresión de tenerla cogida. */
+  private readonly grip: Damped = { value: 0, velocity: 0 };
   private readonly tension: Spring2 = { x: 0, y: 0, vx: 0, vy: 0 };
   private readonly ambient: Ambient = { sway: 0, bob: 0, twist: 0, silkX: 0, silkZ: 0 };
+  /** Vector de trabajo: la resistencia y el recorte escriben aquí, no reservan. */
+  private readonly scratch: Vec2 = { x: 0, y: 0 };
 
   private options: SpiderOptions;
   private stage: StageMetrics = { width: 2, height: 2 };
@@ -64,6 +87,17 @@ export class SpiderRig {
   private pullY = 0;
   private pressedAt = -Infinity;
   private near = false;
+  /** La mano está encima. Mientras dure, el péndulo se apaga y el cuerpo se comprime. */
+  private held = false;
+  /** El tirón se mide desde donde empezó a arrastrarse, no desde el primer contacto. */
+  private dragging = false;
+  /** Un retroceso en marcha. Dura lo que tarda en pararse, y después se olvida. */
+  private recoiling = false;
+  private originX = 0;
+  private originY = 0;
+  /** Desplazamiento pedido por la mano, ya resistido, en unidades de mundo. */
+  private dragX = 0;
+  private dragY = 0;
 
   constructor(
     private readonly model: Object3D,
@@ -74,6 +108,15 @@ export class SpiderRig {
     this.silk = new SpiderSilk({ opacity: options.silkOpacity });
     this.object.add(this.silk.line, this.body);
     this.entrance.value = options.entrance === 'descend' ? 1 : 0;
+  }
+
+  /**
+   * Dónde está el cuerpo ahora mismo, en unidades de mundo. De solo lectura:
+   * quien lo mueve es `update()`. Lo miran las pruebas, que comprueban el
+   * recorrido entero —sujetar, tirar, soltar y volver— sin montar una escena.
+   */
+  get bodyPosition(): Readonly<Vector3> {
+    return this.body.position;
   }
 
   setOptions(options: SpiderOptions): void {
@@ -90,6 +133,54 @@ export class SpiderRig {
 
   press(nowMs: number): void {
     this.pressedAt = nowMs;
+  }
+
+  /**
+   * La mano se posa. Comprime el cuerpo y, si el contacto cae fuera del centro,
+   * lo aparta un poco del dedo: de ese desplazamiento sale la inclinación, sin
+   * necesidad de girar nada a mano.
+   */
+  beginGrab(x: number, y: number): void {
+    this.held = true;
+    this.dragging = false;
+    this.recoiling = false;
+    const span = this.span();
+    if (span <= 0) return;
+    const offX = clamp((x - this.body.position.x) / span, -1, 1);
+    const offY = clamp((y - this.body.position.y) / span, -1, 1);
+    const nudge = span * GRIP.pressNudge;
+    this.tension.vx -= offX * nudge;
+    this.tension.vy -= offY * nudge;
+  }
+
+  /** La mano arrastra. El primer aviso fija el origen: cruzar el umbral no da un salto. */
+  dragTo(x: number, y: number): void {
+    if (!this.held) return;
+    if (!this.dragging) {
+      this.dragging = true;
+      this.originX = x;
+      this.originY = y;
+    }
+    resistInPlace(this.scratch, x - this.originX, y - this.originY, this.span() * GRIP.dragReach);
+    this.dragX = this.scratch.x;
+    this.dragY = this.scratch.y;
+  }
+
+  /**
+   * La mano se levanta. El destino vuelve a ser el que dictan las patas y la
+   * velocidad del gesto se suma a la del muelle, recortada: el retroceso es de
+   * quien lo soltó, pero la araña sigue colgando de su hilo.
+   */
+  release(vx: number, vy: number): void {
+    if (!this.held) return;
+    this.held = false;
+    this.dragging = false;
+    this.recoiling = true;
+    this.dragX = 0;
+    this.dragY = 0;
+    clampSpeed(this.scratch, vx, vy, this.span() * GRIP.maxSpeed);
+    this.tension.vx += this.scratch.x * GRIP.releaseImpulse;
+    this.tension.vy += this.scratch.y * GRIP.releaseImpulse;
   }
 
   /** Nueva selección: golpe hacia las patas que se apoyan, retroceso de las que se sueltan, y sus hilos. */
@@ -139,27 +230,40 @@ export class SpiderRig {
     const restY = (0.5 - o.position[1]) * this.stage.height;
     const topY = o.silkLength === 'top' ? this.stage.height / 2 + 0.05 : restY + o.silkLength * this.stage.height;
     // Pantalla: y hacia abajo. Mundo: y hacia arriba.
-    const targetX = this.pullX * unit;
-    const targetY = -this.pullY * unit;
+    const targetX = this.pullX * unit + this.dragX;
+    const targetY = -this.pullY * unit + this.dragY;
 
-    let busy = false;
+    let busy = this.held;
     if (quiet) {
       this.entrance.value = 0;
       this.entrance.velocity = 0;
       this.lift.value = 0;
       this.lift.velocity = 0;
+      // Sin movimiento el tirón sigue funcionando: lo que desaparece es el recorrido.
       this.tension.x = targetX;
       this.tension.y = targetY;
       this.tension.vx = 0;
       this.tension.vy = 0;
+      this.grip.value = this.held ? 1 : 0;
+      this.grip.velocity = 0;
+      this.recoiling = false;
       stillAmbient(this.ambient);
     } else {
       const speed = Math.max(0.05, o.speed);
       if (o.entrance === 'none') this.entrance.value = 0;
       else smoothDamp(this.entrance, 0, o.entranceDuration / 2.5 / speed, dt);
-      smoothDamp(this.lift, this.near ? MOTION.retreat * Math.min(2, o.motionIntensity) : 0, 0.5, dt);
-      springInPlace(this.tension, targetX, targetY, dt);
-      ambientAt(nowSeconds, o.motionIntensity, o.speed, this.ambient);
+      smoothDamp(this.lift, this.near && !this.held ? MOTION.retreat * Math.min(2, o.motionIntensity) : 0, 0.5, dt);
+      smoothDamp(this.grip, this.held ? 1 : 0, GRIP.pressSmooth, dt);
+      if (this.held) {
+        springInPlace(this.tension, targetX, targetY, dt, GRIP.holdStiffness, GRIP.holdDamping);
+      } else if (this.recoiling) {
+        springInPlace(this.tension, targetX, targetY, dt, GRIP.releaseStiffness, GRIP.releaseDamping);
+        this.recoiling = !this.settled(targetX, targetY, span);
+      } else {
+        springInPlace(this.tension, targetX, targetY, dt);
+      }
+      // El péndulo se apaga mientras la mano sujeta: lo que se mece no está cogido.
+      ambientAt(nowSeconds, o.motionIntensity * (1 - this.grip.value * GRIP.ambientHold), o.speed, this.ambient);
       busy = true;
     }
 
@@ -173,7 +277,7 @@ export class SpiderRig {
     const lean = Math.atan2(x - restX, Math.max(0.01, topY - y));
     this.body.rotation.set(o.rotation[0], o.rotation[1] + this.ambient.twist, o.rotation[2] + lean);
 
-    let scale = span;
+    let scale = span * (1 - this.grip.value * GRIP.pressDepth);
     const progress = (nowSeconds * 1000 - this.pressedAt) / MOTION.pressMs;
     if (!quiet && progress >= 0 && progress < 1) {
       scale *= pupil(progress);
@@ -188,6 +292,10 @@ export class SpiderRig {
       this.attach.copy(this.attachLocal);
       this.model.localToWorld(this.attach);
       const chord = Math.max(1e-3, Math.hypot(this.attach.x - restX, topY - this.attach.y));
+      // Alejarse del anclaje tensa la seda; acercarse la afloja. Es hilo, no varilla.
+      const restSpan = Math.max(1e-3, topY - restY);
+      const stretch = (Math.hypot(x - restX, topY - y) - restSpan) / restSpan;
+      const taut = clamp(1 - stretch * GRIP.silkTaut, 0, 1.6);
       this.silk.setOpacity(o.silkOpacity);
       this.silk.update(
         restX,
@@ -196,13 +304,13 @@ export class SpiderRig {
         this.attach.x,
         this.attach.y,
         this.attach.z,
-        o.silkSlack * chord,
+        o.silkSlack * chord * taut,
         this.ambient.silkX * chord,
         this.ambient.silkZ * chord,
       );
     }
 
-    return this.updateThreads(x, y, nowSeconds, dt, quiet) || busy;
+    return this.updateThreads(x, y, restX, restY, nowSeconds, dt, quiet) || busy;
   }
 
   /** El modelo es de la plantilla compartida: aquí solo se liberan los hilos. */
@@ -227,9 +335,20 @@ export class SpiderRig {
     });
   }
 
-  private updateThreads(x: number, y: number, now: number, dt: number, quiet: boolean): boolean {
+  private updateThreads(
+    x: number,
+    y: number,
+    restX: number,
+    restY: number,
+    now: number,
+    dt: number,
+    quiet: boolean,
+  ): boolean {
     // Largo de sobra para salir del escenario en cualquier dirección.
     const reach = Math.max(this.stage.width, this.stage.height);
+    // Cuánto se ha ido el cuerpo de su sitio. Los hilos siguen prendidos donde estaban.
+    const ux = x - restX;
+    const uy = y - restY;
     let busy = false;
 
     for (let leg = 0; leg < this.threads.length; leg += 1) {
@@ -246,7 +365,8 @@ export class SpiderRig {
 
       const age = now - thread.changedAt;
       let sway = 0;
-      let slack = 0;
+      // Llevar el cuerpo hacia una pata afloja su hilo; alejarlo de ella lo tensa.
+      let slack = (ux * thread.dx + uy * thread.dy) * GRIP.threadSag;
       if (!quiet && Number.isFinite(age)) {
         if (thread.supported) {
           const envelope = Math.exp(-age / THREAD.decay);
@@ -255,15 +375,24 @@ export class SpiderRig {
             busy = true;
           }
         } else {
-          slack = THREAD.slack * reach * Math.min(1, age / THREAD.fadeOut);
+          slack += THREAD.slack * reach * Math.min(1, age / THREAD.fadeOut);
         }
       }
 
       thread.silk.setOpacity(thread.opacity);
       thread.silk.line.visible = this.options.silk;
-      thread.silk.update(x, y, 0, x + thread.dx * reach, y + thread.dy * reach, 0, slack, sway, 0);
+      // El extremo lejano está prendido en la red, no en el animal: no viaja con él.
+      thread.silk.update(x, y, 0, restX + thread.dx * reach, restY + thread.dy * reach, 0, slack, sway, 0);
     }
     return busy;
+  }
+
+  /** El retroceso se ha acabado: ni distancia al destino ni velocidad que valgan un fotograma. */
+  private settled(targetX: number, targetY: number, span: number): boolean {
+    return (
+      Math.hypot(targetX - this.tension.x, targetY - this.tension.y) < span * 0.002 &&
+      Math.hypot(this.tension.vx, this.tension.vy) < span * 0.02
+    );
   }
 
   private span(): number {

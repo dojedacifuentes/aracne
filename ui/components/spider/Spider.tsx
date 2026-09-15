@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import {
   Pressable,
   StyleSheet,
@@ -10,10 +10,11 @@ import {
 
 import { useFocusRing } from '../../hooks/useFocusRing';
 import { colors } from '../../theme';
-import { SCENE, SPIDER_DEFAULTS, type SpiderOptions } from './spiderConfig';
+import { SCENE, SPIDER_DEFAULTS, type SpiderHandle, type SpiderOptions } from './spiderConfig';
 import { SpiderBoundary } from './SpiderBoundary';
 import { SpiderFallback } from './SpiderFallback';
 import { SPIDER_3D_AVAILABLE, SpiderScene } from './SpiderScene';
+import { useSpiderGrab } from './useSpiderGrab';
 
 export type SpiderProps = Partial<SpiderOptions> & {
   /** Patas apoyadas, por su posición en el anillo. */
@@ -82,6 +83,9 @@ export function Spider({
   const [pressToken, setPressToken] = useState(0);
   const [hover, setHover] = useState(false);
   const { focusVisible, onFocus, onBlur } = useFocusRing();
+  // El canal con la escena: por aquí entra la mano y no vuelve a renderizar nada.
+  const handle = useRef<SpiderHandle | null>(null);
+  const { attach, wasDrag } = useSpiderGrab(handle, SPIDER_3D_AVAILABLE && !failed && visible);
 
   const onLayout = useCallback((event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;
@@ -89,9 +93,11 @@ export function Spider({
   }, []);
   const handleFailure = useCallback(() => setFailed(true), []);
   const press = useCallback(() => {
+    // Tirar del animal y soltarlo no es pulsarlo: el clic que llega detrás se descarta.
+    if (wasDrag()) return;
     setPressToken((count) => count + 1);
     onPress?.();
-  }, [onPress]);
+  }, [wasDrag, onPress]);
 
   // El área pulsable cubre la araña y su recorrido cuando las patas tiran de ella.
   const span = Math.min(box.width, box.height) * SCENE.span * scale;
@@ -121,6 +127,7 @@ export function Spider({
             reduceMotion={reduceMotion}
             pressToken={pressToken}
             hover={hover}
+            handle={handle}
             onFailure={handleFailure}
           />
         </SpiderBoundary>
@@ -129,6 +136,7 @@ export function Spider({
       )}
       {visible && box.width > 0 ? (
         <Pressable
+          ref={attach}
           accessibilityRole="button"
           accessibilityLabel={label}
           onPress={press}

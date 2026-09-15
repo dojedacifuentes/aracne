@@ -1,4 +1,5 @@
-import { MOTION } from './spiderConfig';
+import type { Vec2 } from '../../../lib/aleph/tension';
+import { GRIP, MOTION } from './spiderConfig';
 
 /**
  * El movimiento de la araña, sin three.js y sin reservar memoria por
@@ -106,4 +107,94 @@ export function pupil(progress: number, contracted: number = MOTION.pressScale):
   if (progress <= 0 || progress >= 1) return 1;
   const k = progress < 0.4 ? easeOutCubic(progress / 0.4) : 1 - easeInOutSine((progress - 0.4) / 0.6);
   return 1 - (1 - contracted) * k;
+}
+
+/**
+ * Resistencia al tirar:  f(d) = d·R / (d + R).
+ *
+ * En el origen vale exactamente lo que se tira (f′(0) = 1), a media distancia
+ * ya solo la mitad y por mucho que se siga tirando nunca llega a `reach`. Es
+ * una seda y no un carril: el cuerpo sigue a la mano de cerca al principio y
+ * se resiste cada vez más según se lo lleva lejos.
+ */
+export function resist(distance: number, reach: number): number {
+  if (!(reach > 0)) return 0;
+  const d = Math.max(0, distance);
+  return (d * reach) / (d + reach);
+}
+
+/** La misma curva sobre un vector: cambia el módulo y respeta la dirección. */
+export function resistInPlace(out: Vec2, dx: number, dy: number, reach: number): Vec2 {
+  const d = Math.hypot(dx, dy);
+  if (d < 1e-9 || !(reach > 0)) {
+    out.x = 0;
+    out.y = 0;
+    return out;
+  }
+  const k = resist(d, reach) / d;
+  out.x = dx * k;
+  out.y = dy * k;
+  return out;
+}
+
+/**
+ * Recorta una velocidad sin torcerla. Al soltar, el golpe hereda el gesto pero
+ * no lo obedece: la araña cuelga de un hilo y no se puede lanzar fuera.
+ */
+export function clampSpeed(out: Vec2, vx: number, vy: number, max: number): Vec2 {
+  const speed = Math.hypot(vx, vy);
+  const k = speed > max && speed > 0 ? max / speed : 1;
+  out.x = vx * k;
+  out.y = vy * k;
+  return out;
+}
+
+/** Lo que se sabe de la mano: dónde estaba, cuándo, y a qué velocidad iba. */
+export interface PointerTrack {
+  x: number;
+  y: number;
+  /** Instante de la última muestra, en milisegundos. */
+  t: number;
+  vx: number;
+  vy: number;
+}
+
+export function trackStart(track: PointerTrack, x: number, y: number, t: number): PointerTrack {
+  track.x = x;
+  track.y = y;
+  track.t = t;
+  track.vx = 0;
+  track.vy = 0;
+  return track;
+}
+
+/**
+ * Una muestra más. El intervalo se acota por abajo —dos eventos en el mismo
+ * milisegundo darían una velocidad absurda— y por arriba —un fotograma perdido
+ * no debe leerse como una mano lenta—, y la medida se mezcla con la anterior
+ * para que el último temblor no decida el golpe. Es la parte de MOMO que vale:
+ * saber *a qué velocidad* se suelta, no solo dónde.
+ */
+export function trackMove(track: PointerTrack, x: number, y: number, t: number): PointerTrack {
+  const dt = Math.min(GRIP.sampleMaxMs, Math.max(GRIP.sampleMinMs, t - track.t)) / 1000;
+  const vx = (x - track.x) / dt;
+  const vy = (y - track.y) / dt;
+  track.vx += (vx - track.vx) * GRIP.sampleBlend;
+  track.vy += (vy - track.vy) * GRIP.sampleBlend;
+  track.x = x;
+  track.y = y;
+  track.t = t;
+  return track;
+}
+
+/**
+ * La velocidad en el momento de soltar. Si la mano se paró antes de levantarse
+ * —sujetar quieto y soltar—, la última medida ya no vale: se apaga con el
+ * tiempo transcurrido, así que soltar parado no lanza nada.
+ */
+export function trackSpeed(out: Vec2, track: PointerTrack, t: number): Vec2 {
+  const decay = Math.exp(-Math.max(0, t - track.t) / GRIP.staleMs);
+  out.x = track.vx * decay;
+  out.y = track.vy * decay;
+  return out;
 }

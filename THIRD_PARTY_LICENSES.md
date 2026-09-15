@@ -70,6 +70,30 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 ```
 
+## estherliu-lab/momo-soft-play
+
+https://github.com/estherliu-lab/momo-soft-play
+
+Referencia de **ingeniería de interacción** para el gesto de coger, arrastrar y
+soltar la araña (`docs/ARANA-3D.md`, 9). Lo que se estudió fueron tres patrones
+generales, no su implementación: separar estado, destino y velocidad dejando un
+muelle en medio; medir la velocidad del puntero acotando el intervalo entre
+muestras; y amortiguar más con `prefers-reduced-motion` en vez de apagar la
+interacción. Los tres se reescribieron desde cero sobre `SpiderRig`,
+`spiderMotion` y `lib/aleph/tension`, que ya existían.
+
+**El repositorio no declara licencia**, así que no se puede suponer permiso de
+reutilización. En consecuencia, y a propósito, aquí no hay:
+
+- ningún archivo, función, fragmento ni shader copiado;
+- ninguna constante suya: las de `GRIP` se eligieron midiendo esta araña;
+- ningún asset, imagen, sonido, texto, color ni tipografía;
+- nada de su personaje, su interfaz ni su juego;
+- ninguna dependencia: no está en `package.json`, no se clonó y no se sirve.
+
+Se cita porque el origen de una idea se cuenta, aunque la idea no se pueda
+poseer y el código no se haya tocado.
+
 ## tarot de la conjetura
 
 https://github.com/dojedacifuentes/tarot-de-la-conjetura — proyecto propio del

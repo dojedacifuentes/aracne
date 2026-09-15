@@ -60,6 +60,8 @@ export interface SpiderSceneProps {
   pressToken: number;
   /** Cursor sobre la araña (solo con ratón). */
   hover: boolean;
+  /** La escena escribe aquí lo que el gesto puede pedirle. Ver `SpiderHandle`. */
+  handle: SpiderHandleRef;
   /** Sin WebGL, sin modelo o con el contexto perdido: vuelve el fallback. */
   onFailure: () => void;
 }
@@ -133,3 +135,84 @@ export const THREAD = {
   /** Holgura al soltarse, en fracción de la longitud. */
   slack: 0.05,
 } as const;
+
+/**
+ * Manipular el animal: pulsarlo, tirar de él y soltarlo.
+ *
+ * Todo lo que mide espacio va en envergaduras y todo lo que mide tiempo, en
+ * segundos; el único píxel que llega hasta aquí es el umbral del gesto, que es
+ * una cifra de la mano y no del mundo. El muelle al soltar no está: son las
+ * constantes del anillo de `lib/aleph/tension.ts`, que están poco amortiguadas
+ * y por eso el cuerpo pasa de largo y vuelve oscilando.
+ */
+export const GRIP = {
+  /** Píxeles de recorrido antes de que pulsar se convierta en tirar. */
+  dragThreshold: 6,
+  /** Cuánto dura, en ms, el recuerdo de un tirón: el clic que llega detrás no invoca. */
+  clickGraceMs: 350,
+  /** Reparto del gesto táctil: la página se recorre a lo alto, el animal se lleva a lo ancho. */
+  touchAction: 'pan-y',
+  /** Tope al que tiende el desplazamiento, en envergaduras. La curva nunca lo alcanza. */
+  dragReach: 0.85,
+  /** Muelle mientras la mano sujeta: crítico (2·√170 ≈ 26), sigue al dedo sin temblar. */
+  holdStiffness: 170,
+  holdDamping: 26,
+  /**
+   * Muelle mientras dura el retroceso, y solo mientras dura. La rigidez es la
+   * del anillo; lo que baja es la amortiguación, de 14 a 9 (ζ = 0,47 en vez de
+   * 0,74). Con las del anillo, medido sobre el lienzo, el cuerpo se pasaba de
+   * su sitio dos píxeles: eso no es un retroceso, es un redondeo. Con estas se
+   * pasa un décimo de envergadura y está quieto antes de un segundo. En cuanto
+   * se para vuelven las del anillo: que una pata tire no es que alguien tire.
+   */
+  releaseStiffness: 90,
+  releaseDamping: 9,
+  /** Del gesto al golpe: qué parte de la velocidad del puntero se conserva al soltar. */
+  releaseImpulse: 0.7,
+  /** Tope de la velocidad heredada, en envergaduras por segundo. */
+  maxSpeed: 4.5,
+  /** Compresión mientras se sujeta, y en cuánto llega y se va. */
+  pressDepth: 0.035,
+  pressSmooth: 0.09,
+  /** Empujón al pulsar fuera del centro, en envergaduras por segundo. El cuerpo se aparta del dedo y la inclinación sale sola. */
+  pressNudge: 0.7,
+  /** Cuánto se apaga el péndulo mientras la mano lo sujeta, de 0 a 1. */
+  ambientHold: 0.7,
+  /** Muestreo del puntero: dt acotado, mezcla con la medida anterior y caída si la mano se para. */
+  sampleMinMs: 8,
+  sampleMaxMs: 40,
+  sampleBlend: 0.6,
+  staleMs: 70,
+  /** Cuánto se tensa la seda al alejarse del anclaje, en veces el estiramiento. */
+  silkTaut: 3,
+  /** Cuánto se afloja el hilo de una pata cuando el cuerpo se acerca a ella. */
+  threadSag: 0.35,
+} as const;
+
+/**
+ * El canal entre el gesto y la escena. `Spider` monta el botón y mide la mano;
+ * `SpiderScene` traduce píxeles a mundo y llama al rig. Van por una referencia
+ * y no por props para que arrastrar no vuelva a renderizar nada.
+ *
+ * Las coordenadas son píxeles de cliente y la velocidad, píxeles por segundo:
+ * quien los recibe sabe dónde está el lienzo, y quien los emite no.
+ */
+export interface SpiderHandle {
+  beginGrab(clientX: number, clientY: number): void;
+  dragTo(clientX: number, clientY: number): void;
+  release(vx: number, vy: number): void;
+  cancel(): void;
+}
+
+/** Estructuralmente, la referencia de React; se declara aquí para no importarlo. */
+export interface SpiderHandleRef {
+  current: SpiderHandle | null;
+}
+
+/** Lo que el gesto devuelve al componente que monta el botón. */
+export interface SpiderGrab {
+  /** Se engancha al elemento que se pulsa. En nativo no hay nada que enganchar. */
+  attach?: (node: unknown) => void;
+  /** Si el gesto que acaba de terminar fue un tirón, no era una invocación. */
+  wasDrag: () => boolean;
+}
