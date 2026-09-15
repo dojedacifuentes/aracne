@@ -13,10 +13,33 @@
     "profecia",
     "circularidad"
   ],
-  "content": "Una superstición es una creencia falsa. Una hiperstición sería una ficción que, al circular, produce las condiciones que la vuelven cierta: no describe un futuro, lo fabrica. El término procede de un grupo de investigación británico de los años noventa que trabajaba entre la teoría y la escritura de ficción y que usaba sus propios textos como experimentos. La figura incomoda porque no se deja evaluar con la pregunta de si es verdad: una vez que suficiente gente actúa como si lo fuera, la distinción entre describir y provocar deja de poder trazarse desde fuera.",
+  "content": "Una superstición es solo una creencia falsa. Una hiperstición, según Nick Land, es una idea que por el mero hecho de existir funciona como causa de su propia realidad: no describe un futuro, lo fabrica. Land la definió como la (tecno)ciencia experimental de las profecías autocumplidas. Es una de las ideas centrales de la CCRU, un colectivo formado a finales de 1995 en la Universidad de Warwick que escribía teoría-ficción, entre la filosofía, el cyberpunk y el ocultismo. La figura incomoda porque no se deja evaluar con la pregunta de si es verdad: una vez que suficiente gente actúa como si lo fuera, la distinción entre describir y provocar deja de poder trazarse desde fuera.",
   "question": "¿En qué momento una historia deja de contar algo y empieza a causarlo?",
-  "sources": [],
-  "epistemicStatus": "unverified",
+  "sources": [
+    {
+      "label": "Land, entrevistado por Delphi Carstens, «Hyperstition: An Introduction», 2009",
+      "author": "Nick Land",
+      "work": "Hyperstition: An Introduction",
+      "year": 2009,
+      "url": "https://www.orphandriftarchive.com/articles/hyperstition-an-introduction/",
+      "kind": "primary"
+    },
+    {
+      "label": "Ccru, «Writings 1997–2003», Urbanomic, 2017",
+      "author": "Ccru",
+      "work": "Writings 1997–2003",
+      "year": 2017,
+      "url": "https://www.urbanomic.com/book/ccru-writings-1997-2003/",
+      "kind": "primary"
+    },
+    {
+      "label": "Cybernetic Culture Research Unit",
+      "work": "Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Cybernetic_Culture_Research_Unit",
+      "kind": "reference"
+    }
+  ],
+  "epistemicStatus": "interpretation",
   "scores": {
     "strangeness": 5,
     "darkness": 3,
@@ -29,5 +52,5 @@
     "delyra-0043"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: origen del término en el CCRU (Cybernetic Culture Research Unit, Warwick, años noventa) y su formulación en los textos de Nick Land."
+  "captureNote": "Comprobado: la definición es de Nick Land en la entrevista de Delphi Carstens de 2009 («Superstitions are merely false beliefs, but hyperstitions – by their very existence as ideas – function causally to bring about their own reality», y la hiperstición como «the experimental (techno-)science of self-fulfilling prophecies»). La CCRU se formó a finales de 1995 en la Universidad de Warwick y es conocida por su teoría-ficción, y la hiperstición es una de sus ideas centrales (Wikipedia); Urbanomic la presenta con sus escritos como ficciones que se hacen reales. Corregido: la entrada afirmaba que el término «procede» de la CCRU, y ninguna fuente comprobada dice quién lo acuñó; y que el grupo «usaba sus propios textos como experimentos», que tampoco se pudo sostener. La última frase es del archivo."
 }
