@@ -1,17 +1,13 @@
 import { useEffect, useState } from 'react';
-import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 
 import type { Corpus } from '../../lib/content/corpus';
 import { catalogId, STATUS_LABEL, TYPE_LABEL } from '../../lib/labels';
-import { causesForEntry } from '../../lib/atlas/bridge';
-import { loadAtlas } from '../../lib/atlas/loader';
-import { figuresOfEntry } from '../../lib/museum/themes';
 import type { Entry } from '../../lib/schema';
 import { STATUS_BORDER, type StatusBorder } from '../lib/epistemic';
 import { colors, fonts, space } from '../theme';
-import { entrySheet } from '../../lib/export/sheet';
-import { ExportRow } from './ExportRow';
 import { Reveal } from './Reveal';
+import { ToolButton } from './ToolButton';
 
 type Props = {
   entry: Entry;
@@ -19,132 +15,70 @@ type Props = {
   reduceMotion: boolean;
   /** Pantalla estrecha: título a 30 px en lugar de 42. */
   compact: boolean;
-  /** Abre la figura del gabinete que reclama esta entrada. */
-  onOpenFigure: (id: string) => void;
-  /** Abre el Atlas con esta causa puesta como lente. */
-  onOpenCause: (id: string) => void;
+  /** El expediente está abierto: lo dice el botón con su `aria-expanded`. */
+  dossierOpen: boolean;
+  onToggleDossier: () => void;
 };
 
 /** El identificador cuenta hasta su número en 200 ms: el único gesto de «procesamiento». */
 const COUNTER_MS = 200;
 
 /**
- * Una entrada, como una ficha de catálogo razonado (docs/DESIGN.md):
- * identificador en mono, título en serif, cuerpo con el estado epistémico en
- * el borde izquierdo, la pregunta tras un blanco generoso y los metadatos
- * colgados al pie en dos columnas. Aparece escalonada, una sola vez.
+ * Una entrada, y casi nada más.
+ *
+ * Antes la ficha era una columna de 680 px con una banda de datos de 196 px
+ * pegada al cuerpo: ciento cuarenta palabras de lectura compartiendo pantalla,
+ * a partes casi iguales, con «tipo / categorías / estado / fuentes / en el
+ * atlas / añadida». En una pantalla de mil novecientos píxeles eso se veía
+ * como lo que era: el texto arrinconado y el aparato administrativo al lado.
+ *
+ * Ahora manda la lectura. El cuerpo se queda con su medida —unos setenta
+ * caracteres, que es lo que el ojo sigue sin perder el renglón— y la caja
+ * entera se centra en el hueco en vez de pegarse al menú. Todo el aparato se
+ * va a `EntryDossier`, detrás de un solo control.
+ *
+ * Lo que no se esconde: **el estado epistémico**. Lo exige `CLAUDE.md` y tiene
+ * razón —dice cómo leer lo que se está leyendo—, así que va dos veces: en el
+ * trazo del borde izquierdo y escrito al pie del cuerpo.
  */
-export function EntryView({ entry, corpus, reduceMotion, compact, onOpenFigure, onOpenCause }: Props) {
-  // docs/MUSEO.md: la navegación va en los dos sentidos, y el vínculo solo
-  // está escrito del lado de la figura.
-  const figures = figuresOfEntry(entry.id, corpus.figures);
+export function EntryView({ entry, corpus, reduceMotion, compact, dossierOpen, onToggleDossier }: Props) {
   const border = STATUS_BORDER[entry.epistemicStatus];
-  const categories = entry.categories.map((id) => corpus.categories.find((c) => c.id === id)?.name ?? id);
-
-  const wide = !compact;
+  const patas = entry.categories
+    .map((id) => corpus.categories.find((c) => c.id === id)?.name ?? id)
+    .join(' · ');
 
   return (
-    <View style={[styles.column, wide && styles.columnWide]}>
+    <View style={styles.ficha}>
       <Reveal index={0} reduceMotion={reduceMotion}>
-        <CatalogId id={entry.id} reduceMotion={reduceMotion} />
+        <View style={styles.tira}>
+          <CatalogId id={entry.id} reduceMotion={reduceMotion} />
+          <ToolButton
+            label="expediente"
+            expanded={dossierOpen}
+            onPress={onToggleDossier}
+            hint="tipo, patas, fuentes, atlas, autores y exportación"
+          />
+        </View>
       </Reveal>
 
       <Reveal index={1} reduceMotion={reduceMotion}>
         <Text style={[styles.title, compact && styles.titleCompact]} accessibilityRole="header">
           {entry.title}
         </Text>
+        <Text style={styles.linea}>
+          {TYPE_LABEL[entry.type]}
+          {patas ? ` · ${patas}` : ''}
+        </Text>
         {entry.sensitive ? <Text style={styles.sensitive}>contenido sensible, con fines educativos</Text> : null}
       </Reveal>
 
-      <View style={wide ? styles.split : undefined}>
-        <View style={wide ? styles.splitBody : undefined}>
-          <Reveal index={2} reduceMotion={reduceMotion}>
-            <ContentBlock border={border} text={entry.content} statusLabel={STATUS_LABEL[entry.epistemicStatus]} />
-          </Reveal>
-
-          <Reveal index={3} reduceMotion={reduceMotion}>
-            <Text style={[styles.question, compact && styles.questionCompact]}>{entry.question}</Text>
-          </Reveal>
-        </View>
-
-      <Reveal index={4} reduceMotion={reduceMotion}>
-        <View style={[styles.meta, wide && styles.metaAside]}>
-          <MetaRow label="tipo" value={TYPE_LABEL[entry.type]} />
-          <MetaRow label="categorías" value={categories.length > 0 ? categories.join(', ') : 'sin categoría todavía'} />
-          <MetaRow label="estado" value={STATUS_LABEL[entry.epistemicStatus]} accent={border.accentLabel} />
-          <View style={styles.metaRow}>
-            <Text style={styles.metaLabel}>fuentes</Text>
-            <View style={styles.metaValues}>
-              {entry.sources.length === 0 ? (
-                <Text style={styles.metaValue}>ninguna todavía</Text>
-              ) : (
-                entry.sources.map((source) =>
-                  source.url ? (
-                    <Text
-                      key={source.label}
-                      style={[styles.metaValue, styles.link]}
-                      accessibilityRole="link"
-                      onPress={() => void Linking.openURL(source.url as string)}
-                    >
-                      {source.label}
-                    </Text>
-                  ) : (
-                    <Text key={source.label} style={styles.metaValue}>
-                      {source.label}
-                    </Text>
-                  ),
-                )
-              )}
-            </View>
-          </View>
-          {(() => {
-            // Bajo qué finales cae esta entrada. Como en el gabinete, el
-            // vínculo no está escrito a mano: lo declaran los dos extremos
-            // con sus tags y sus patas, y se calcula.
-            const causas = causesForEntry(entry, loadAtlas().causes).slice(0, 3);
-            if (causas.length === 0) return null;
-            return (
-              <View style={styles.metaRow}>
-                <Text style={styles.metaLabel}>en el atlas</Text>
-                <View style={styles.metaValues}>
-                  {causas.map((cause) => (
-                    <Pressable
-                      key={cause.id}
-                      accessibilityRole="link"
-                      accessibilityLabel={cause.name}
-                      accessibilityHint="abre el atlas con esta causa"
-                      onPress={() => onOpenCause(cause.id)}
-                    >
-                      <Text style={[styles.metaValue, styles.link]}>{cause.name.toLowerCase()}</Text>
-                    </Pressable>
-                  ))}
-                </View>
-              </View>
-            );
-          })()}
-          {figures.length > 0 ? (
-            <View style={styles.metaRow}>
-              <Text style={styles.metaLabel}>en el gabinete</Text>
-              <View style={styles.metaValues}>
-                {figures.map((figure) => (
-                  <Pressable
-                    key={figure.id}
-                    accessibilityRole="link"
-                    accessibilityLabel={figure.name}
-                    accessibilityHint="abre la figura"
-                    onPress={() => onOpenFigure(figure.id)}
-                  >
-                    <Text style={[styles.metaValue, styles.link]}>{figure.name}</Text>
-                  </Pressable>
-                ))}
-              </View>
-            </View>
-          ) : null}
-          <MetaRow label="añadida" value={entry.addedAt} />
-          <ExportRow sheet={entrySheet(entry, corpus)} />
-        </View>
+      <Reveal index={2} reduceMotion={reduceMotion}>
+        <ContentBlock border={border} text={entry.content} statusLabel={STATUS_LABEL[entry.epistemicStatus]} />
       </Reveal>
-      </View>
+
+      <Reveal index={3} reduceMotion={reduceMotion}>
+        <Text style={[styles.question, compact && styles.questionCompact]}>{entry.question}</Text>
+      </Reveal>
     </View>
   );
 }
@@ -188,53 +122,50 @@ function CatalogId({ id, reduceMotion }: { id: string; reduceMotion: boolean }) 
 function ContentBlock({ border, text, statusLabel }: { border: StatusBorder; text: string; statusLabel: string }) {
   const tone = border.tone === 'dim' ? colors.dim : colors.text;
   return (
-    <View
-      style={[
-        styles.block,
-        border.rule === 'solid' || border.rule === 'dashed' || border.rule === 'dotted'
-          ? { borderLeftWidth: border.width, borderLeftColor: tone, borderStyle: border.rule }
-          : null,
-      ]}
-      accessibilityLabel={`${statusLabel}. ${text}`}
-    >
-      {border.rule === 'double' ? (
-        // Dos líneas de 1 px con 1 px entre ellas: el borde doble, dibujado igual en web y en nativo.
-        <View style={[styles.double, { borderColor: tone }]} />
-      ) : null}
-      <Text style={styles.body}>{text}</Text>
-    </View>
-  );
-}
-
-function MetaRow({ label, value, accent = false }: { label: string; value: string; accent?: boolean }) {
-  return (
-    <View style={styles.metaRow}>
-      <Text style={styles.metaLabel}>{label}</Text>
-      <Text style={[styles.metaValue, styles.metaValues, accent && styles.accent]}>{value}</Text>
+    <View style={styles.cuerpo}>
+      <View
+        style={[
+          styles.block,
+          border.rule === 'solid' || border.rule === 'dashed' || border.rule === 'dotted'
+            ? { borderLeftWidth: border.width, borderLeftColor: tone, borderStyle: border.rule }
+            : null,
+        ]}
+        accessibilityLabel={`${statusLabel}. ${text}`}
+      >
+        {border.rule === 'double' ? (
+          // Dos líneas de 1 px con 1 px entre ellas: el borde doble, dibujado igual en web y en nativo.
+          <View style={[styles.double, { borderColor: tone }]} />
+        ) : null}
+        <Text style={styles.body}>{text}</Text>
+      </View>
+      {/* CLAUDE.md, regla 5: el estado se ve siempre que no sea un hecho. */}
+      <Text style={[styles.estado, border.accentLabel && styles.estadoAcento]}>{statusLabel}</Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  // Una columna de 640 px, alineada a la izquierda; con sitio, 680 para que
-  // quepa la banda de datos sin estrechar la medida del texto.
-  column: { maxWidth: 640, width: '100%' },
-  columnWide: { maxWidth: 680 },
-  // Cuerpo y datos en paralelo: el texto conserva su medida y los metadatos
-  // dejan de empujarlo hacia abajo.
-  split: { flexDirection: 'row', alignItems: 'flex-start', gap: space.lg },
-  splitBody: { flex: 1, minWidth: 0 },
-  metaAside: {
-    width: 196,
-    marginTop: space.lg,
-    borderTopWidth: 0,
-    paddingTop: 0,
+  /**
+   * La ficha entera cabe en 900 px y se centra en el hueco; el cuerpo se queda
+   * en 680, que son unos setenta caracteres a 18 px. Ancho de ficha y medida de
+   * lectura son dos cosas distintas: estirar la segunda hasta la primera haría
+   * ilegible lo único que hay que leer.
+   */
+  ficha: { width: '100%', maxWidth: 900, alignSelf: 'center' },
+  tira: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: space.md,
+    paddingBottom: space.xs,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.line,
   },
   // El identificador es uno de los dos únicos usos del acento.
   catalog: {
     fontFamily: fonts.mono,
     fontSize: 12,
-    letterSpacing: 0.72,
+    letterSpacing: 1.2,
     color: colors.accent,
   },
   title: {
@@ -245,6 +176,15 @@ const styles = StyleSheet.create({
     marginTop: space.md,
   },
   titleCompact: { fontSize: 30, lineHeight: 37 },
+  linea: {
+    fontFamily: fonts.mono,
+    fontSize: 11,
+    letterSpacing: 1.2,
+    lineHeight: 18,
+    color: colors.dim,
+    marginTop: space.xs,
+    textTransform: 'lowercase',
+  },
   sensitive: {
     fontFamily: fonts.mono,
     fontSize: 12,
@@ -252,6 +192,10 @@ const styles = StyleSheet.create({
     color: colors.dim,
     marginTop: space.sm,
   },
+  // 620 px a 18 px de serif son unos setenta caracteres por línea, que es la
+  // medida que el ojo sigue sin perder el renglón. Medido en pantalla: a 680
+  // se iba a setenta y seis.
+  cuerpo: { maxWidth: 620 },
   block: {
     marginTop: space.lg,
     paddingLeft: space.md,
@@ -271,38 +215,26 @@ const styles = StyleSheet.create({
     lineHeight: 30,
     color: colors.text,
   },
+  estado: {
+    fontFamily: fonts.mono,
+    fontSize: 10,
+    letterSpacing: 1.6,
+    color: colors.dim,
+    textTransform: 'uppercase',
+    marginTop: space.sm,
+    paddingLeft: space.md,
+  },
+  estadoAcento: { color: colors.accent },
   question: {
     fontFamily: fonts.serif,
-    fontSize: 24,
-    lineHeight: 33,
-    color: colors.dim,
-    marginTop: space.xl,
-  },
-  questionCompact: { fontSize: 21, lineHeight: 29 },
-  meta: {
+    fontSize: 27,
+    lineHeight: 37,
+    color: colors.text,
+    maxWidth: 820,
     marginTop: space.xl,
     paddingTop: space.md,
-    borderTopWidth: StyleSheet.hairlineWidth * 2,
+    borderTopWidth: 1,
     borderTopColor: colors.line,
   },
-  metaRow: { flexDirection: 'row', marginBottom: space.xs },
-  metaLabelWide: { width: '100%' },
-  metaLabel: {
-    width: 108,
-    fontFamily: fonts.mono,
-    fontSize: 12,
-    lineHeight: 18,
-    letterSpacing: 0.72,
-    color: colors.dim,
-  },
-  metaValues: { flex: 1 },
-  metaValue: {
-    fontFamily: fonts.mono,
-    fontSize: 12,
-    lineHeight: 18,
-    letterSpacing: 0.72,
-    color: colors.text,
-  },
-  link: { textDecorationLine: 'underline', textDecorationColor: colors.line },
-  accent: { color: colors.accent },
+  questionCompact: { fontSize: 22, lineHeight: 30 },
 });

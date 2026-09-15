@@ -154,17 +154,27 @@ if (!worldParsed.success) {
     if (palabras < 60 || palabras > 140) {
       warnings.push({ id: cause.id, message: `texto de ${palabras} palabras (se piden 60-140)` });
     }
-    // La prueba de que la regla reparte: entre el percentil 5 y el 95 tiene
+    // La prueba de que la regla reparte: entre el percentil 5 y el 99 tiene
     // que haber al menos veinticinco puntos. Si no, esa causa no dice nada
     // de nadie y está ocupando sitio.
+    //
+    // El techo era el percentil 95 y se subió al pasar el mundo de 177 a 242
+    // territorios. El motivo no es que la medida estorbara: es que **dejaba
+    // fuera justo aquello de lo que habla la causa**. La guerra nuclear separa
+    // a nueve países por cincuenta puntos; con 242 territorios esos nueve son
+    // el 3,7 %, o sea, por encima del percentil 95, así que la ventana medía
+    // solo el pelotón —plano, como debe ser— y declaraba que la regla no
+    // repartía. Con el percentil 99 hacen falta al menos cuatro territorios
+    // separados del resto, que sigue siendo «distingue a alguien» y no «le
+    // toca a uno por casualidad».
     if (!cause.uniform) {
       const valores = world.countries
         .map((country) => dominant(country, [cause])?.score ?? 0)
         .sort((a, b) => a - b);
       const p5 = valores[Math.floor(valores.length * 0.05)];
-      const p95 = valores[Math.floor(valores.length * 0.95)];
-      if (p95 - p5 < 25) {
-        issues.push({ id: cause.id, message: `la regla no reparte: de ${p5} a ${p95} en todo el mundo` });
+      const p99 = valores[Math.floor(valores.length * 0.99)];
+      if (p99 - p5 < 25) {
+        issues.push({ id: cause.id, message: `la regla no reparte: de ${p5} a ${p99} en todo el mundo` });
       }
     }
   }

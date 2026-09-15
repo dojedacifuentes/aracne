@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { PanResponder, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
+import { PanResponder, Platform, Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import Svg, { Circle, Line, Path, Polyline, Rect } from 'react-native-svg';
 
 import {
@@ -28,9 +28,11 @@ import { bridgeText, entriesForCause } from '../../lib/atlas/bridge';
 import type { Corpus } from '../../lib/content/corpus';
 import { catalogId } from '../../lib/labels';
 import { useFocusRing } from '../hooks/useFocusRing';
+import { useTouchHeight } from '../hooks/useTouch';
 import { canvasSize } from '../lib/layout';
 import { colors, fonts, heat, machine, space } from '../theme';
 import { Chip } from './Chip';
+import { ToolButton } from './ToolButton';
 
 /** Lo que se guarda de la vista: el resto se deriva del lienzo. */
 interface Camera {
@@ -50,12 +52,15 @@ type Props = {
   /** Lo que queda de pantalla. El mapa no pasa de aquí. */
   maxHeight: number;
   reduceMotion: boolean;
+  /** La lente está abierta en su cajón: lo dice el botón de la barra. */
+  lensOpen: boolean;
+  onToggleLens: () => void;
   onFocus: (id: string | null) => void;
   onLens: (id: string | null) => void;
   onOpenEntry: (id: string) => void;
 };
 
-type AsideProps = {
+type LensProps = {
   atlas: Atlas;
   lens: string | null;
   onLens: (id: string | null) => void;
@@ -159,6 +164,8 @@ export function AtlasView({
   width: columna,
   maxHeight,
   reduceMotion,
+  lensOpen,
+  onToggleLens,
   onFocus,
   onLens,
   onOpenEntry,
@@ -169,7 +176,7 @@ export function AtlasView({
    * alto que la ventana y había que bajar para verlo entero: un mapa que no se
    * ve de una vez no es un mapa, es un rollo.
    */
-  const width = canvasSize(columna, Math.round(maxHeight / RATIO), 1000);
+  const width = canvasSize(columna, Math.round(maxHeight / RATIO), 1600);
   const height = Math.round(width * RATIO);
   const [camera, setCamera] = useState<Camera>({ zoom: MIN_ZOOM, center: { x: 0.5, y: 0.5 } });
   const [hovered, setHovered] = useState<string | null>(null);
@@ -346,6 +353,24 @@ export function AtlasView({
 
   const irA = (destino: Country) => mover(() => frame(destino.rings, width, height));
 
+  /**
+   * Abrir `/atlas/AUS` tiene que enseñar Australia, no el mundo entero con
+   * Australia en una esquina. Se encuadra una sola vez por país elegido: si se
+   * rehiciera en cada pintado, no se podría mover el mapa después.
+   */
+  const encuadrado = useRef<string | null>(null);
+  useEffect(() => {
+    const destino = focus ? (countries.find((c) => c.id === focus) ?? null) : null;
+    if (!destino) {
+      encuadrado.current = null;
+      return;
+    }
+    if (encuadrado.current === destino.id) return;
+    encuadrado.current = destino.id;
+    const vista = frame(destino.rings, width, height);
+    setCamera({ zoom: vista.zoom, center: vista.center });
+  }, [focus, countries, width, height]);
+
   const acercar = (factor: number) =>
     mover((actual) => zoomAt(actual, factor, { x: width / 2, y: height / 2 }));
 
@@ -360,12 +385,33 @@ export function AtlasView({
 
   return (
     <View>
-      {/* El título lo pone la cabecera de la consola: repetirlo aquí solo
-          robaba alto a un mapa que tiene que caber de una vez. */}
-      <Text style={styles.lead}>
-        {causes.length} maneras de que se acabe, repartidas por el mundo. cada país arde según su regla, y la regla se
-        enseña entera: el número sale de su población, su superficie, su renta, su latitud y su costa.
-      </Text>
+      {/* La barra del instrumento: compacta, encima del mapa, y nada más. La
+          entradilla de dos líneas que había aquí robaba alto al único elemento
+          que de verdad hay que mirar. */}
+      <View style={styles.toolbar}>
+        <View style={styles.toolGroup}>
+          <Chip label="−" on={false} onPress={() => acercar(1 / 1.6)} hint="alejar" />
+          <Chip label="+" on={false} onPress={() => acercar(1.6)} hint="acercar" />
+          <Chip
+            label="mundo"
+            on={false}
+            onPress={() => mover(() => clampView({ width, height, zoom: MIN_ZOOM, center: { x: 0.5, y: 0.5 } }))}
+            hint="vuelve a la vista general"
+          />
+          {country ? (
+            <Chip label={`ir a ${country.name.toLowerCase()}`} on={false} onPress={() => irA(country)} />
+          ) : null}
+        </View>
+        <View style={styles.toolGroup}>
+          <BuscarPais countries={countries} onFocus={onFocus} />
+          <ToolButton
+            label={`lente: ${lensCause ? lensCause.name.toLowerCase() : 'score general'}`}
+            expanded={lensOpen}
+            onPress={onToggleLens}
+            hint="con qué causa se pinta el mundo"
+          />
+        </View>
+      </View>
 
       <View
         ref={lienzo}
@@ -475,6 +521,20 @@ export function AtlasView({
             opacity={0.6}
           />
         </Svg>
+
+        {/* La leyenda, superpuesta en una esquina del mar: una rampa sin sus
+            cortes es una mancha, pero tampoco merece una columna propia. */}
+        <View style={styles.leyenda} pointerEvents="none">
+          <Text style={styles.leyendaLabel}>exposición</Text>
+          <View style={styles.rampa}>
+            {heat.map((color, i) => (
+              <View key={color} style={[styles.tramo, { backgroundColor: color }]}>
+                <Text style={styles.tramoTexto}>{i === 0 ? 0 : scale.cuts[i - 1]}</Text>
+              </View>
+            ))}
+            <Text style={styles.tramoFin}>100</Text>
+          </View>
+        </View>
       </View>
 
       <View style={styles.bar}>
@@ -485,19 +545,22 @@ export function AtlasView({
                   ? `${lecturas.get(hovered)?.score} · ${lecturas.get(hovered)?.cause?.name ?? ''}`
                   : 'sin población estable: el Atlas no puntúa aquí'
               }`
-            : `${countries.length} territorios · ${causes.length} causas · lente: ${lensCause ? lensCause.name.toLowerCase() : 'score general'} · ×${view.zoom.toFixed(1)}`}
+            : `${countries.length} territorios · ${causes.length} causas · quintiles · ×${view.zoom.toFixed(1)}`}
         </Text>
-        <View style={styles.zoom}>
-          <Chip label="−" on={false} onPress={() => acercar(1 / 1.6)} hint="alejar" />
-          <Chip label="+" on={false} onPress={() => acercar(1.6)} hint="acercar" />
-          <Chip
-            label="todo el mundo"
-            on={false}
-            onPress={() => mover(() => clampView({ width, height, zoom: MIN_ZOOM, center: { x: 0.5, y: 0.5 } }))}
-          />
-          {country ? <Chip label={`ir a ${country.name}`} on={false} onPress={() => irA(country)} /> : null}
-        </View>
       </View>
+
+      {country ? (
+        <CountryPanel
+          country={country}
+          readings={lecturasPais}
+          background={fondo}
+          scale={scale}
+          onLens={onLens}
+          onClose={() => onFocus(null)}
+        />
+      ) : (
+        <Text style={styles.hint}>pulsa un territorio para abrir su ficha, o busca uno arriba.</Text>
+      )}
 
       {lensCause ? (
         <View style={styles.block}>
@@ -548,19 +611,6 @@ export function AtlasView({
         </View>
       ) : null}
 
-      {country ? (
-        <CountryPanel
-          country={country}
-          readings={lecturasPais}
-          background={fondo}
-          scale={scale}
-          onLens={onLens}
-          onClose={() => onFocus(null)}
-        />
-      ) : (
-        <Text style={styles.hint}>pulsa un territorio para abrir su ficha.</Text>
-      )}
-
       <Text style={styles.colophon}>
         atlas de ficción especulativa. las puntuaciones pertenecen al universo de la obra y no describen riesgo
         real de ningún país. la geometría y los datos de población, superficie y renta son de {atlas.world.source.name},
@@ -586,6 +636,7 @@ function CountryPanel({
   onLens: (id: string | null) => void;
   onClose: () => void;
 }) {
+  const alto = useTouchHeight();
   const reparto = scored(country) ? readings.filter((r) => !r.cause.uniform) : [];
   const top = reparto[0];
   const densidad = country.area > 0 ? country.pop / country.area : 0;
@@ -632,7 +683,7 @@ function CountryPanel({
           accessibilityLabel={lectura.cause.name}
           accessibilityHint={`${lectura.score} de cien. pinta el mapa con esta causa`}
           onPress={() => onLens(lectura.cause.id)}
-          style={styles.row}
+          style={[styles.row, { minHeight: alto }]}
         >
           <Text style={styles.rowScore}>{String(lectura.score).padStart(3, ' ')}</Text>
           <View style={styles.rowBarTrack}>
@@ -673,42 +724,16 @@ function CountryPanel({
  * a todo el mundo y no distinguen a nadie. Ni la separación ni el orden están
  * escritos a mano: salen de `uniform` y del score que cada regla produce.
  */
-export function AtlasAside({ atlas, lens, onLens }: AsideProps) {
+export function AtlasLens({ atlas, lens, onLens }: LensProps) {
   const causes = atlas.causes;
-  const lensCause = lens ? (causes.find((cause) => cause.id === lens) ?? null) : null;
-  const { scale } = useMemo(
-    () => readWorld(atlas.world.countries, causes, lensCause),
-    [atlas.world.countries, causes, lensCause],
-  );
-
   const reparten = causes.filter((cause) => !cause.uniform);
   const fondo = background(causes);
 
   return (
     <View>
-      <View style={styles.asideHead}>
-        <Text style={styles.asideLabel}>la lente</Text>
-        <Text style={[styles.asideState, lensCause ? styles.asideStateOn : null]}>
-          {lensCause ? 'una causa' : 'score general'}
-        </Text>
-      </View>
-
-      {/* La leyenda va primero: es lo que hace legible lo que ya se está
-          mirando, y cabe entera sin bajar. */}
-      {heat.map((color, i) => {
-        const desde = i === 0 ? 0 : scale.cuts[i - 1];
-        const hasta = i === heat.length - 1 ? 100 : scale.cuts[i] - 1;
-        return (
-          <View key={color} style={styles.band}>
-            <View style={[styles.swatch, { backgroundColor: color }]} />
-            <Text style={styles.bandText}>
-              {desde}–{hasta}
-            </Text>
-          </View>
-        );
-      })}
       <Text style={styles.bandNote}>
-        quintiles: cada tramo lleva una quinta parte del mundo, y los cortes cambian con la lente
+        con qué causa se pinta el mundo. el calor va por quintiles, así que los cortes cambian con la lente y la
+        leyenda del mapa los enseña.
       </Text>
 
       <View style={styles.asideBlock}>
@@ -744,6 +769,60 @@ export function AtlasAside({ atlas, lens, onLens }: AsideProps) {
   );
 }
 
+/**
+ * El buscador de países de la barra. Con ciento setenta y siete territorios,
+ * encontrar uno a ojo en una proyección Robinson es un juego de paciencia.
+ * Enseña como mucho cuatro coincidencias y se vacía al elegir.
+ */
+function BuscarPais({
+  countries,
+  onFocus,
+}: {
+  countries: readonly Country[];
+  onFocus: (id: string | null) => void;
+}) {
+  const [texto, setTexto] = useState('');
+  const q = texto.trim().toLowerCase();
+  const encontrados = q.length < 2 ? [] : countries.filter((c) => c.name.toLowerCase().includes(q)).slice(0, 4);
+
+  return (
+    <View style={styles.buscador}>
+      <TextInput
+        value={texto}
+        onChangeText={setTexto}
+        placeholder="buscar país"
+        placeholderTextColor={colors.dim}
+        style={styles.buscadorCampo}
+        autoCorrect={false}
+        accessibilityLabel="buscar un país en el mapa"
+        returnKeyType="search"
+        onSubmitEditing={() => {
+          if (encontrados.length > 0) {
+            onFocus(encontrados[0].id);
+            setTexto('');
+          }
+        }}
+      />
+      {encontrados.length > 0 ? (
+        <View style={styles.sugerencias}>
+          {encontrados.map((c) => (
+            <Chip
+              key={c.id}
+              label={c.name.toLowerCase()}
+              on={false}
+              onPress={() => {
+                onFocus(c.id);
+                setTexto('');
+              }}
+              hint="lo abre y lo encuadra en el mapa"
+            />
+          ))}
+        </View>
+      ) : null}
+    </View>
+  );
+}
+
 /** Una posición de la lente. Misma gramática que un conmutador de pata. */
 function LensRow({
   label,
@@ -760,6 +839,7 @@ function LensRow({
 }) {
   const { focusVisible, onFocus, onBlur } = useFocusRing();
   const [hovered, setHovered] = useState(false);
+  const alto = useTouchHeight();
 
   return (
     <Pressable
@@ -767,12 +847,13 @@ function LensRow({
       accessibilityLabel={label}
       accessibilityHint={hint ?? 'pinta el mapa con esta causa'}
       accessibilityState={{ selected: on }}
+      aria-checked={on}
       onPress={onPress}
       onHoverIn={() => setHovered(true)}
       onHoverOut={() => setHovered(false)}
       onFocus={onFocus}
       onBlur={onBlur}
-      style={[styles.lensRow, on && styles.lensRowOn, focusVisible && styles.focus]}
+      style={[styles.lensRow, { minHeight: alto }, on && styles.lensRowOn, focusVisible && styles.focus]}
     >
       <View style={[styles.lensBar, on && styles.lensBarOn]} />
       <Text style={[styles.lensName, (on || hovered) && styles.lensNameOn]} numberOfLines={1}>
@@ -805,6 +886,80 @@ const styles = StyleSheet.create({
     color: machine,
   },
   zoom: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
+
+  // La barra del instrumento, encima del mapa: compacta y de una sola fila.
+  toolbar: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'flex-start',
+    justifyContent: 'space-between',
+    gap: space.xs,
+    marginBottom: space.xs,
+  },
+  toolGroup: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'flex-start', gap: space.xs },
+  buscador: { minWidth: 150 },
+  buscadorCampo: {
+    minHeight: 34,
+    paddingHorizontal: space.sm,
+    borderWidth: 1,
+    borderColor: colors.line,
+    backgroundColor: colors.bg,
+    fontFamily: fonts.mono,
+    fontSize: 11,
+    letterSpacing: 0.9,
+    color: colors.text,
+    outlineWidth: 0,
+  },
+  sugerencias: {
+    position: 'absolute',
+    top: 38,
+    right: 0,
+    zIndex: 5,
+    alignItems: 'flex-end',
+    gap: 2,
+    padding: space.xs,
+    backgroundColor: colors.surface,
+    borderWidth: 1,
+    borderColor: colors.line,
+  },
+
+  // La leyenda, dentro del mapa y en el mar: no cobra alto propio.
+  leyenda: {
+    position: 'absolute',
+    left: space.sm,
+    bottom: space.sm,
+    padding: 6,
+    paddingBottom: 18,
+    backgroundColor: 'rgba(14,13,12,0.82)',
+    borderWidth: 1,
+    borderColor: colors.line,
+  },
+  leyendaLabel: {
+    fontFamily: fonts.mono,
+    fontSize: 9,
+    letterSpacing: 1.6,
+    color: colors.dim,
+    textTransform: 'uppercase',
+    marginBottom: 3,
+  },
+  rampa: { flexDirection: 'row', alignItems: 'flex-end' },
+  tramo: { width: 34, height: 9, justifyContent: 'flex-end' },
+  tramoTexto: {
+    position: 'absolute',
+    top: 11,
+    left: 0,
+    fontFamily: fonts.mono,
+    fontSize: 9,
+    letterSpacing: 0.6,
+    color: colors.dim,
+  },
+  tramoFin: {
+    fontFamily: fonts.mono,
+    fontSize: 9,
+    letterSpacing: 0.6,
+    color: colors.dim,
+    marginLeft: 3,
+  },
 
   band: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 1 },
   swatch: { width: 22, height: 10, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
@@ -892,7 +1047,8 @@ const styles = StyleSheet.create({
   panelTerminal: { fontFamily: fonts.serif, fontSize: 16, lineHeight: 26, color: colors.dim, marginTop: space.xs },
   panelBackground: { fontFamily: fonts.serif, fontSize: 15, lineHeight: 24, color: colors.dim },
 
-  row: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 26, outlineWidth: 0 },
+  // 34: la ficha de país es una lista larga y con el dedo hay que acertar.
+  row: { flexDirection: 'row', alignItems: 'center', gap: space.sm, minHeight: 34, outlineWidth: 0 },
   rowScore: { fontFamily: fonts.mono, fontSize: 12, letterSpacing: 0.72, color: colors.dim, width: 30 },
   rowBarTrack: { width: 120, height: 8, backgroundColor: colors.surface },
   rowBar: { height: 8 },

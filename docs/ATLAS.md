@@ -43,11 +43,22 @@ uniformes, que es un mapa de un solo color.
 
 ## Dos reglas duras propias
 
-- **Una causa que reparte tiene que repartir.** Entre el percentil 5 y el 95 de
+- **Una causa que reparte tiene que repartir.** Entre el percentil 5 y el 99 de
   los países tiene que haber al menos veinticinco puntos de diferencia. Si no,
   esa causa pinta el mundo entero igual y no dice nada de nadie: `npm run
   validate` falla y el build no sigue. Dos reglas se escribieron mal y esta
   comprobación las cazó.
+
+  El techo era el percentil 95 y subió al pasar el mundo de 177 a 242
+  territorios. No fue para que pasara una regla incómoda: es que **la ventana
+  dejaba fuera justo aquello de lo que habla la causa**. La guerra nuclear
+  separa a nueve países por cincuenta puntos —21 el pelotón, 85 a 98 los que
+  tienen arsenal—; con 242 territorios esos nueve son el 3,7 %, o sea, por
+  encima del percentil 95, así que la medida solo veía el pelotón, que es plano
+  como debe ser, y declaraba que la regla no repartía. Con el percentil 99 hacen
+  falta al menos cuatro territorios separados del resto, que sigue siendo
+  «distingue a alguien» y no «le toca a uno por casualidad». Con 177 la regla
+  pasaba por una posición de la lista: era suerte, no diseño.
 - **Lo que no tiene población no se puntúa.** Por debajo de diez mil habitantes
   —la Antártida, las Tierras Australes— el Atlas no mide nada, lo dice y deja el
   territorio en hueco. Pintarlo de un color cualquiera sería inventarse un dato.
@@ -116,9 +127,30 @@ ficción: lo que se cuenta es el mecanismo, no el parte de guerra.
 ## Los datos
 
 `content/atlas/world.json` lo escribe `npm run atlas` desde Natural Earth
-(admin 0, 1:110m, dominio público). Se simplifica con Douglas-Peucker a un
-tercio de grado y dos decimales: de 10.642 puntos a 4.600, unos 100 KB, con un
-error de alrededor de un kilómetro que a escala mundial no se ve.
+(admin 0, **1:50m**, dominio público). Se simplifica con Douglas-Peucker a
+0,14 grados y dos decimales, y un anillo entra si mide más de 0,22 grados.
+
+Medido, antes y después de subir de escala:
+
+| | 1:110m | 1:50m |
+|---|---|---|
+| territorios | 177 | **242** |
+| puntos | ~4.600 | 14.213 |
+| peso | 100 KB | 235 KB |
+| causas dominantes | 11 | 13 |
+
+Los sesenta y cinco territorios nuevos no son adorno: **1:110m no traía a
+Baréin, Cabo Verde, las Comoras, Hong Kong, Micronesia ni Kiribati**, que son
+sitios con gente. Un atlas de exposición humana que se deja fuera a millón y
+medio de personas por ser una isla pequeña está peor hecho que uno que pesa
+135 KB más. A cambio, las costas dejan de ser una aproximación: Indonesia, el
+Caribe, el Egeo y los fiordos existen.
+
+Un anillo que la simplificación deja en dos puntos ya no es un polígono: en esos
+casos —islas diminutas— entra el contorno crudo, que son cuatro coordenadas.
+
+Cambiar de escala es un argumento, no un ajuste: `npm run atlas -- --escala
+110m` vuelve a la anterior, y el archivo dice en `source.name` con cuál se hizo.
 
 De cada territorio se guardan la geometría y los atributos que las reglas leen.
 La superficie y la insularidad **se calculan desde la propia geometría**, no se

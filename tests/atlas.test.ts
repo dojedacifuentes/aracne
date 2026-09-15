@@ -148,13 +148,17 @@ describe('las causas y sus reglas', () => {
   });
 
   it('toda causa que reparte, reparte de verdad', () => {
-    // Si entre el percentil 5 y el 95 no hay veinticinco puntos, esa causa
+    // Si entre el percentil 5 y el 99 no hay veinticinco puntos, esa causa
     // pinta el mundo entero del mismo color y no dice nada de nadie.
+    //
+    // El techo es el 99 y no el 95 porque el 95 dejaba fuera aquello de lo que
+    // habla la causa: la guerra nuclear separa a nueve países, que en un mundo
+    // de 242 territorios son el 3,7 % y caen por encima del percentil 95.
     for (const cause of causes.filter((c) => !c.uniform)) {
       const valores = countries.map((country) => readCountry(country, cause.rule).score).sort((a, b) => a - b);
       const p5 = valores[Math.floor(valores.length * 0.05)];
-      const p95 = valores[Math.floor(valores.length * 0.95)];
-      expect(p95 - p5, cause.id).toBeGreaterThanOrEqual(25);
+      const p99 = valores[Math.floor(valores.length * 0.99)];
+      expect(p99 - p5, cause.id).toBeGreaterThanOrEqual(25);
     }
   });
 

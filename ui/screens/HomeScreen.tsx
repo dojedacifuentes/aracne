@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import type { ArchiveFilters } from '../../lib/archive/filter';
+import { NO_FILTERS, type ArchiveFilters } from '../../lib/archive/filter';
 import { usableLegs } from '../../lib/content/corpus';
 import { loadAtlas } from '../../lib/atlas/loader';
 import { loadArchive } from '../../lib/content/loader';
@@ -12,33 +12,37 @@ import { entriesOfTheme, themeStates } from '../../lib/museum/themes';
 import type { DriftMode, WebSkin } from '../../lib/drift/modes';
 import { invoke } from '../../lib/oracle/invoke';
 import { freshSeed } from '../../lib/oracle/rng';
-import { ArchiveAside, ArchiveView } from '../components/ArchiveView';
-import { AtlasAside, AtlasView } from '../components/AtlasView';
-import { LivesView, ThemeView } from '../components/LivesView';
+import { ArchiveFilterPanel, ArchiveView } from '../components/ArchiveView';
+import { AtlasLens, AtlasView } from '../components/AtlasView';
+import { AuthorsView } from '../components/AuthorsView';
 import { CommandPalette, type Command } from '../components/CommandPalette';
+import { Drawer } from '../components/Drawer';
 import { DriftView } from '../components/DriftView';
-import { ShapeView } from '../components/ShapeView';
-import { Tejido, TelaAside } from '../components/Tejido';
+import { EntryDossier } from '../components/EntryDossier';
 import { EntryView } from '../components/EntryView';
 import { FigureView } from '../components/FigureView';
+import { InvocationComposer } from '../components/InvocationComposer';
 import { InvocationView } from '../components/InvocationView';
-import { LegPanel } from '../components/LegPanel';
-import { ASIDE_WIDTH, NAV_WIDTH, Shell, type ShellGroup } from '../components/Shell';
-import { PurposeView } from '../components/PurposeView';
+import { ShapeView } from '../components/ShapeView';
+import { Shell, NAV_WIDTH, type Measure, type ShellGroup } from '../components/Shell';
 import { Spider } from '../components/spider/Spider';
+import { Tejido, TelaAside } from '../components/Tejido';
 import { TextButton } from '../components/TextButton';
 import { useRoute } from '../hooks/useRoute';
 import { canvasSize, getLayoutMode } from '../lib/layout';
 import { ARCHIVE, ATLAS, HOME, LIVES, SHAPE, WEB } from '../lib/route';
 import { readHistory, rememberEntries } from '../lib/storedHistory';
-import { colors, fonts, space } from '../theme';
+import { colors, fonts, machine, space } from '../theme';
 
 type Props = {
   reduceMotion: boolean;
 };
 
-/** Qué ocupa el panel cuando no hay invocación: las patas o su propósito. */
-type Panel = 'patas' | 'proposito';
+/**
+ * Qué hay abierto encima del contenido. Uno cada vez: dos instrumentos a la
+ * vez son un escritorio, no una consola.
+ */
+type Cajon = 'invocar' | 'expediente' | 'filtros' | 'lente' | null;
 
 const NONE: readonly string[] = [];
 
@@ -49,10 +53,14 @@ const NONE: readonly string[] = [];
 const LEAD = 'apoya las patas que quieras y pulsa la araña. lo que salga no lo estabas buscando.';
 
 /**
- * La portada. Una sola escena, como en el tarot: nunca se navega a otra
- * pantalla. La araña cuelga a un lado y el panel del otro muestra las patas,
- * su propósito o lo que salió al pulsar. En móvil, la araña arriba y el panel
- * debajo.
+ * Una sola escena. La ruta decide tres cosas: qué va en el centro, cuánto
+ * ancho pide ese centro y qué instrumento puede abrirse encima.
+ *
+ * Lo que cambió en esta revisión: **ya no hay columna permanente**. Las once
+ * patas vivían a la derecha de todas las pantallas, también de una ficha de
+ * lectura, cobrando 310 px por un mando que allí no decide nada. Ahora el
+ * instrumento se pide —`invocar`, `expediente`, `filtros`, `lente`— y el ancho
+ * es del contenido.
  */
 export function HomeScreen({ reduceMotion }: Props) {
   const { width, height } = useWindowDimensions();
@@ -60,21 +68,19 @@ export function HomeScreen({ reduceMotion }: Props) {
   const { corpus, legs } = loadArchive();
   const [route, navigate] = useRoute();
   const [selected, setSelected] = useState<readonly string[]>(NONE);
-  const [panel, setPanel] = useState<Panel>('patas');
+  const [cajon, setCajon] = useState<Cajon>(null);
   const [history, setHistory] = useState<readonly string[]>(NONE);
   const presses = useRef(0);
   const [palette, setPalette] = useState(false);
+
   /**
-   * El ancho de la columna central. Todo lo que se dibuja va medido con esto
-   * y no con el de la ventana: la araña se calculaba con la ventana entera y
-   * se salía por encima del menú de la izquierda.
+   * El ancho de la columna central. Todo lo que se dibuja va medido con esto y
+   * no con el de la ventana: la araña se calculaba con la ventana entera y se
+   * salía por encima del menú de la izquierda.
    */
-  // El aire de `centerContent` en Shell: si no coincide, el lienzo se pasa.
-  const centro = portrait
-    ? width - space.md * 2
-    : Math.max(360, width - NAV_WIDTH - ASIDE_WIDTH - space.md * 2);
-  const stageWeb = canvasSize(Math.round(centro * 0.74), height - 300, 460);
-  const webSize = canvasSize(centro, height - 260, 720);
+  const centro = portrait ? width - space.md * 2 : Math.max(360, width - NAV_WIDTH - space.md * 2);
+  const stageWeb = canvasSize(Math.round(centro * 0.56), height - 280, 460);
+  const webSize = canvasSize(centro, height - 240, 760);
 
   useEffect(() => {
     let alive = true;
@@ -154,6 +160,7 @@ export function HomeScreen({ reduceMotion }: Props) {
       presses.current += 1;
       const { seed, invocation: next } = pressSeed(from, patas, Date.now(), presses.current, history);
       setSelected(patas);
+      setCajon(null);
       navigate(state ? { name: 'invocation', seed, legs: patas, room } : { name: 'invocation', seed, legs: patas });
       if (!next) return;
       const ids = next.entries.map((item) => item.id);
@@ -167,21 +174,43 @@ export function HomeScreen({ reduceMotion }: Props) {
 
   const openEntry = useCallback(
     (id: string) => {
+      setCajon(null);
       navigate({ name: 'entry', id });
     },
     [navigate],
   );
 
-  const openTheme = useCallback((id: string) => navigate({ name: 'theme', id }), [navigate]);
-  const openFigure = useCallback((id: string) => navigate({ name: 'figure', id }), [navigate]);
+  const openTheme = useCallback(
+    (id: string | null) => navigate(id ? { name: 'theme', id } : LIVES),
+    [navigate],
+  );
+  const openFigure = useCallback(
+    (id: string) => {
+      setCajon(null);
+      navigate({ name: 'figure', id });
+    },
+    [navigate],
+  );
   const openLives = useCallback(() => navigate(LIVES), [navigate]);
-
   const openArchive = useCallback(() => navigate(ARCHIVE), [navigate]);
   const openWeb = useCallback(() => navigate(WEB), [navigate]);
   const openAtlas = useCallback(() => navigate(ATLAS), [navigate]);
+  const openShape = useCallback(() => navigate(SHAPE), [navigate]);
+
   /** Desde una entrada se salta al Atlas con esa causa ya puesta. */
   const openCause = useCallback(
-    (id: string) => navigate({ name: 'atlas', country: null, lens: id }),
+    (id: string) => {
+      setCajon(null);
+      navigate({ name: 'atlas', country: null, lens: id });
+    },
+    [navigate],
+  );
+  /** Desde el expediente se salta al archivo filtrado por esa pata. */
+  const openCategory = useCallback(
+    (id: string) => {
+      setCajon(null);
+      navigate({ name: 'archive', filters: { ...NO_FILTERS, categories: [id] } });
+    },
     [navigate],
   );
   /** En el Atlas, el país y la lente viajan en la URL como todo lo demás. */
@@ -221,7 +250,6 @@ export function HomeScreen({ reduceMotion }: Props) {
     },
     [selected, navigate],
   );
-  const openShape = useCallback(() => navigate(SHAPE), [navigate]);
 
   /** La red se abre con la semilla de la invocación en curso, o con una nueva. */
   const openDrift = useCallback(() => {
@@ -255,9 +283,10 @@ export function HomeScreen({ reduceMotion }: Props) {
         case 'theme':
           return navigate({ name: 'theme', id: command.id });
         case 'leg':
-          // Saltar a una pata es apoyarla y volver a la araña, no invocar:
+          // Saltar a una pata es apoyarla y abrir el compositor, no invocar:
           // la decisión de pulsar sigue siendo de quien mira.
           setSelected((current) => (current.includes(command.id) ? current : [...current, command.id]));
+          setCajon('invocar');
           return navigate(HOME);
       }
     },
@@ -266,19 +295,11 @@ export function HomeScreen({ reduceMotion }: Props) {
 
   const back = useCallback(() => {
     setSelected(active);
-    setPanel('patas');
+    setCajon(null);
     navigate(HOME);
   }, [active, navigate]);
 
   const lit = legs.filter((leg) => leg.visible).length;
-  const latest = legs.find((leg) => leg.category.id === selected[selected.length - 1]);
-
-  /**
-   * Dónde el instrumento no son las patas. Ahí el estado dice cuántas quedan
-   * apoyadas, porque el botón de invocar del pie sigue usándolas y no se ven.
-   */
-  const patasFuera =
-    (route.name === 'atlas' || route.name === 'web' || route.name === 'archive') && active.length > 0;
 
   const spider = (
     <Spider
@@ -294,16 +315,19 @@ export function HomeScreen({ reduceMotion }: Props) {
 
   const reading =
     route.name === 'invocation' ? (
-      <InvocationView
-        key={`${route.seed}|${route.legs.join(',')}`}
-        invocation={invocation}
-        corpus={corpus}
-        seed={route.seed}
-        reduceMotion={reduceMotion}
-        compact={portrait}
-        onOpen={openEntry}
-        pool={pool}
-      />
+      <View>
+        <PatasUsadas legs={legs} active={active} onOpen={() => setCajon('invocar')} />
+        <InvocationView
+          key={`${route.seed}|${route.legs.join(',')}`}
+          invocation={invocation}
+          corpus={corpus}
+          seed={route.seed}
+          reduceMotion={reduceMotion}
+          compact={portrait}
+          onOpen={openEntry}
+          pool={pool}
+        />
+      </View>
     ) : route.name === 'entry' ? (
       entry ? (
         <EntryView
@@ -312,20 +336,20 @@ export function HomeScreen({ reduceMotion }: Props) {
           corpus={corpus}
           reduceMotion={reduceMotion}
           compact={portrait}
-          onOpenFigure={openFigure}
-          onOpenCause={openCause}
+          dossierOpen={cajon === 'expediente'}
+          onToggleDossier={() => setCajon(cajon === 'expediente' ? null : 'expediente')}
         />
       ) : (
         <Text style={styles.missing}>no hay ninguna entrada con ese identificador. vuelve y pulsa.</Text>
       )
-    ) : route.name === 'lives' ? (
-      <LivesView themes={themes} reduceMotion={reduceMotion} onOpenTheme={openTheme} />
-    ) : route.name === 'theme' ? (
-      themeState ? (
-        <ThemeView state={themeState} reduceMotion={reduceMotion} onOpenFigure={openFigure} />
-      ) : (
-        <Text style={styles.missing}>no hay ningún tema con ese nombre. vuelve a las biografías.</Text>
-      )
+    ) : route.name === 'lives' || route.name === 'theme' ? (
+      <AuthorsView
+        corpus={corpus}
+        theme={route.name === 'theme' ? route.id : null}
+        compact={portrait}
+        onOpenFigure={openFigure}
+        onTheme={openTheme}
+      />
     ) : route.name === 'figure' ? (
       figure ? (
         <FigureView
@@ -334,10 +358,10 @@ export function HomeScreen({ reduceMotion }: Props) {
           corpus={corpus}
           reduceMotion={reduceMotion}
           onOpenEntry={openEntry}
-          onOpenTheme={openTheme}
+          onOpenTheme={(id) => openTheme(id)}
         />
       ) : (
-        <Text style={styles.missing}>no hay ninguna figura con ese nombre. vuelve a las biografías.</Text>
+        <Text style={styles.missing}>no hay ningún autor con ese nombre. vuelve a la cronología.</Text>
       )
     ) : route.name === 'drift' ? (
       <DriftView
@@ -346,7 +370,7 @@ export function HomeScreen({ reduceMotion }: Props) {
         mode={route.mode}
         leg={route.leg}
         // El cuadro nunca es mayor que la columna que lo contiene.
-        size={Math.min(centro, 460)}
+        size={Math.min(centro, 560)}
         onOpen={openEntry}
         onMode={setDriftMode}
       />
@@ -359,6 +383,8 @@ export function HomeScreen({ reduceMotion }: Props) {
         reduceMotion={reduceMotion}
         onFocus={weave}
         onOpen={openEntry}
+        onOpenTools={() => setCajon(cajon === 'lente' ? null : 'lente')}
+        toolsOpen={cajon === 'lente'}
       />
     ) : route.name === 'atlas' ? (
       <AtlasView
@@ -366,11 +392,13 @@ export function HomeScreen({ reduceMotion }: Props) {
         corpus={corpus}
         focus={route.country}
         lens={route.lens}
-        width={Math.min(centro, 1000)}
+        width={centro}
         // El mapa cabe en lo que queda de pantalla: cabecera, pie, el aire de
-        // la columna, la entradilla y la barra de lectura ya están descontados.
-        maxHeight={height - 320}
+        // la columna y la barra de lectura ya están descontados.
+        maxHeight={height - 250}
         reduceMotion={reduceMotion}
+        lensOpen={cajon === 'lente'}
+        onToggleLens={() => setCajon(cajon === 'lente' ? null : 'lente')}
         onFocus={setAtlasCountry}
         onLens={setAtlasLens}
         onOpenEntry={openEntry}
@@ -378,92 +406,69 @@ export function HomeScreen({ reduceMotion }: Props) {
     ) : route.name === 'shape' ? (
       <ShapeView corpus={corpus} legs={legs} />
     ) : route.name === 'archive' ? (
-      <ArchiveView corpus={corpus} filters={route.filters} onOpen={openEntry} />
-    ) : panel === 'proposito' ? (
-      <PurposeView legs={legs} selected={selected} reduceMotion={reduceMotion} />
+      <ArchiveView
+        corpus={corpus}
+        filters={route.filters}
+        compact={portrait}
+        filtersOpen={cajon === 'filtros'}
+        onToggleFilters={() => setCajon(cajon === 'filtros' ? null : 'filtros')}
+        onChange={setFilters}
+        onOpen={openEntry}
+      />
     ) : null;
 
   const buttons =
     route.name === 'invocation' ? (
       <View style={styles.buttons}>
         <TextButton label="otra" onPress={press} hint="otra invocación con las mismas patas" />
+        <TextButton label="las patas" onPress={() => setCajon('invocar')} hint="cambia las patas apoyadas" />
         <TextButton label="la red" onPress={openDrift} hint="ver esta invocación sobre la tela" />
         <TextButton label="volver" onPress={back} />
       </View>
-    ) : route.name === 'entry' ? (
+    ) : route.name === 'theme' && themeState && themeState.entries.length > 0 ? (
       <View style={styles.buttons}>
-        <TextButton label="invocar" onPress={press} hint="una invocación nueva con las patas apoyadas" />
-        <TextButton label="volver" onPress={back} />
+        <TextButton
+          label="invocar desde este tema"
+          onPress={() => pressWith(themeState.theme.id)}
+          hint={`solo las ${themeState.entries.length} entradas ligadas a este tema`}
+        />
+        <TextButton label="todos los autores" onPress={openLives} />
       </View>
-    ) : route.name === 'lives' ? (
+    ) : route.name === 'home' ? (
       <View style={styles.buttons}>
-        <TextButton label="invocar" onPress={press} />
-        <TextButton label="volver" onPress={back} />
-      </View>
-    ) : route.name === 'theme' ? (
-      <View style={styles.buttons}>
-        {themeState && themeState.entries.length > 0 ? (
-          <TextButton
-            label="invocar desde este tema"
-            onPress={() => pressWith(themeState.theme.id)}
-            hint={`solo las ${themeState.entries.length} entradas ligadas a este tema`}
-          />
-        ) : null}
-        <TextButton label="biografías" onPress={openLives} />
-      </View>
-    ) : route.name === 'figure' ? (
-      <View style={styles.buttons}>
-        <TextButton label="biografías" onPress={openLives} />
-        <TextButton label="volver" onPress={back} />
-      </View>
-    ) : route.name === 'archive' ? (
-      <View style={styles.buttons}>
-        <TextButton label="invocar" onPress={press} />
-        <TextButton label="volver" onPress={back} />
-      </View>
-    ) : route.name === 'web' || route.name === 'atlas' ? (
-      <View style={styles.buttons}>
-        <TextButton label="invocar" onPress={press} />
-        <TextButton label="volver" onPress={back} />
-      </View>
-    ) : route.name === 'drift' || route.name === 'shape' ? (
-      <View style={styles.buttons}>
-        <TextButton label="invocar" onPress={press} />
-        <TextButton label="volver" onPress={back} />
+        <TextButton label="invocar" onPress={press} hint="pulsa la araña y sale algo que no buscabas" />
+        <TextButton label="las patas" onPress={() => setCajon('invocar')} hint="elige qué categorías se apoyan" />
       </View>
     ) : (
       <View style={styles.buttons}>
-        <TextButton label="invocar" onPress={press} hint="pulsa la araña y sale algo que no buscabas" />
+        <TextButton label="invocar" onPress={press} />
+        <TextButton label="volver" onPress={back} />
       </View>
     );
 
   /**
-   * Las secciones, a la izquierda. Antes eran una botonera que envolvía en
-   * dos filas descuadradas al pie del texto; ahora son una columna con su
-   * estado, como una consola. Invocar está arriba del todo porque es lo
-   * único que hace algo en vez de llevar a otro sitio.
+   * Las secciones. Tres grupos y siete destinos: el oráculo, la red y el
+   * archivo. Fuera quedan «propósito», que ahora se lee pata a pata dentro del
+   * compositor, y «biografías», que era una sección global para lo que en
+   * realidad es media sección del archivo: los autores.
    */
   const groups: ShellGroup[] = [
     {
       label: 'el oráculo',
       items: [
-        { id: 'invocar', label: 'invocar', hint: 'pulsa la araña', onPress: press },
+        {
+          id: 'invocar',
+          label: 'invocar',
+          hint: 'elige patas y pulsa',
+          onPress: () => setCajon(cajon === 'invocar' ? null : 'invocar'),
+          active: cajon === 'invocar',
+        },
         {
           id: 'portada',
           label: 'la araña',
           hint: 'el animal y sus once patas',
           onPress: () => navigate(HOME),
-          active: route.name === 'home' && panel === 'patas',
-        },
-        {
-          id: 'proposito',
-          label: 'propósito',
-          hint: 'para qué es esto',
-          onPress: () => {
-            setPanel('proposito');
-            navigate(HOME);
-          },
-          active: route.name === 'home' && panel === 'proposito',
+          active: route.name === 'home' || route.name === 'invocation',
         },
       ],
     },
@@ -478,17 +483,29 @@ export function HomeScreen({ reduceMotion }: Props) {
           onPress: openAtlas,
           active: route.name === 'atlas',
         },
-        { id: 'forma', label: 'la forma', hint: 'cómo está repartido', onPress: openShape, active: route.name === 'shape' },
+        {
+          id: 'forma',
+          label: 'la forma',
+          hint: 'cómo está repartido',
+          onPress: openShape,
+          active: route.name === 'shape' || route.name === 'drift',
+        },
       ],
     },
     {
       label: 'el archivo',
       items: [
-        { id: 'archivo', label: 'archivo', hint: 'filtros y búsqueda', onPress: openArchive, active: route.name === 'archive' },
         {
-          id: 'biografias',
-          label: 'biografías',
-          hint: 'vidas por temas',
+          id: 'invocaciones',
+          label: 'invocaciones',
+          hint: `${corpus.entries.length} piezas, con filtros`,
+          onPress: openArchive,
+          active: route.name === 'archive' || route.name === 'entry',
+        },
+        {
+          id: 'autores',
+          label: 'autores',
+          hint: 'cronología de quien lo pensó',
           onPress: openLives,
           active: route.name === 'lives' || route.name === 'theme' || route.name === 'figure',
         },
@@ -504,50 +521,7 @@ export function HomeScreen({ reduceMotion }: Props) {
     <View style={styles.hero}>
       <View style={{ width: stageWeb, height: stageWeb }}>{spider}</View>
       <Text style={styles.lead}>{LEAD}</Text>
-      {latest ? <Text style={styles.latest}>última pata apoyada: {latest.category.name}</Text> : null}
-    </View>
-  );
-
-  /**
-   * La derecha es el instrumento de lo que hay delante, no siempre el mismo
-   * panel. En el Atlas, la lente y la leyenda; en la tela, las pieles y los
-   * mapas; en el archivo, las facetas. Donde se invoca —la portada, una
-   * invocación, una ficha— el instrumento son las once patas, porque son lo
-   * que decide qué sale al pulsar.
-   */
-  const instrumento =
-    route.name === 'atlas' ? (
-      <AtlasAside atlas={loadAtlas()} lens={route.lens} onLens={setAtlasLens} />
-    ) : route.name === 'web' ? (
-      <TelaAside
-        skin={route.skin}
-        focus={route.focus}
-        onSkin={setSkin}
-        onFocus={weave}
-        onMap={openMap}
-      />
-    ) : route.name === 'archive' ? (
-      <ArchiveAside corpus={corpus} legs={legs} filters={route.filters} onChange={setFilters} />
-    ) : (
-      <LegPanel legs={legs} selected={active} onToggle={toggle} onClear={() => setSelected(NONE)} />
-    );
-
-  /** El estado va al pie de cualquier instrumento: es el de la máquina entera. */
-  const aside = (
-    <View>
-      {instrumento}
-      <View style={styles.readout}>
-        <Text style={styles.readoutLabel}>estado</Text>
-        <Text style={styles.readoutLine}>{corpus.entries.length} entradas · {lit} de {legs.length} patas</Text>
-        <Text style={styles.readoutLine}>{corpus.figures.length} biografías · {corpus.themes.length} temas</Text>
-        {route.name === 'invocation' ? <Text style={styles.readoutLine}>semilla {route.seed}</Text> : null}
-        {patasFuera ? (
-          <Text style={styles.readoutLine}>
-            {active.length} {active.length === 1 ? 'pata apoyada' : 'patas apoyadas'}
-          </Text>
-        ) : null}
-        <Text style={styles.readoutHint}>⌘K abre la paleta</Text>
-      </View>
+      <PatasUsadas legs={legs} active={active} onOpen={() => setCajon('invocar')} centrado />
     </View>
   );
 
@@ -563,22 +537,46 @@ export function HomeScreen({ reduceMotion }: Props) {
             : route.name === 'atlas'
               ? 'el atlas de la extinción'
               : route.name === 'archive'
-                ? 'el archivo'
+                ? 'invocaciones'
                 : route.name === 'shape'
                   ? 'la forma del archivo'
                   : route.name === 'figure'
-                    ? (figure?.name ?? 'figura')
+                    ? (figure?.name ?? 'autor')
                     : route.name === 'theme'
                       ? (themeState?.theme.name ?? 'tema')
-                      : // `drift` caía aquí y la cabecera decía «biografías».
-                        route.name === 'drift'
+                      : route.name === 'drift'
                         ? 'la red'
-                        : 'biografías';
+                        : 'autores';
 
   const metaLinea =
     route.name === 'invocation'
-      ? `${route.seed} · ${active.length} patas apoyadas`
-      : `${corpus.entries.length} entradas · ${lit} de ${legs.length} patas`;
+      ? `semilla ${route.seed} · ${active.length} patas`
+      : route.name === 'entry'
+        ? 'una pieza del archivo'
+        : route.name === 'lives' || route.name === 'theme'
+          ? 'cronología de autores'
+          : route.name === 'figure'
+            ? (figure?.years ?? '')
+            : `${corpus.entries.length} entradas · ${lit} de ${legs.length} patas`;
+
+  /** La barra de estado: cifras de la máquina, siempre en el mismo sitio. */
+  const estado =
+    route.name === 'atlas'
+      ? `${loadAtlas().world.countries.length} territorios · ${loadAtlas().causes.length} causas`
+      : route.name === 'lives' || route.name === 'theme' || route.name === 'figure'
+        ? `${corpus.figures.length} autores · ${corpus.themes.length} temas`
+        : `${corpus.entries.length} entradas · ${lit}/${legs.length} patas · ⌘K`;
+
+  /** Cuánto ancho pide cada sección. Una ficha no se lee a mil trescientos. */
+  const measure: Measure =
+    route.name === 'entry' ||
+    route.name === 'figure' ||
+    route.name === 'lives' ||
+    route.name === 'theme'
+      ? 'lectura'
+      : route.name === 'atlas' || route.name === 'web' || route.name === 'drift' || route.name === 'home'
+        ? 'instrumento'
+        : 'lista';
 
   return (
     <SafeAreaView style={styles.root} edges={['bottom', 'left', 'right']}>
@@ -586,17 +584,128 @@ export function HomeScreen({ reduceMotion }: Props) {
         groups={groups}
         title={titulo}
         meta={metaLinea}
-        aside={aside}
-        asideFirst={route.name === 'archive'}
+        status={estado}
+        measure={measure}
         footer={buttons}
         compact={portrait}
       >
         {contenido}
       </Shell>
+
+      <Drawer
+        title="invocar"
+        meta={`${active.length} de ${legs.length} patas apoyadas`}
+        open={cajon === 'invocar'}
+        onClose={() => setCajon(null)}
+        compact={portrait}
+      >
+        <InvocationComposer
+          legs={legs}
+          selected={active}
+          entries={corpus.entries}
+          onToggle={toggle}
+          onClear={() => setSelected(NONE)}
+          onInvoke={press}
+        />
+      </Drawer>
+
+      <Drawer
+        title="expediente"
+        meta={entry ? entry.addedAt : undefined}
+        open={cajon === 'expediente' && Boolean(entry)}
+        onClose={() => setCajon(null)}
+        compact={portrait}
+      >
+        {entry ? (
+          <EntryDossier
+            entry={entry}
+            corpus={corpus}
+            onOpenFigure={openFigure}
+            onOpenCause={openCause}
+            onOpenCategory={openCategory}
+            onOpenEntry={openEntry}
+          />
+        ) : null}
+      </Drawer>
+
+      <Drawer
+        title="filtros"
+        meta="el archivo entero, recortado"
+        open={cajon === 'filtros' && route.name === 'archive'}
+        onClose={() => setCajon(null)}
+        compact={portrait}
+      >
+        {route.name === 'archive' ? (
+          <ArchiveFilterPanel corpus={corpus} legs={legs} filters={route.filters} onChange={setFilters} />
+        ) : null}
+      </Drawer>
+
+      <Drawer
+        title="la lente"
+        meta="con qué causa se pinta el mundo"
+        open={cajon === 'lente' && route.name === 'atlas'}
+        onClose={() => setCajon(null)}
+        compact={portrait}
+      >
+        {route.name === 'atlas' ? (
+          <AtlasLens atlas={loadAtlas()} lens={route.lens} onLens={setAtlasLens} />
+        ) : null}
+      </Drawer>
+
+      <Drawer
+        title="la tela"
+        meta="pieles y mapas"
+        open={cajon === 'lente' && route.name === 'web'}
+        onClose={() => setCajon(null)}
+        compact={portrait}
+      >
+        {route.name === 'web' ? (
+          <TelaAside
+            skin={route.skin}
+            focus={route.focus}
+            onSkin={setSkin}
+            onFocus={weave}
+            onMap={openMap}
+          />
+        ) : null}
+      </Drawer>
+
       {palette ? (
         <CommandPalette corpus={corpus} legs={legs} onRun={run} onClose={() => setPalette(false)} />
       ) : null}
     </SafeAreaView>
+  );
+}
+
+/**
+ * Las patas apoyadas, en pequeño. En una invocación ya hecha no hace falta el
+ * selector entero: basta saber con qué se pulsó, y poder volver a abrirlo.
+ */
+function PatasUsadas({
+  legs,
+  active,
+  onOpen,
+  centrado = false,
+}: {
+  legs: ReturnType<typeof loadArchive>['legs'];
+  active: readonly string[];
+  onOpen: () => void;
+  centrado?: boolean;
+}) {
+  const puestas = legs.filter((leg) => active.includes(leg.category.id));
+  if (puestas.length === 0) return null;
+
+  return (
+    <Text
+      accessibilityRole="button"
+      accessibilityLabel={`${puestas.length} patas apoyadas`}
+      accessibilityHint="abre el compositor para cambiarlas"
+      onPress={onOpen}
+      style={[styles.patas, centrado && styles.patasCentradas]}
+      numberOfLines={1}
+    >
+      {puestas.map((leg) => leg.category.name.toLowerCase()).join(' · ')}
+    </Text>
   );
 }
 
@@ -614,44 +723,15 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: space.md,
   },
-  latest: {
+  patas: {
     fontFamily: fonts.mono,
     fontSize: 11,
     letterSpacing: 1.2,
-    color: colors.line,
-    marginTop: space.sm,
-  },
-
-  // El estado, bajo los interruptores: cifras, no prosa.
-  readout: {
-    marginTop: space.lg,
-    paddingTop: space.sm,
-    borderTopWidth: 1,
-    borderTopColor: colors.line,
-  },
-  readoutLabel: {
-    fontFamily: fonts.mono,
-    fontSize: 10,
-    letterSpacing: 2,
-    color: colors.dim,
-    textTransform: 'uppercase',
-    marginBottom: space.xs,
-  },
-  readoutLine: {
-    fontFamily: fonts.mono,
-    fontSize: 11,
-    letterSpacing: 1,
     lineHeight: 18,
-    color: colors.dim,
+    color: machine,
+    marginBottom: space.sm,
   },
-  readoutHint: {
-    fontFamily: fonts.mono,
-    fontSize: 10,
-    letterSpacing: 1.2,
-    lineHeight: 16,
-    color: colors.line,
-    marginTop: space.xs,
-  },
+  patasCentradas: { marginTop: space.sm, marginBottom: 0, textAlign: 'center' },
 
   buttons: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
   missing: {

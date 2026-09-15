@@ -3,6 +3,7 @@ import path from 'node:path';
 import { describe, expect, it } from 'vitest';
 
 import { loadArchive } from '../lib/content/loader';
+import { birthYear, byChronology, centuries, century } from '../lib/museum/authors';
 import { entriesOfTheme, figuresOfEntry, themeOf, themeStates } from '../lib/museum/themes';
 import { buildDrift } from '../lib/drift/graph';
 import { invoke } from '../lib/oracle/invoke';
@@ -121,13 +122,60 @@ describe('invocar desde un tema', () => {
   });
 });
 
+describe('la cronología de autores', () => {
+  it('el año sale de `years`, sin escribirlo aparte', () => {
+    const wittgenstein = corpus.figures.find((f) => f.id === 'wittgenstein');
+    expect(wittgenstein && birthYear(wittgenstein)).toBe(1889);
+    expect(wittgenstein && century(wittgenstein)).toBe(19);
+  });
+
+  it('están todos, y en orden ascendente', () => {
+    const orden = byChronology(corpus.figures);
+    expect(orden).toHaveLength(corpus.figures.length);
+    expect(new Set(orden.map((f) => f.id)).size).toBe(corpus.figures.length);
+
+    const conAnio = orden.map(birthYear).filter((y): y is number => y !== null);
+    for (let i = 1; i < conAnio.length; i += 1) {
+      expect(conAnio[i]).toBeGreaterThanOrEqual(conAnio[i - 1]);
+    }
+  });
+
+  it('quien no tenga año reconocible va al final, no se le inventa uno', () => {
+    const sinAnio = { ...corpus.figures[0], id: 'sin-anio', name: 'Anónimo', years: 'sin fecha' };
+    const orden = byChronology([sinAnio, ...corpus.figures]);
+    expect(orden[orden.length - 1].id).toBe('sin-anio');
+    expect(birthYear(sinAnio)).toBeNull();
+  });
+
+  it('las fechas anteriores a nuestra era ordenan bien', () => {
+    // Ovidio pone «43 a.C.–17 d.C.»: con un lector ingenuo se iba al final de
+    // la cronología, detrás de quien vive hoy.
+    const ovidio = corpus.figures.find((f) => f.id === 'ovidio');
+    expect(ovidio, 'ovidio debería estar en el archivo').toBeTruthy();
+    if (!ovidio) return;
+    expect(birthYear(ovidio)).toBe(-43);
+    expect(century(ovidio)).toBe(-1);
+    expect(byChronology(corpus.figures)[0].id).toBe('ovidio');
+  });
+
+  it('los siglos se calculan del archivo, no se listan a mano', () => {
+    const lista = centuries(corpus.figures);
+    expect(lista.length).toBeGreaterThan(0);
+    for (let i = 1; i < lista.length; i += 1) expect(lista[i]).toBeGreaterThan(lista[i - 1]);
+    for (const figure of corpus.figures) {
+      const siglo = century(figure);
+      if (siglo !== null) expect(lista).toContain(siglo);
+    }
+  });
+});
+
 describe('rutas de las biografías', () => {
   it('los temas y las figuras tienen su URL, y vuelve la misma', () => {
-    expect(parseRoute('/biografias', '')).toEqual({ name: 'lives' });
-    expect(parseRoute('/biografias/', '')).toEqual({ name: 'lives' });
+    expect(parseRoute('/autores', '')).toEqual({ name: 'lives' });
+    expect(parseRoute('/autores/', '')).toEqual({ name: 'lives' });
     for (const theme of corpus.themes) {
       const url = routeToUrl({ name: 'theme', id: theme.id });
-      expect(url).toBe(`/biografias/${theme.id}`);
+      expect(url).toBe(`/autores/${theme.id}`);
       expect(parseRoute(url, '')).toEqual({ name: 'theme', id: theme.id });
     }
     for (const figure of corpus.figures) {
@@ -136,11 +184,19 @@ describe('rutas de las biografías', () => {
     }
   });
 
-  it('las URL viejas del gabinete siguen abriendo', () => {
-    // Se compartieron antes de que las salas fueran temas: romperlas sería
-    // cobrarle a quien guardó el enlace un cambio de idea de aquí dentro.
+  it('las URL viejas del gabinete y de las biografías siguen abriendo', () => {
+    // Se compartieron antes de que las salas fueran temas, y antes de que los
+    // temas fueran un filtro de autores: romperlas sería cobrarle a quien
+    // guardó el enlace tres cambios de idea de aquí dentro.
     expect(parseRoute('/gabinete', '')).toEqual({ name: 'lives' });
     expect(parseRoute('/gabinete/el-baul', '')).toEqual({ name: 'theme', id: 'el-baul' });
+    expect(parseRoute('/biografias', '')).toEqual({ name: 'lives' });
+    expect(parseRoute('/biografias/la-hora-del-buho', '')).toEqual({
+      name: 'theme',
+      id: 'la-hora-del-buho',
+    });
+    expect(parseRoute('/figura/borges', '')).toEqual({ name: 'figure', id: 'borges' });
+    expect(parseRoute('/autor/borges', '')).toEqual({ name: 'figure', id: 'borges' });
   });
 
   it('un tema que no existe cae en las biografías, no en la portada', () => {

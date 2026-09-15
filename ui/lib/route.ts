@@ -34,9 +34,18 @@ const SLUG = /^[a-z0-9-]+$/;
 /** El mismo formato que `EntrySchema`: aquí solo decide si la ruta existe. */
 /** `/deriva/<semilla>`: se construye con RegExp para no escapar cada barra. */
 const DRIFT_PATH = new RegExp('^/deriva/([^/]+)/?$');
-/** `/biografias`, y `/gabinete` por compatibilidad con lo ya compartido. */
-const LIVES_PATH = new RegExp('^/(?:biografias|gabinete)/?$');
-const THEME_PATH = new RegExp('^/(?:biografias|gabinete)/([^/]+)/?$');
+/**
+ * Las vidas han cambiado de nombre dos veces: fueron `/gabinete` cuando eran
+ * salas, `/biografias` cuando pasaron a temas, y ahora son `/autores`. Las tres
+ * formas se siguen entendiendo, y solo la última se escribe. Una URL compartida
+ * no se rompe porque aquí dentro se haya cambiado de idea.
+ */
+const LIVES_PATH = new RegExp('^/(?:autores|biografias|gabinete)/?$');
+const THEME_PATH = new RegExp('^/(?:autores|biografias|gabinete)/([^/]+)/?$');
+/** `/invocaciones`, y `/archivo` por lo mismo. */
+const ARCHIVE_PATH = new RegExp('^/(?:invocaciones|archivo)/?$');
+/** `/autor/<id>`, y `/figura/<id>` por lo mismo. */
+const FIGURE_PATH = new RegExp('^/(?:autor|figura)/([^/]+)/?$');
 /** `/tela` y `/tela/<id>`, por el mismo motivo que la anterior. */
 const WEB_PATH = new RegExp('^/tela(?:/([^/]+))?/?$');
 /** `/atlas` y `/atlas/<código>`, con la causa en la query. */
@@ -54,12 +63,9 @@ export function parseRoute(pathname: string, search: string): Route {
   const entry = /^\/e\/([^/]+)\/?$/.exec(pathname);
   if (entry) return ENTRY_ID.test(entry[1]) ? { name: 'entry', id: entry[1] } : HOME;
 
-  const figure = /^\/figura\/([^/]+)\/?$/.exec(pathname);
+  const figure = FIGURE_PATH.exec(pathname);
   if (figure) return SLUG.test(figure[1]) ? { name: 'figure', id: figure[1] } : HOME;
 
-  // Las biografías vivían en /gabinete hasta que las salas se cambiaron por
-  // temas. La ruta vieja sigue entendiéndose: una URL compartida no se rompe
-  // porque aquí dentro se haya cambiado de idea.
   if (LIVES_PATH.test(pathname)) return LIVES;
   const theme = THEME_PATH.exec(pathname);
   if (theme) return SLUG.test(theme[1]) ? { name: 'theme', id: theme[1] } : LIVES;
@@ -97,7 +103,7 @@ export function parseRoute(pathname: string, search: string): Route {
 
   if (/^\/adn\/?$/.test(pathname)) return SHAPE;
 
-  if (/^\/archivo\/?$/.test(pathname)) return { name: 'archive', filters: parseFilters(search) };
+  if (ARCHIVE_PATH.test(pathname)) return { name: 'archive', filters: parseFilters(search) };
 
   const match = /^\/i\/([^/]+)\/?$/.exec(pathname);
   if (!match || !isSeed(match[1])) return HOME;
@@ -121,11 +127,11 @@ export function routeToUrl(route: Route): string {
     case 'entry':
       return `/e/${route.id}`;
     case 'lives':
-      return '/biografias';
+      return '/autores';
     case 'theme':
-      return `/biografias/${route.id}`;
+      return `/autores/${route.id}`;
     case 'figure':
-      return `/figura/${route.id}`;
+      return `/autor/${route.id}`;
     case 'drift': {
       const query = new URLSearchParams();
       if (route.mode !== 'deriva') query.set('modo', route.mode);
@@ -145,7 +151,7 @@ export function routeToUrl(route: Route): string {
       return '/adn';
     case 'archive': {
       const query = filtersToQuery(route.filters);
-      return query ? `/archivo?${query}` : '/archivo';
+      return query ? `/invocaciones?${query}` : '/invocaciones';
     }
     case 'invocation': {
       const query = new URLSearchParams();

@@ -22,6 +22,7 @@ import { linkText } from '../lib/copy';
 import { THREAD_STYLE } from '../lib/epistemic';
 import { colors, fonts, machine, space } from '../theme';
 import { Chip } from './Chip';
+import { ToolButton } from './ToolButton';
 
 type Props = {
   corpus: Corpus;
@@ -32,6 +33,9 @@ type Props = {
   reduceMotion: boolean;
   onFocus: (id: string | null) => void;
   onOpen: (id: string) => void;
+  /** Abre el cajón con las pieles y los mapas. */
+  onOpenTools?: () => void;
+  toolsOpen?: boolean;
 };
 
 type AsideProps = {
@@ -106,7 +110,17 @@ const TRAIL = [0, 0.018, 0.036];
  * Lo que no cambia en ninguna piel: la posición la manda la pata. No es un
  * layout de fuerzas y no debe serlo.
  */
-export function Tejido({ corpus, focus, skin, size, reduceMotion, onFocus, onOpen }: Props) {
+export function Tejido({
+  corpus,
+  focus,
+  skin,
+  size,
+  reduceMotion,
+  onFocus,
+  onOpen,
+  onOpenTools,
+  toolsOpen,
+}: Props) {
   const web = useMemo(
     () => buildWeb(corpus.entries, corpus.categories, SEED, RING, MIN_WEIGHT),
     [corpus.entries, corpus.categories],
@@ -310,6 +324,20 @@ export function Tejido({ corpus, focus, skin, size, reduceMotion, onFocus, onOpe
 
   return (
     <View>
+      {onOpenTools ? (
+        <View style={styles.barra}>
+          <Text style={styles.barraTexto}>
+            {skin === 'flujo' ? 'flujo · trazas en ángulo recto, con corriente' : 'tela · hilos curvos, quietos'}
+          </Text>
+          <ToolButton
+            label="instrumento"
+            expanded={toolsOpen}
+            onPress={onOpenTools}
+            hint="pieles, foco y los tres mapas"
+          />
+        </View>
+      ) : null}
+
       <View style={[styles.canvas, { width: size, height: size }]}>
         <Svg width={size} height={size}>
           {rejilla}
@@ -519,6 +547,20 @@ export function TelaAside({ skin, focus, onSkin, onFocus, onMap }: AsideProps) {
 
 const styles = StyleSheet.create({
   canvas: { alignSelf: 'center' },
+  barra: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: space.md,
+    marginBottom: space.xs,
+  },
+  barraTexto: {
+    flex: 1,
+    fontFamily: fonts.mono,
+    fontSize: 11,
+    letterSpacing: 1,
+    color: colors.dim,
+  },
   hit: { position: 'absolute', width: 28, height: 28 },
   legend: {
     fontFamily: fonts.mono,

@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { buildPdf } from '../../lib/export/pdf';
 import { sheetPdf, sheetText, type Sheet } from '../../lib/export/sheet';
 import { useFocusRing } from '../hooks/useFocusRing';
+import { useTouchHeight } from '../hooks/useTouch';
 import { copyText, downloadPdf, downloadText } from '../lib/download';
 import { colors, fonts, machine, space } from '../theme';
 
@@ -51,6 +52,7 @@ export function ExportRow({ sheet }: Props) {
 function Salida({ label, onPress }: { label: string; onPress: () => void }) {
   const { focusVisible, onFocus, onBlur } = useFocusRing();
   const [hovered, setHovered] = useState(false);
+  const alto = useTouchHeight();
 
   return (
     <Pressable
@@ -61,7 +63,7 @@ function Salida({ label, onPress }: { label: string; onPress: () => void }) {
       onHoverOut={() => setHovered(false)}
       onFocus={onFocus}
       onBlur={onBlur}
-      style={[styles.button, hovered && styles.hovered, focusVisible && styles.focus]}
+      style={[styles.button, { minHeight: alto }, hovered && styles.hovered, focusVisible && styles.focus]}
     >
       <Text style={[styles.buttonText, hovered && styles.buttonTextOn]}>{label}</Text>
     </Pressable>

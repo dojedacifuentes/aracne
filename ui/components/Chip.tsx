@@ -1,6 +1,7 @@
 import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { useFocusRing } from '../hooks/useFocusRing';
+import { useTouchHeight } from '../hooks/useTouch';
 import { colors, fonts, machine, space } from '../theme';
 
 type Props = {
@@ -27,6 +28,7 @@ type Props = {
  */
 export function Chip({ label, on, onPress, hint, count }: Props) {
   const { focusVisible, onFocus, onBlur } = useFocusRing();
+  const alto = useTouchHeight();
 
   return (
     <Pressable
@@ -34,10 +36,13 @@ export function Chip({ label, on, onPress, hint, count }: Props) {
       accessibilityLabel={label}
       accessibilityHint={hint ?? (count === undefined ? undefined : `${count} entradas`)}
       accessibilityState={{ selected: on }}
+      // Un filtro es un botón que se queda pulsado, así que el atributo es
+      // `aria-pressed`. React Native Web no traduce `accessibilityState`.
+      aria-pressed={on}
       onPress={onPress}
       onFocus={onFocus}
       onBlur={onBlur}
-      style={[styles.chip, on && styles.chipOn, focusVisible && styles.focus]}
+      style={[styles.chip, { minHeight: alto }, on && styles.chipOn, focusVisible && styles.focus]}
     >
       <Text style={[styles.text, on && styles.textOn]} numberOfLines={1} maxFontSizeMultiplier={1.4}>
         {label}

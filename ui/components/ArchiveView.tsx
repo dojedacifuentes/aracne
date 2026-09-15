@@ -6,16 +6,22 @@ import type { Corpus, LegState } from '../../lib/content/corpus';
 import { catalogId, STATUS_LABEL, TYPE_LABEL } from '../../lib/labels';
 import type { Entry, EntryType, EpistemicStatus } from '../../lib/schema';
 import { useFocusRing } from '../hooks/useFocusRing';
+import { useTouchHeight } from '../hooks/useTouch';
 import { colors, fonts, HIT_SIZE, machine, space } from '../theme';
 import { Chip } from './Chip';
+import { ToolButton } from './ToolButton';
 
 type Props = {
   corpus: Corpus;
   filters: ArchiveFilters;
+  compact: boolean;
+  filtersOpen: boolean;
+  onToggleFilters: () => void;
+  onChange: (next: ArchiveFilters) => void;
   onOpen: (id: string) => void;
 };
 
-type AsideProps = {
+type FiltersProps = {
   corpus: Corpus;
   legs: LegState[];
   filters: ArchiveFilters;
@@ -25,85 +31,142 @@ type AsideProps = {
 /** Un tag que solo tiene una entrada es esa entrada: no es un filtro. */
 const TAG_FLOOR = 2;
 
+/** Cuántas filas se pintan de una vez. Con mil entradas esto importa. */
+const PAGINA = 60;
+
+/** El año de una entrada sale de sus fuentes; si ninguna lo trae, no hay año. */
+function entryYear(entry: Entry): number | null {
+  const years = entry.sources.map((source) => source.year).filter((year): year is number => typeof year === 'number');
+  return years.length > 0 ? Math.min(...years) : null;
+}
+
 /**
- * El archivo entero: lo que queda tras los filtros, y nada más.
+ * Las invocaciones: el archivo entero, que es de donde sale todo lo que el
+ * oráculo devuelve.
  *
- * Los filtros viven en la columna de la derecha (`ArchiveAside`), que es la
- * que corresponde a esta sección. Estaban aquí arriba, y con cuarenta y cuatro
- * entradas eso significaba que el primer scroll se los llevaba: para quitar
- * una faceta había que volver a subir.
+ * Dos cosas cambian respecto al listado anterior. La primera: **los quince
+ * tipos se ven**. El esquema admite concepto, obra, caso, fenómeno,
+ * experimento, paradoja, pregunta, lugar, suceso, objeto, personaje, portal,
+ * tecnología, teoría y anomalía, y el listado los enseñaba a todos con la
+ * misma cara; ahora hay una regla de tipos arriba, con su cuenta, que además
+ * filtra. La segunda: **los filtros no cobran columna**. Están detrás de un
+ * control y se abren encima.
  *
- * Aquí no se invoca nada: esta pantalla es lo contrario del oráculo. El
- * oráculo sirve para encontrar lo que no buscabas; esto, para volver a algo
- * que ya sabes que está.
+ * Y se pinta por páginas: cuarenta y cuatro entradas caben de una vez, mil no.
  */
-export function ArchiveView({ corpus, filters, onOpen }: Props) {
+export function ArchiveView({
+  corpus,
+  filters,
+  compact,
+  filtersOpen,
+  onToggleFilters,
+  onChange,
+  onOpen,
+}: Props) {
+  const [visibles, setVisibles] = useState(PAGINA);
   const results = useMemo(() => filterEntries(corpus.entries, filters), [corpus.entries, filters]);
+  const tipos = useMemo(() => {
+    const cuenta = new Map<string, number>();
+    for (const entry of corpus.entries) cuenta.set(entry.type, (cuenta.get(entry.type) ?? 0) + 1);
+    return [...cuenta.entries()].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]));
+  }, [corpus.entries]);
 
   const categoryName = (id: string) => corpus.categories.find((c) => c.id === id)?.name ?? id;
+  const puestos =
+    filters.categories.length +
+    filters.types.length +
+    filters.statuses.length +
+    filters.tags.length +
+    (filters.query.trim() ? 1 : 0);
+
+  const mostradas = results.slice(0, visibles);
 
   return (
     <View>
-      <Text style={styles.count}>
-        {isEmpty(filters)
-          ? `${results.length} entradas`
-          : `${results.length} de ${corpus.entries.length} entradas`}
-      </Text>
+      <View style={styles.barra}>
+        <Text style={styles.cuenta}>
+          {isEmpty(filters)
+            ? `${results.length} entradas`
+            : `${results.length} de ${corpus.entries.length} entradas`}
+        </Text>
+        <ToolButton
+          label="filtros"
+          count={puestos}
+          expanded={filtersOpen}
+          onPress={onToggleFilters}
+          hint="patas, tipo, estado, tags y búsqueda"
+        />
+      </View>
+
+      {/* La regla de tipos: lo que el archivo contiene, y no solo cuánto. */}
+      <View style={styles.regla}>
+        {tipos.map(([tipo, cuenta]) => {
+          const on = filters.types.includes(tipo as EntryType);
+          return (
+            <TipoMarca
+              key={tipo}
+              label={TYPE_LABEL[tipo as EntryType]}
+              count={cuenta}
+              on={on}
+              onPress={() => onChange({ ...filters, types: toggle(filters.types, tipo as EntryType) })}
+            />
+          );
+        })}
+      </View>
 
       {results.length === 0 ? (
-        <Text style={styles.empty}>ninguna entrada cumple estos filtros. quita alguno.</Text>
+        <Text style={styles.vacio}>ninguna entrada cumple estos filtros. quita alguno.</Text>
       ) : (
-        <View style={styles.results}>
-          {results.map((entry) => (
-            <Row key={entry.id} entry={entry} categoryName={categoryName} onPress={() => onOpen(entry.id)} />
+        <View style={styles.lista}>
+          {mostradas.map((entry) => (
+            <Row
+              key={entry.id}
+              entry={entry}
+              compact={compact}
+              categoryName={categoryName}
+              onPress={() => onOpen(entry.id)}
+            />
           ))}
         </View>
       )}
+
+      {results.length > mostradas.length ? (
+        <View style={styles.mas}>
+          <ToolButton
+            label={`ver ${Math.min(PAGINA, results.length - mostradas.length)} más`}
+            onPress={() => setVisibles((n) => n + PAGINA)}
+            hint={`quedan ${results.length - mostradas.length} entradas sin pintar`}
+          />
+        </View>
+      ) : null}
     </View>
   );
 }
 
 /**
- * El instrumento del archivo: la búsqueda y las facetas.
- *
- * Las cifras de cada faceta se calculan sobre el archivo entero, no sobre lo
- * que queda filtrado: un filtro tiene que decir cuánto hay detrás antes de
- * pulsarlo. Los tags de una sola entrada no aparecen, porque un tag que solo
- * tiene una entrada *es* esa entrada.
+ * El instrumento del archivo, para el cajón. Las cifras de cada faceta se
+ * calculan sobre el archivo entero, no sobre lo que queda filtrado: un filtro
+ * tiene que decir cuánto hay detrás antes de pulsarlo.
  */
-export function ArchiveAside({ corpus, legs, filters, onChange }: AsideProps) {
+export function ArchiveFilterPanel({ corpus, legs, filters, onChange }: FiltersProps) {
   const available = useMemo(() => facets(corpus.entries, legs), [corpus.entries, legs]);
-
   const categoryName = (id: string) => corpus.categories.find((c) => c.id === id)?.name ?? id;
-
-  const tags = available.tags.filter(
-    (tag) => tag.count >= TAG_FLOOR || filters.tags.includes(tag.id),
-  );
-
-  const puestos =
-    filters.categories.length + filters.types.length + filters.statuses.length + filters.tags.length;
+  const tags = available.tags.filter((tag) => tag.count >= TAG_FLOOR || filters.tags.includes(tag.id));
 
   return (
     <View>
-      <View style={styles.head}>
-        <Text style={styles.label}>las facetas</Text>
-        <Text style={[styles.state, puestos > 0 && styles.stateOn]}>
-          {puestos > 0 ? `${puestos} puestas` : 'ninguna'}
-        </Text>
-      </View>
-
       <TextInput
         value={filters.query}
         onChangeText={(query) => onChange({ ...filters, query })}
         placeholder="buscar"
         placeholderTextColor={colors.dim}
-        style={styles.search}
+        style={styles.busca}
         autoCorrect={false}
         accessibilityLabel="buscar en el archivo"
         returnKeyType="search"
       />
 
-      <Group label="patas">
+      <Grupo label="patas">
         {available.categories.map((facet) => (
           <Chip
             key={facet.id}
@@ -113,9 +176,9 @@ export function ArchiveAside({ corpus, legs, filters, onChange }: AsideProps) {
             onPress={() => onChange({ ...filters, categories: toggle(filters.categories, facet.id) })}
           />
         ))}
-      </Group>
+      </Grupo>
 
-      <Group label="tipo">
+      <Grupo label="tipo">
         {available.types.map((facet) => (
           <Chip
             key={facet.id}
@@ -125,24 +188,22 @@ export function ArchiveAside({ corpus, legs, filters, onChange }: AsideProps) {
             onPress={() => onChange({ ...filters, types: toggle(filters.types, facet.id as EntryType) })}
           />
         ))}
-      </Group>
+      </Grupo>
 
-      <Group label="estado">
+      <Grupo label="estado">
         {available.statuses.map((facet) => (
           <Chip
             key={facet.id}
             label={STATUS_LABEL[facet.id as EpistemicStatus]}
             count={facet.count}
             on={filters.statuses.includes(facet.id as EpistemicStatus)}
-            onPress={() =>
-              onChange({ ...filters, statuses: toggle(filters.statuses, facet.id as EpistemicStatus) })
-            }
+            onPress={() => onChange({ ...filters, statuses: toggle(filters.statuses, facet.id as EpistemicStatus) })}
           />
         ))}
-      </Group>
+      </Grupo>
 
       {tags.length > 0 ? (
-        <Group label="tags">
+        <Grupo label="tags">
           {tags.map((facet) => (
             <Chip
               key={facet.id}
@@ -152,38 +213,73 @@ export function ArchiveAside({ corpus, legs, filters, onChange }: AsideProps) {
               onPress={() => onChange({ ...filters, tags: toggle(filters.tags, facet.id) })}
             />
           ))}
-        </Group>
+        </Grupo>
       ) : null}
 
-      <Pressable
-        accessibilityRole="button"
-        accessibilityLabel="quitar los filtros"
-        accessibilityHint="deja el archivo entero a la vista"
-        disabled={isEmpty(filters)}
-        onPress={() => onChange({ ...NO_FILTERS })}
-        style={[styles.clear, isEmpty(filters) && styles.clearOff]}
-      >
-        <Text style={styles.clearText}>quitar los filtros</Text>
-      </Pressable>
+      <View style={styles.mas}>
+        <ToolButton
+          label="quitar los filtros"
+          onPress={() => onChange({ ...NO_FILTERS })}
+          hint="deja el archivo entero a la vista"
+        />
+      </View>
     </View>
   );
 }
 
-function Group({ label, children }: { label: string; children: React.ReactNode }) {
+function Grupo({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <View style={styles.group}>
-      <Text style={styles.groupLabel}>{label}</Text>
-      <View style={styles.chips}>{children}</View>
+    <View style={styles.grupo}>
+      <Text style={styles.grupoLabel}>{label}</Text>
+      <View style={styles.fichas}>{children}</View>
     </View>
+  );
+}
+
+/** Una marca de la regla de tipos: nombre, cuenta, y conmuta el filtro. */
+function TipoMarca({
+  label,
+  count,
+  on,
+  onPress,
+}: {
+  label: string;
+  count: number;
+  on: boolean;
+  onPress: () => void;
+}) {
+  const { focusVisible, onFocus, onBlur } = useFocusRing();
+  const [hovered, setHovered] = useState(false);
+  const alto = useTouchHeight();
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityLabel={label}
+      accessibilityHint={`${count} entradas de este tipo`}
+      accessibilityState={{ selected: on }}
+      aria-pressed={on}
+      onPress={onPress}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
+      onFocus={onFocus}
+      onBlur={onBlur}
+      style={[styles.tipo, { minHeight: alto }, on && styles.tipoOn, focusVisible && styles.focus]}
+    >
+      <Text style={[styles.tipoTexto, (on || hovered) && styles.tipoTextoOn]}>{label}</Text>
+      <Text style={[styles.tipoCuenta, on && styles.tipoCuentaOn]}>{count}</Text>
+    </Pressable>
   );
 }
 
 function Row({
   entry,
+  compact,
   categoryName,
   onPress,
 }: {
   entry: Entry;
+  compact: boolean;
   categoryName: (id: string) => string;
   onPress: () => void;
 }) {
@@ -191,54 +287,107 @@ function Row({
   const [hovered, setHovered] = useState(false);
   // CLAUDE.md: el estado epistémico siempre se ve cuando no es un hecho.
   const status = entry.epistemicStatus === 'fact' ? null : STATUS_LABEL[entry.epistemicStatus];
-  const meta = [TYPE_LABEL[entry.type], ...entry.categories.map(categoryName)].join(' · ');
+  const year = entryYear(entry);
+  const datos = [
+    TYPE_LABEL[entry.type],
+    year === null ? null : String(year),
+    ...entry.categories.map(categoryName),
+    status,
+  ]
+    .filter(Boolean)
+    .join(' · ');
 
   return (
     <Pressable
       accessibilityRole="link"
       accessibilityLabel={entry.title}
-      accessibilityHint={`${catalogId(entry.id)}. ${meta}${status ? `. ${status}` : ''}`}
+      accessibilityHint={`${catalogId(entry.id)}. ${datos}. abre la entrada.`}
       onPress={onPress}
       onHoverIn={() => setHovered(true)}
       onHoverOut={() => setHovered(false)}
       onFocus={onFocus}
       onBlur={onBlur}
-      style={[styles.row, focusVisible && styles.focus]}
+      style={[styles.fila, focusVisible && styles.focus]}
     >
-      <Text style={[styles.title, hovered && styles.underline]}>{entry.title}</Text>
-      {/* Identificador y datos en la misma línea. Eran dos, y dos líneas por
-          cuarenta y cuatro entradas es media pantalla de más. No se quita
-          nada: el estado epistémico sigue aquí, que es lo que manda. */}
-      <Text style={styles.meta}>
-        <Text style={styles.catalog}>{catalogId(entry.id)}</Text>
-        {` · ${meta}`}
-        {status ? ` · ${status}` : ''}
+      <Text style={[styles.titulo, hovered && styles.subrayado]} numberOfLines={compact ? 2 : 1}>
+        {entry.title}
+      </Text>
+      <Text style={styles.datos} numberOfLines={2}>
+        <Text style={styles.catalogo}>{catalogId(entry.id)}</Text>
+        {` · ${datos}`}
+        {entry.related.length > 0 ? ` · ${entry.related.length} cruces` : ''}
       </Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  // La cabecera del panel, con la misma gramática que las patas.
-  head: {
+  barra: {
     flexDirection: 'row',
-    alignItems: 'baseline',
+    alignItems: 'center',
     justifyContent: 'space-between',
-    marginBottom: space.xs,
+    gap: space.md,
+    marginBottom: space.sm,
   },
-  label: {
+  cuenta: {
     fontFamily: fonts.mono,
-    fontSize: 10,
-    letterSpacing: 2,
+    fontSize: 11,
+    letterSpacing: 1.2,
     color: colors.dim,
     textTransform: 'uppercase',
   },
-  state: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1.2, color: colors.dim },
-  stateOn: { color: machine },
 
-  // El fondo es el del lienzo, no el de la columna: la columna ya es
-  // `surface`, y una caja del mismo color que su panel no se ve.
-  search: {
+  regla: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: space.xs,
+    paddingBottom: space.sm,
+    marginBottom: space.xs,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.line,
+  },
+  tipo: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: 4,
+    minHeight: 26,
+    paddingHorizontal: 6,
+    borderWidth: 1,
+    borderColor: 'transparent',
+    outlineWidth: 0,
+  },
+  tipoOn: { borderColor: machine },
+  tipoTexto: { fontFamily: fonts.mono, fontSize: 11, letterSpacing: 0.9, color: colors.dim },
+  tipoTextoOn: { color: colors.text },
+  tipoCuenta: { fontFamily: fonts.mono, fontSize: 9, letterSpacing: 0.9, color: colors.line },
+  tipoCuentaOn: { color: machine },
+
+  // Dos resultados por fila donde quepan; lo decide el ancho, no un umbral.
+  lista: { flexDirection: 'row', flexWrap: 'wrap', columnGap: space.md },
+  fila: {
+    flexGrow: 1,
+    flexBasis: 320,
+    minHeight: HIT_SIZE,
+    paddingVertical: space.xs,
+    borderTopWidth: StyleSheet.hairlineWidth * 2,
+    borderTopColor: colors.line,
+    outlineWidth: 0,
+  },
+  titulo: { fontFamily: fonts.serif, fontSize: 20, lineHeight: 27, color: colors.text },
+  datos: {
+    fontFamily: fonts.mono,
+    fontSize: 11,
+    lineHeight: 17,
+    letterSpacing: 0.6,
+    color: colors.dim,
+  },
+  // El identificador es uno de los dos únicos usos del acento.
+  catalogo: { color: colors.accent },
+  subrayado: { textDecorationLine: 'underline', textDecorationColor: colors.line },
+
+  mas: { marginTop: space.md, flexDirection: 'row' },
+
+  busca: {
     minHeight: HIT_SIZE,
     paddingHorizontal: space.sm,
     borderWidth: 1,
@@ -249,9 +398,8 @@ const styles = StyleSheet.create({
     color: colors.text,
     outlineWidth: 0,
   },
-
-  group: { marginTop: space.md },
-  groupLabel: {
+  grupo: { marginTop: space.md },
+  grupoLabel: {
     fontFamily: fonts.mono,
     fontSize: 10,
     letterSpacing: 2,
@@ -259,73 +407,13 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     marginBottom: space.xs,
   },
-  chips: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
+  fichas: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
 
-  clear: {
-    minHeight: 34,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: space.md,
-    borderWidth: 1,
-    borderColor: colors.line,
-    outlineWidth: 0,
-  },
-  clearOff: { opacity: 0.35 },
-  clearText: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1.6, color: colors.dim, textTransform: 'uppercase' },
-
-  count: {
-    fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
-    color: colors.dim,
-    paddingBottom: space.sm,
-  },
-  empty: {
+  vacio: {
     fontFamily: fonts.serif,
     fontSize: 18,
     lineHeight: 28,
     color: colors.dim,
   },
-
-  /*
-   * Cuantos resultados quepan por fila, sin un punto de ruptura escrito: lo
-   * decide el ancho que haya. La base es 320 y no menos, **y eso es
-   * compactación aunque parezca lo contrario**: medido, con tres columnas de
-   * 267 px los títulos envolvían a dos líneas y la sección salía más alta que
-   * con dos columnas anchas. Estrechar la caja no ahorra pantalla: la alarga.
-   */
-  results: { flexDirection: 'row', flexWrap: 'wrap', columnGap: space.md },
-  row: {
-    flexGrow: 1,
-    flexBasis: 320,
-    minHeight: HIT_SIZE,
-    paddingVertical: space.xs,
-    borderTopWidth: StyleSheet.hairlineWidth * 2,
-    borderTopColor: colors.line,
-    outlineWidth: 0,
-  },
-  // El identificador es uno de los dos únicos usos del acento.
-  catalog: {
-    fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
-    color: colors.accent,
-  },
-  title: {
-    fontFamily: fonts.serif,
-    fontSize: 20,
-    lineHeight: 27,
-    color: colors.text,
-  },
-  meta: {
-    fontFamily: fonts.mono,
-    fontSize: 12,
-    lineHeight: 18,
-    letterSpacing: 0.72,
-    color: colors.dim,
-    marginTop: 2,
-  },
-
-  underline: { textDecorationLine: 'underline', textDecorationColor: colors.line },
-  focus: { outlineColor: colors.accent, outlineStyle: 'solid', outlineWidth: 1, outlineOffset: 2 },
+  focus: { outlineColor: machine, outlineStyle: 'solid', outlineWidth: 1, outlineOffset: 2 },
 });

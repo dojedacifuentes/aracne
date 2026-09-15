@@ -134,7 +134,7 @@ describe('los filtros viajan en la URL', () => {
     });
     const url = routeToUrl({ name: 'archive', filters });
     expect(url).toBe(
-      '/archivo?categorias=logica,telaranas&tipos=work&tags=borges&estado=fiction&q=laberinto',
+      '/invocaciones?categorias=logica,telaranas&tipos=work&tags=borges&estado=fiction&q=laberinto',
     );
     const [pathname, query] = url.split('?');
     const route = parseRoute(pathname, `?${query}`);
@@ -149,9 +149,20 @@ describe('los filtros viajan en la URL', () => {
   });
 
   it('sin filtros no hay query', () => {
-    expect(routeToUrl({ name: 'archive', filters: NO_FILTERS })).toBe('/archivo');
+    expect(routeToUrl({ name: 'archive', filters: NO_FILTERS })).toBe('/invocaciones');
+    expect(parseRoute('/invocaciones', '')).toEqual({ name: 'archive', filters: NO_FILTERS });
+    expect(parseRoute('/invocaciones/', '')).toEqual({ name: 'archive', filters: NO_FILTERS });
+  });
+
+  it('la URL vieja del archivo sigue abriendo', () => {
+    // `/archivo` se compartió antes de que la sección se llamara invocaciones.
+    // Se sigue entendiendo, aunque ya no se escriba: quien guardó el enlace no
+    // tiene por qué pagar un cambio de nombre de aquí dentro.
     expect(parseRoute('/archivo', '')).toEqual({ name: 'archive', filters: NO_FILTERS });
     expect(parseRoute('/archivo/', '')).toEqual({ name: 'archive', filters: NO_FILTERS });
+    const conFiltros = parseRoute('/archivo', '?categorias=logica');
+    if (conFiltros.name !== 'archive') throw new Error('la ruta debería ser el archivo');
+    expect(conFiltros.filters.categories).toEqual(['logica']);
   });
 
   it('un filtro inventado se descarta y no vacía el archivo', () => {

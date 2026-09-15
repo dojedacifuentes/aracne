@@ -5,9 +5,26 @@ import { useFocusRing } from '../hooks/useFocusRing';
 import { colors, fonts, HIT_SIZE, machine, space } from '../theme';
 import { Sigil } from './Sigil';
 
-/** Anchos de las dos columnas laterales. El centro se queda con el resto. */
-export const NAV_WIDTH = 248;
-export const ASIDE_WIDTH = 310;
+/** Ancho de la columna de secciones. El centro se queda con todo lo demás. */
+export const NAV_WIDTH = 236;
+
+/**
+ * Cuánto ancho quiere el centro. No es decoración: es la diferencia entre una
+ * ficha que se lee y un mapa que se mira.
+ *
+ * - `lectura`: una columna editorial centrada en el hueco. Antes se quedaba
+ *   pegada a la izquierda con seiscientos píxeles de negro a la derecha.
+ * - `lista`: ancha, pero con tope; una lista de mil filas de pared a pared no
+ *   se recorre con los ojos.
+ * - `instrumento`: todo el ancho disponible. El mapa es el contenido.
+ */
+export type Measure = 'lectura' | 'lista' | 'instrumento';
+
+const MAX_WIDTH: Record<Measure, number | undefined> = {
+  lectura: 980,
+  lista: 1320,
+  instrumento: undefined,
+};
 
 export interface ShellItem {
   id: string;
@@ -23,6 +40,28 @@ export interface ShellGroup {
   items: ShellItem[];
 }
 
+type Props = {
+  groups: ShellGroup[];
+  /** Cabecera de la columna central. */
+  title: string;
+  meta: string;
+  /** La barra de estado de la derecha de la cabecera: cifras de la máquina. */
+  status?: string;
+  /** Lo que ocupa el centro. */
+  children: ReactNode;
+  measure?: Measure;
+  /**
+   * Instrumento contextual como **columna**. Solo se usa donde sobra ancho de
+   * verdad; el resto del tiempo el instrumento es un `Drawer` superpuesto y
+   * aquí no hay nada. Ninguna ruta reserva ancho por tenerlo disponible.
+   */
+  aside?: ReactNode;
+  /** Botonera al pie del centro. */
+  footer?: ReactNode;
+  /** Pantalla estrecha: todo se apila. */
+  compact: boolean;
+};
+
 /** El nodo del DOM de un `ScrollView`, en web. En nativo no hay tal cosa. */
 function scrollNode(ref: { current: ScrollView | null }): HTMLElement | null {
   if (Platform.OS !== 'web') return null;
@@ -33,8 +72,8 @@ function scrollNode(ref: { current: ScrollView | null }): HTMLElement | null {
 
 /**
  * ¿Hay alguna caja entre `desde` y `hasta` que pueda moverse en ese sentido?
- * Sirve para no robarle la rueda a quien sí la estaba usando: el panel de la
- * derecha tiene su propio recorrido y debe quedárselo.
+ * Sirve para no robarle la rueda a quien sí la estaba usando: un cajón abierto
+ * tiene su propio recorrido y debe quedárselo.
  */
 function alguienLaUsa(desde: EventTarget | null, hasta: HTMLElement, delta: number): boolean {
   let nodo = desde instanceof HTMLElement ? desde : null;
@@ -55,18 +94,13 @@ function alguienLaUsa(desde: EventTarget | null, hasta: HTMLElement, delta: numb
  *
  * Cada columna tiene el suyo, así que la rueda solo movía el contenido con el
  * cursor sobre él: sobre el menú de la izquierda, sobre la cabecera o sobre el
- * pie no pasaba nada, y como la barra estaba escondida tampoco se veía que
- * hubiera más abajo. Aquí el centro recoge la rueda que ninguna otra columna
+ * pie no pasaba nada. Aquí el centro recoge la rueda que ninguna otra columna
  * ha usado, y se le añaden las teclas de página, que en un `ScrollView` no
  * existen. Solo en web: en nativo el gesto ya es del sistema.
  */
-function useRecorridoCentral(
-  raiz: { current: View | null },
-  centro: { current: ScrollView | null },
-  activo: boolean,
-) {
+function useRecorridoCentral(raiz: { current: View | null }, centro: { current: ScrollView | null }) {
   useEffect(() => {
-    if (Platform.OS !== 'web' || !activo) return;
+    if (Platform.OS !== 'web') return;
     const caja = raiz.current as unknown as HTMLElement | null;
     const lienzo = scrollNode(centro);
     if (!caja || !lienzo) return;
@@ -100,49 +134,41 @@ function useRecorridoCentral(
       caja.removeEventListener('wheel', onWheel);
       window.removeEventListener('keydown', onKey);
     };
-  }, [raiz, centro, activo]);
+  }, [raiz, centro]);
 }
 
-type Props = {
-  groups: ShellGroup[];
-  /** Cabecera de la columna central. */
-  title: string;
-  meta: string;
-  /** Lo que ocupa el centro. */
-  children: ReactNode;
-  /** La columna de la derecha: estado e instrumentos. */
-  aside?: ReactNode;
-  /**
-   * Solo en vertical, donde las tres columnas se apilan: el instrumento va
-   * antes del contenido. Lo pide el archivo, y solo el archivo — un filtro
-   * detrás de cuarenta y cuatro resultados no es un filtro.
-   */
-  asideFirst?: boolean;
-  /** Botonera al pie del centro. */
-  footer?: ReactNode;
-  /** Pantalla estrecha: todo se apila. */
-  compact: boolean;
-};
-
 /**
- * El armazón de la aplicación.
+ * El armazón de la aplicación: **secciones a la izquierda y contenido en el
+ * centro**. No hay tercera columna por defecto.
  *
- * Tres columnas: **las secciones a la izquierda, el contenido en el centro y
- * los instrumentos a la derecha**. Sustituye al reparto anterior —escenario a
- * un lado, panel al otro—, donde abrir cualquier sección la dejaba pegada a la
- * araña y con la mitad del ancho.
+ * La consola de la fase 15 traía una columna derecha permanente de 310 px con
+ * las once patas, estuviera uno leyendo una ficha o mirando un mapa. Eso es
+ * ancho cobrado por adelantado a un instrumento que casi nunca se usaba en esa
+ * pantalla. Ahora el instrumento aparece cuando se pide —`Drawer`— y el ancho
+ * se lo lleva el contenido, que es lo que se venía a ver.
  *
- * El aire es el de una consola: etiquetas en mono y versales, filетes de un
+ * El aire es el de una consola: etiquetas en mono y versales, filetes de un
  * píxel, y el frío del instrumento (`machine`) para todo lo que se puede
- * tocar. `docs/DESIGN.md` pedía un solo acento y ninguna superficie; esta
- * pantalla es una excepción pedida expresamente, y su regla propia es que **el
- * frío es de lo interactivo y el cálido es del contenido**: si algo se puede
- * pulsar, se ve; si es texto del archivo, nunca se pinta.
+ * tocar. La regla de la excepción de `docs/DESIGN.md` sigue en pie: **el frío
+ * es de lo interactivo y el cálido es del contenido**.
  */
-export function Shell({ groups, title, meta, children, aside, asideFirst, footer, compact }: Props) {
+export function Shell({
+  groups,
+  title,
+  meta,
+  status,
+  children,
+  measure = 'lista',
+  aside,
+  footer,
+  compact,
+}: Props) {
   const raiz = useRef<View | null>(null);
   const centro = useRef<ScrollView | null>(null);
-  useRecorridoCentral(raiz, centro, true);
+  useRecorridoCentral(raiz, centro);
+
+  const tope = MAX_WIDTH[measure];
+  const caja = [styles.caja, tope ? { maxWidth: tope } : null];
 
   if (compact) {
     return (
@@ -162,9 +188,8 @@ export function Shell({ groups, title, meta, children, aside, asideFirst, footer
           ))}
         </ScrollView>
         <ScrollView ref={centro} style={styles.centerCompact} contentContainerStyle={styles.centerContent}>
-          {aside && asideFirst ? <View style={styles.asideBefore}>{aside}</View> : null}
           {children}
-          {aside && !asideFirst ? <View style={styles.asideCompact}>{aside}</View> : null}
+          {aside ? <View style={styles.asideCompact}>{aside}</View> : null}
         </ScrollView>
         {footer ? <View style={styles.footerCompact}>{footer}</View> : null}
       </View>
@@ -175,7 +200,7 @@ export function Shell({ groups, title, meta, children, aside, asideFirst, footer
     <View ref={raiz} style={styles.columns}>
       <View style={styles.nav}>
         <View style={styles.brand}>
-          <Sigil mark="aracne" size={34} />
+          <Sigil mark="aracne" size={30} />
           <View style={styles.brandText}>
             <Text style={styles.brandName}>aracne</Text>
             <Text style={styles.brandMeta}>archivo sin firma</Text>
@@ -195,23 +220,32 @@ export function Shell({ groups, title, meta, children, aside, asideFirst, footer
 
       <View style={styles.center}>
         <View style={styles.head}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.meta}>{meta}</Text>
+          <View style={styles.headText}>
+            <Text style={styles.title} numberOfLines={1}>
+              {title}
+            </Text>
+            <Text style={styles.meta} numberOfLines={1}>
+              {meta}
+            </Text>
+          </View>
+          {status ? (
+            <Text style={styles.status} numberOfLines={1}>
+              {status}
+            </Text>
+          ) : null}
         </View>
         {/* La barra se ve: es la única manera de saber que hay más abajo. */}
         <ScrollView ref={centro} style={styles.centerScroll} contentContainerStyle={styles.centerContent}>
-          {children}
+          <View style={caja}>{children}</View>
         </ScrollView>
-        {footer ? <View style={styles.footer}>{footer}</View> : null}
+        {footer ? (
+          <View style={styles.footer}>
+            <View style={caja}>{footer}</View>
+          </View>
+        ) : null}
       </View>
 
-      {aside ? (
-        <View style={styles.asideColumn}>
-          <ScrollView style={styles.aside} contentContainerStyle={styles.asideContent}>
-            {aside}
-          </ScrollView>
-        </View>
-      ) : null}
+      {aside ? <View style={styles.asideColumn}>{aside}</View> : null}
     </View>
   );
 }
@@ -240,7 +274,7 @@ function NavItem({ item, compact }: { item: ShellItem; compact: boolean }) {
     >
       {/* La barra de la izquierda dice cuál está abierta sin usar color de fondo. */}
       {compact ? null : <View style={[styles.navBar, on && styles.navBarOn]} />}
-      <Sigil mark={item.label} size={compact ? 18 : 22} strong={hovered || on} />
+      <Sigil mark={item.label} size={compact ? 18 : 20} strong={hovered || on} />
       <View style={styles.navText}>
         <Text style={[styles.navLabel, (hovered || on) && styles.navLabelOn]} numberOfLines={1}>
           {item.label}
@@ -271,12 +305,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: space.sm,
     paddingHorizontal: space.md,
-    paddingVertical: space.md,
+    paddingVertical: space.sm,
     borderBottomWidth: 1,
     borderBottomColor: colors.line,
   },
   brandText: { flex: 1 },
-  brandName: { fontFamily: fonts.serif, fontSize: 21, lineHeight: 27, color: colors.text },
+  brandName: { fontFamily: fonts.serif, fontSize: 20, lineHeight: 26, color: colors.text },
   brandMeta: {
     fontFamily: fonts.mono,
     fontSize: 10,
@@ -296,25 +330,25 @@ const styles = StyleSheet.create({
     marginBottom: space.xs,
   },
   navItem: {
-    minHeight: HIT_SIZE,
+    minHeight: HIT_SIZE - 6,
     flexDirection: 'row',
     alignItems: 'center',
     gap: space.sm,
     paddingRight: space.md,
-    paddingVertical: 7,
+    paddingVertical: 6,
     outlineWidth: 0,
   },
   navItemOn: { backgroundColor: colors.bg },
   navBar: { width: 2, alignSelf: 'stretch', backgroundColor: 'transparent' },
   navBarOn: { backgroundColor: machine },
   navText: { flex: 1 },
-  navLabel: { fontFamily: fonts.serif, fontSize: 17, lineHeight: 24, color: colors.dim },
+  navLabel: { fontFamily: fonts.serif, fontSize: 16, lineHeight: 22, color: colors.dim },
   navLabelOn: { color: colors.text },
   navHint: {
     fontFamily: fonts.mono,
     fontSize: 10,
     letterSpacing: 0.9,
-    lineHeight: 15,
+    lineHeight: 14,
     color: colors.line,
   },
 
@@ -325,7 +359,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   navChip: {
-    height: 36,
+    height: HIT_SIZE,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
@@ -336,20 +370,17 @@ const styles = StyleSheet.create({
   },
 
   center: { flex: 1, minWidth: 0 },
-  /*
-   * El aire de la cabecera, el pie y la caja del centro se recortó a
-   * propósito: cada píxel que se quitan es un píxel que no hay que bajar, y
-   * son los mismos cuarenta y tantos en todas las secciones. La medida de
-   * lectura sigue mandando dentro —los textos largos siguen con su `maxWidth`
-   * de 640—, así que esto aprieta el marco, no la prosa.
-   */
   head: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    gap: space.md,
     paddingHorizontal: space.md,
     paddingTop: space.sm,
     paddingBottom: space.xs,
     borderBottomWidth: 1,
     borderBottomColor: colors.line,
   },
+  headText: { flex: 1, minWidth: 0 },
   title: { fontFamily: fonts.serif, fontSize: 26, lineHeight: 34, color: colors.text },
   meta: {
     fontFamily: fonts.mono,
@@ -358,8 +389,22 @@ const styles = StyleSheet.create({
     color: colors.dim,
     textTransform: 'uppercase',
   },
+  // La barra de estado de la máquina: cifras, a la derecha, siempre en frío.
+  status: {
+    fontFamily: fonts.mono,
+    fontSize: 10,
+    letterSpacing: 1.4,
+    color: colors.line,
+    textTransform: 'uppercase',
+  },
   centerScroll: { flex: 1 },
   centerContent: { paddingHorizontal: space.md, paddingTop: space.md, paddingBottom: space.lg },
+  /**
+   * La caja del contenido: centrada en el hueco, nunca pegada a un lado. Una
+   * ficha de setecientos píxeles en una pantalla de mil novecientos quedaba
+   * arrinconada contra el menú, con medio metro de negro a la derecha.
+   */
+  caja: { width: '100%', alignSelf: 'center' },
   footer: {
     paddingHorizontal: space.md,
     paddingVertical: space.xs,
@@ -367,16 +412,15 @@ const styles = StyleSheet.create({
     borderTopColor: colors.line,
   },
 
+  /** Columna de instrumento. Se usa donde sobra ancho; nunca por defecto. */
   asideColumn: {
-    width: ASIDE_WIDTH,
+    width: 320,
     flexGrow: 0,
     flexShrink: 0,
     borderLeftWidth: 1,
     borderLeftColor: colors.line,
     backgroundColor: colors.surface,
   },
-  aside: { flex: 1 },
-  asideContent: { padding: space.md, paddingBottom: space.xl },
 
   stack: { flex: 1 },
   // Sin esto la fila de secciones se come media pantalla en vertical.
@@ -384,10 +428,9 @@ const styles = StyleSheet.create({
   headCompact: { paddingHorizontal: space.md, paddingTop: space.sm, paddingBottom: space.xs },
   centerCompact: { flex: 1 },
   asideCompact: { marginTop: space.lg },
-  asideBefore: { marginBottom: space.lg },
   footerCompact: {
     paddingHorizontal: space.md,
-    paddingVertical: space.sm,
+    paddingVertical: space.xs,
     borderTopWidth: 1,
     borderTopColor: colors.line,
   },

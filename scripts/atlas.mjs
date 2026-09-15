@@ -23,14 +23,39 @@
 import fs from 'node:fs';
 import path from 'node:path';
 
-const FUENTE =
-  'https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_110m_admin_0_countries.geojson';
+/**
+ * La escala de la fuente. `50m` da costas de verdad —Indonesia deja de ser
+ * cuatro manchas, el Caribe existe, Chile tiene fiordos— a cambio de más
+ * puntos; `110m` era lo que había antes. Se cambia con
+ * `npm run atlas -- --escala 110m`, y el archivo que sale dice cuál se usó.
+ */
+const ESCALA = leerEscala();
+const FUENTE = `https://raw.githubusercontent.com/nvkelso/natural-earth-vector/master/geojson/ne_${ESCALA}_admin_0_countries.geojson`;
 const OUT = path.join(process.cwd(), 'content', 'atlas');
 
-/** Tolerancia de simplificación, en grados. */
-const EPS = 0.32;
-/** Un anillo más pequeño que esto no se ve a escala mundial. */
-const MIN_SPAN = 0.7;
+/**
+ * Tolerancia de simplificación, en grados, y tamaño mínimo de un anillo.
+ *
+ * A 1:50m hay que apretar la tolerancia —si no, la ganancia de la fuente se
+ * tira por el desagüe en el mismo paso que la trajo— y bajar el mínimo de
+ * isla, que es lo que de verdad se notaba: con 0,7 grados desaparecían
+ * archipiélagos enteros.
+ */
+const AJUSTES = {
+  '50m': { eps: 0.14, minSpan: 0.22, decimals: 2 },
+  '110m': { eps: 0.32, minSpan: 0.7, decimals: 2 },
+};
+const { eps: EPS, minSpan: MIN_SPAN, decimals: DECIMALES } = AJUSTES[ESCALA];
+
+function leerEscala() {
+  const i = process.argv.indexOf('--escala');
+  const valor = i >= 0 ? process.argv[i + 1] : '50m';
+  if (valor !== '50m' && valor !== '110m') {
+    console.error(`error  escala desconocida: ${valor}. usa 50m o 110m.`);
+    process.exit(1);
+  }
+  return valor;
+}
 
 /** Distancia de un punto a la recta que une los otros dos. */
 function distancia(p, a, b) {
@@ -68,7 +93,8 @@ function simplificar(points, eps) {
   return points.filter((_, i) => keep[i]);
 }
 
-const redondear = (v) => Math.round(v * 100) / 100;
+const factor = 10 ** DECIMALES;
+const redondear = (v) => Math.round(v * factor) / factor;
 
 function caja(points) {
   let x0 = Infinity;
@@ -115,7 +141,13 @@ for (const feature of crudo.features) {
 
   const todos = anillos(feature.geometry);
   const simplificados = todos
-    .map((ring) => ({ ring: simplificar(ring, EPS), caja: caja(ring), area: superficie(ring) }))
+    .map((ring) => {
+      const simple = simplificar(ring, EPS);
+      // Un anillo de dos puntos no es un polígono, es un palo. A 1:50m
+      // aparecen islas tan pequeñas que la simplificación se las come: para
+      // ésas vale más el contorno crudo, que son cuatro coordenadas.
+      return { ring: simple.length >= 3 ? simple : ring, caja: caja(ring), area: superficie(ring) };
+    })
     .sort((a, b) => b.area - a.area);
   // El anillo mayor entra siempre, aunque sea diminuto: ningún país puede
   // quedarse fuera del mapa por pequeño.
@@ -145,12 +177,12 @@ countries.sort((a, b) => a.id.localeCompare(b.id));
 
 const salida = {
   source: {
-    name: 'Natural Earth, admin 0 countries, 1:110m',
+    name: `Natural Earth, admin 0 countries, 1:${ESCALA}`,
     url: FUENTE,
     license: 'dominio público',
     note: 'Geometría y atributos reales. Lo que el Atlas calcula encima es ficción declarada.',
   },
-  simplified: { algorithm: 'Douglas-Peucker', epsilon: EPS, decimals: 2, minSpan: MIN_SPAN },
+  simplified: { algorithm: 'Douglas-Peucker', epsilon: EPS, decimals: DECIMALES, minSpan: MIN_SPAN },
   countries,
 };
 

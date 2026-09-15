@@ -7,6 +7,31 @@ pequeños y precisos abajo, y un solo objeto en pantalla a la vez.
 Eso resuelve la tensión entre "oscuro" y "sobrio". Lo oscuro viene del
 soporte; la sobriedad, de que hay una sola cosa en la página.
 
+## Dónde está esto ahora: archivo editorial + instrumento forense
+
+El catálogo razonado sigue siendo la base y no se sustituye. Lo que se le ha
+sumado es **el instrumento**: la parte de la pantalla que mide, filtra, apunta
+y cuenta. Un archivo que además es una máquina de consultar.
+
+La mezcla tiene una sola regla, y de ella cuelga todo lo demás:
+
+> **El contenido es editorial y cálido. El instrumento es frío y pequeño.**
+> Lo que se lee va en serif, con su medida y su aire. Lo que se toca va en
+> mono, en versales, de un píxel de trazo y del frío de la máquina.
+
+De ahí sale la estética que se buscaba —archivo clasificado de 1999, software
+científico abandonado, terminal universitaria— sin una sola concesión al
+cyberpunk de tienda: la sensación es de **sistema**, no de neón. Entra por la
+interacción y por el lenguaje —corchetes de tecla, cuentas, coordenadas,
+inversión al pasar por encima, barras de estado, sprites de 32 píxeles— y no
+por añadir luz.
+
+Sigue prohibido, y ahora con más motivo porque es lo que más cerca queda:
+neón decorativo, *glow* gratuito, glassmorphism, degradados sin función,
+tarjetas redondeadas, sombras, y cualquier componente que se reconozca como
+«panel de SaaS». El frío de la máquina no es un segundo acento: es un color
+ya existente (`machine`) usado **solo** en lo que se puede tocar.
+
 ## Color
 
 Negro cálido, no azulado. El neutro frío es el tell de la interfaz cyberpunk
@@ -104,6 +129,85 @@ El identificador cuenta rápido hasta su número, 200 ms. Es el único gesto de
 Con `prefers-reduced-motion`, todo queda en un fundido de 120 ms sin
 desplazamiento ni contador.
 
+## Cuándo hay tercera columna: nunca por defecto
+
+El armazón tiene **dos columnas**: las secciones a la izquierda y el contenido
+en el centro. No hay panel derecho permanente. Lo hubo —310 px con las once
+patas, en todas las rutas, también leyendo una ficha— y ése es exactamente el
+error que esta revisión corrige: **ancho cobrado por adelantado a un
+instrumento que en esa pantalla no decide nada**.
+
+Lo que un instrumento puede ser, en orden de preferencia:
+
+1. **Nada.** Si la sección no necesita mando, no hay columna ni botón.
+2. **Un cajón** (`ui/components/Drawer.tsx`): se superpone por la derecha,
+   380 px, y en vertical sube desde abajo como una hoja. **No cambia la medida
+   del contenido de debajo**, que es la diferencia entre consultar y perder el
+   sitio. Cierra con `Escape`, con el fondo y con su aspa.
+3. **Una barra compacta** sobre el propio contenido, cuando el mando es de tres
+   botones y se usa constantemente: el Atlas la tiene.
+4. **Una columna**, que el `Shell` sigue admitiendo (`aside`) pero que hoy no
+   usa ninguna ruta. Si algún día se usa, tendrá que justificar el ancho.
+
+El disparador es siempre el mismo componente y siempre se ve igual:
+`[ expediente ]`, `[ filtros 3 ]`, `[ lente: guerra nuclear ]`. Va entre
+corchetes porque así se nombran las teclas en un manual.
+
+## Divulgación progresiva: qué está oculto y por qué
+
+**Menos elementos permanentes, más información contextual.** Lo que se usa de
+vez en cuando no puede ocupar sitio todo el rato.
+
+| qué | dónde estaba | dónde está |
+|---|---|---|
+| las once patas | columna fija en todas las rutas | el modo de invocación (`InvocationComposer`) |
+| el propósito de cada pata | una sección entera del menú | la ficha de cada pata, dentro del compositor |
+| tipo, fuentes, atlas, autores, exportación | banda fija junto al cuerpo de la entrada | `[ expediente ]` |
+| facetas del archivo | columna fija | `[ filtros ]` |
+| las 34 causas del Atlas | columna fija | `[ lente ]` |
+| pieles y mapas de la tela | columna fija | `[ instrumento ]` |
+
+**Lo que no se esconde nunca:** el estado epistémico de una entrada. Lo exige
+`CLAUDE.md` y tiene razón: dice cómo hay que leer lo que se está leyendo. Va
+dos veces, en el trazo del borde del cuerpo y escrito al pie.
+
+## Las patas
+
+Aparecen **solo cuando se va a invocar**. Y dentro del compositor:
+
+- Una pulsación **siempre conmuta**, la primera y la décima. Si inspeccionar
+  fuera «volver a pulsar», soltar una pata sería imposible.
+- La ficha de la pata se abre por **su sello** —un botón propio, alcanzable con
+  el tabulador, con su `aria-expanded`—, con doble pulsación o manteniendo
+  pulsado. Tres caminos, y ninguno le quita el sitio al conmutador.
+- La ficha dice: qué es, cuántas entradas tiene, con qué patas cruza bien —lo
+  dice el orden del anillo, no una lista escrita— y tres ejemplos.
+
+## Los autores
+
+Una sola cronología ascendente, de Ovidio a hoy, cortada por cabeceras de
+siglo que se calculan del dato. Los nueve temas siguen existiendo y siguen
+siendo el criterio bueno —agrupan problemas, no siglos ni escuelas— pero son
+**un filtro**, no una puerta: la puerta es el tiempo, que cualquiera sabe leer.
+
+Cada autor lleva su sprite. Primero, el emblema dibujado a mano de
+`public/figures/<id>.svg`, 32×32 píxeles y seis tokens, que son lo mejor que
+tiene este archivo. Cuando no hay dibujo —y con cientos de autores no lo
+habrá— entra un **espectro**: busto de frente en una rejilla de 16×16, relleno
+con ruido del PRNG sembrado con el identificador. Determinista, así que la
+misma persona tiene siempre la misma cara de máquina; y con su marco de trazos,
+porque es una ficha pendiente, no un avatar.
+
+## El Atlas
+
+El mapa es el contenido, así que se lleva el ancho entero de la columna y toda
+la altura que quede de pantalla. Encima, una barra compacta —zoom, mundo, ir a,
+buscar país, lente—. Dentro, en una esquina del mar, la leyenda de la rampa con
+sus cortes. Debajo, **inmediatamente**, la ficha del país.
+
+Abrir `/atlas/AUS` encuadra Australia: un mapa que enseña el mundo entero
+cuando le han pedido un país no ha contestado a la pregunta.
+
 ## La barra de desplazamiento
 
 Se ve. Está en `public/index.html`, fina y con los colores de la paleta: el
@@ -119,3 +223,13 @@ sea de un píxel y del color de los filetes.
 Neón, glow, scanlines, gradientes, glassmorphism, tarjetas redondeadas
 idénticas, sombras suaves bajo todo, flechas `→` pegadas al texto de los
 botones, un segundo color de acento, iconos decorativos, emoji.
+
+Y, desde esta revisión, tres más:
+
+- **Una columna lateral que no se ha ganado el ancho.** Si el instrumento no se
+  usa en esa pantalla, no está.
+- **Una caja alrededor del artículo.** La ficha de entrada no es una tarjeta:
+  es texto con aire.
+- **Una ficha de lectura arrinconada.** Si la columna de lectura es más
+  estrecha que el hueco, se centra en él. Nunca se pega al menú dejando medio
+  metro de negro a la derecha.
