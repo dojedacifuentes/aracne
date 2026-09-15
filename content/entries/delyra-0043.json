@@ -13,10 +13,31 @@
     "azar",
     "control"
   ],
-  "content": "El procedimiento consiste en tomar una página, cortarla en cuatro, recombinar los trozos y leer lo que resulta. Quienes lo practicaron no lo presentaban como un juego formal sino como una operación sobre el pensamiento: si las asociaciones habituales entre palabras son el mecanismo por el que un discurso se impone, romperlas a tijera sería una forma material de desobedecerlo. De ahí la fórmula de que el lenguaje se comporta como un virus, algo que se reproduce usándonos y que condiciona lo que se puede pensar. La tesis es discutible. El procedimiento, en cambio, se puede ejecutar y comprobar qué produce.",
+  "content": "El procedimiento consiste en tomar una página, cortarla en cuatro, recombinar los trozos y leer lo que resulta. Brion Gysin lo practicó en el verano de 1959 con artículos de periódico, y William S. Burroughs no lo trató como un simple juego: The Ticket That Exploded (1962), escrita con una variante del método, es una historia de control mental en la que los personajes cortan textos, y en ella la palabra es ahora un virus, un organismo parásito que invade el sistema nervioso y no deja callar. De ese pasaje salió la canción de Laurie Anderson «Language is a Virus». La tesis es discutible. El procedimiento, en cambio, se puede ejecutar y comprobar qué produce.",
   "question": "¿Qué se rompe además del texto cuando se corta una frase por la mitad?",
-  "sources": [],
-  "epistemicStatus": "unverified",
+  "sources": [
+    {
+      "label": "Burroughs, «The Cut-Up Method of Brion Gysin»",
+      "author": "William S. Burroughs",
+      "work": "The Cut-Up Method of Brion Gysin",
+      "url": "https://www.ubu.com/papers/burroughs_gysin.html",
+      "kind": "primary"
+    },
+    {
+      "label": "Burroughs, «The Ticket That Exploded», 1962",
+      "author": "William S. Burroughs",
+      "work": "The Ticket That Exploded",
+      "year": 1962,
+      "kind": "primary"
+    },
+    {
+      "label": "The Ticket That Exploded",
+      "work": "Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/The_Ticket_That_Exploded",
+      "kind": "reference"
+    }
+  ],
+  "epistemicStatus": "interpretation",
   "scores": {
     "strangeness": 4,
     "darkness": 3,
@@ -28,5 +49,5 @@
     "delyra-0042"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: técnica cut-up de Brion Gysin y William S. Burroughs, y la procedencia exacta de la fórmula «el lenguaje es un virus»."
+  "captureNote": "Comprobado en «The Cut-Up Method of Brion Gysin», de Burroughs, en UbuWeb: Gysin cortó artículos de periódico en el verano de 1959; el método es tomar una página, cortarla por la mitad a lo largo y a lo ancho y reordenar las cuatro secciones; Burroughs lo propone también para la estrategia, los datos científicos y el cine, y dice que es experimental «en el sentido de ser algo que se hace», no algo para discutir. El año de publicación del ensayo no se comprobó. En Wikipedia: The Ticket That Exploded es de 1962, escrita con la variante fold-in, trata del control mental, sus personajes usan el cut-up y expone la idea del lenguaje como virus; su pasaje «The word is now a virus» inspiró la canción de Laurie Anderson, y el «from outer space» del título no es de Burroughs. Retirado: que quienes lo practicaron lo presentaran como una manera de desobedecer un discurso rompiendo sus asociaciones no lo sostiene ninguna fuente comprobada."
 }
