@@ -28,7 +28,7 @@ export function ShapeView({ corpus, legs }: Props) {
 
   return (
     <View>
-      <Text style={styles.section}>la forma del archivo</Text>
+      {/* El título lo pone la cabecera de la consola: aquí sobraba. */}
       <Text style={styles.lead}>
         {shape.entries} entradas en {shape.lit} patas encendidas
         {shape.retracted > 0 ? ` y ${shape.retracted} en reserva` : ''}.{' '}
@@ -112,7 +112,6 @@ function Bar({ label, slice, max }: { label: string; slice: Slice; max: number }
 }
 
 const styles = StyleSheet.create({
-  section: { fontFamily: fonts.mono, ...MONO, color: colors.dim, marginBottom: space.sm },
   lead: {
     fontFamily: fonts.serif,
     fontSize: 18,

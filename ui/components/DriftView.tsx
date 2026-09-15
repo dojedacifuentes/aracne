@@ -70,7 +70,7 @@ export function DriftView({ corpus, seed, mode, leg, size, onOpen, onMode }: Pro
 
   return (
     <View>
-      <Text style={styles.section}>la red</Text>
+      {/* El título lo pone la cabecera de la consola: aquí sobraba. */}
       <Tela corpus={corpus} seed={seed} size={size} lit={lit} onOpen={onOpen} />
 
       <View style={styles.modes}>
@@ -175,7 +175,6 @@ function Line({ id, title, onPress }: { id: string; title: string; onPress: () =
 const MONO = { fontSize: 12, letterSpacing: 0.72, lineHeight: 18 } as const;
 
 const styles = StyleSheet.create({
-  section: { fontFamily: fonts.mono, ...MONO, color: colors.dim, marginBottom: space.sm },
   modes: { flexDirection: 'row', gap: space.xs, marginTop: space.md },
   mode: {
     paddingVertical: 6,

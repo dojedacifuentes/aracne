@@ -35,6 +35,33 @@
         background-color: #0e0d0c;
       }
       /*
+        La barra de desplazamiento, con los colores de la paleta: el hilo es
+        `--line` y al pasar por encima sube a `--dim`. No hay color nuevo.
+
+        Estaba escondida en las tres columnas, y una columna que se puede
+        recorrer sin decirlo no se recorre: nadie baja a lo que no sabe que
+        está. Fina, del color de los filetes, es un instrumento más.
+      */
+      * {
+        scrollbar-width: thin;
+        scrollbar-color: #2a2724 transparent;
+      }
+      ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background-color: #2a2724;
+        border: 3px solid transparent;
+        background-clip: content-box;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background-color: #8a857d;
+      }
+      /*
         El paquete pesa 1,8 MB y hasta que arranca no hay nada que mirar.
         Esta marca ocupa ese hueco y desaparece sola: en cuanto React monta
         algo dentro, #root deja de estar vacío y el pseudoelemento se va. Sin

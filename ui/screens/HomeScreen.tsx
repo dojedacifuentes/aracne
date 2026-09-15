@@ -69,9 +69,10 @@ export function HomeScreen({ reduceMotion }: Props) {
    * y no con el de la ventana: la araña se calculaba con la ventana entera y
    * se salía por encima del menú de la izquierda.
    */
+  // El aire de `centerContent` en Shell: si no coincide, el lienzo se pasa.
   const centro = portrait
     ? width - space.md * 2
-    : Math.max(360, width - NAV_WIDTH - ASIDE_WIDTH - space.lg * 2);
+    : Math.max(360, width - NAV_WIDTH - ASIDE_WIDTH - space.md * 2);
   const stageWeb = canvasSize(Math.round(centro * 0.74), height - 300, 460);
   const webSize = canvasSize(centro, height - 260, 720);
 
@@ -569,7 +570,10 @@ export function HomeScreen({ reduceMotion }: Props) {
                     ? (figure?.name ?? 'figura')
                     : route.name === 'theme'
                       ? (themeState?.theme.name ?? 'tema')
-                      : 'biografías';
+                      : // `drift` caía aquí y la cabecera decía «biografías».
+                        route.name === 'drift'
+                        ? 'la red'
+                        : 'biografías';
 
   const metaLinea =
     route.name === 'invocation'

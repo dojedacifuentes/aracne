@@ -197,7 +197,7 @@ function Row({
     <Pressable
       accessibilityRole="link"
       accessibilityLabel={entry.title}
-      accessibilityHint="abre la entrada"
+      accessibilityHint={`${catalogId(entry.id)}. ${meta}${status ? `. ${status}` : ''}`}
       onPress={onPress}
       onHoverIn={() => setHovered(true)}
       onHoverOut={() => setHovered(false)}
@@ -205,10 +205,13 @@ function Row({
       onBlur={onBlur}
       style={[styles.row, focusVisible && styles.focus]}
     >
-      <Text style={styles.catalog}>{catalogId(entry.id)}</Text>
       <Text style={[styles.title, hovered && styles.underline]}>{entry.title}</Text>
+      {/* Identificador y datos en la misma línea. Eran dos, y dos líneas por
+          cuarenta y cuatro entradas es media pantalla de más. No se quita
+          nada: el estado epistémico sigue aquí, que es lo que manda. */}
       <Text style={styles.meta}>
-        {meta}
+        <Text style={styles.catalog}>{catalogId(entry.id)}</Text>
+        {` · ${meta}`}
         {status ? ` · ${status}` : ''}
       </Text>
     </Pressable>
@@ -284,13 +287,19 @@ const styles = StyleSheet.create({
     color: colors.dim,
   },
 
-  // Dos resultados por fila: 44 entradas apiladas son veinte pantallas.
-  results: { flexDirection: 'row', flexWrap: 'wrap', columnGap: space.lg },
+  /*
+   * Cuantos resultados quepan por fila, sin un punto de ruptura escrito: lo
+   * decide el ancho que haya. La base es 320 y no menos, **y eso es
+   * compactación aunque parezca lo contrario**: medido, con tres columnas de
+   * 267 px los títulos envolvían a dos líneas y la sección salía más alta que
+   * con dos columnas anchas. Estrechar la caja no ahorra pantalla: la alarga.
+   */
+  results: { flexDirection: 'row', flexWrap: 'wrap', columnGap: space.md },
   row: {
     flexGrow: 1,
-    flexBasis: 260,
+    flexBasis: 320,
     minHeight: HIT_SIZE,
-    paddingVertical: space.sm,
+    paddingVertical: space.xs,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
     borderTopColor: colors.line,
     outlineWidth: 0,
@@ -307,7 +316,6 @@ const styles = StyleSheet.create({
     fontSize: 20,
     lineHeight: 27,
     color: colors.text,
-    marginTop: 2,
   },
   meta: {
     fontFamily: fonts.mono,

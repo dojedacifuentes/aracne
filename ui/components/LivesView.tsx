@@ -32,8 +32,8 @@ export function LivesView({ themes, reduceMotion, onOpenTheme }: LivesProps) {
 
   return (
     <View>
+      {/* El título lo pone la cabecera de la consola: aquí sobraba. */}
       <Reveal index={0} reduceMotion={reduceMotion}>
-        <Text style={styles.section}>biografías</Text>
         <Text style={styles.lead}>
           {total} vidas en {themes.length} temas. ninguna se representa por su cara: cada una tiene un objeto. de
           cada una se cuenta una idea poco citada, un hecho comprobable y, cuando la hay, una obra que se puede
@@ -72,7 +72,9 @@ function ThemeRow({ state, onPress }: { state: ThemeState; onPress: () => void }
         {count} {count === 1 ? 'biografía' : 'biografías'}
         {state.entries.length > 0 ? ` · ${state.entries.length} entradas ligadas` : ' · sin entradas ligadas'}
       </Text>
-      <Text style={styles.roster} numberOfLines={2}>
+      {/* El elenco a una línea: es un aperitivo, no el contenido. El criterio
+          de arriba dice más de este tema que la lista de quién está dentro. */}
+      <Text style={styles.roster} numberOfLines={1}>
         {state.figures.map((figure) => figure.name).join(' · ')}
       </Text>
     </Pressable>
@@ -90,11 +92,12 @@ export function ThemeView({ state, reduceMotion, onOpenFigure }: ThemeProps) {
   return (
     <View>
       <Reveal index={0} reduceMotion={reduceMotion}>
-        <Text style={styles.section}>tema</Text>
-        <Text style={styles.title} accessibilityRole="header">
-          {state.theme.name}
+        {/* El nombre del tema ya está en la cabecera; aquí manda el criterio,
+            que es lo que de verdad reúne a estas vidas. */}
+        <Text style={styles.section}>tema · {state.figures.length} vidas</Text>
+        <Text style={styles.criterionLarge} accessibilityRole="header">
+          {state.theme.criterion}
         </Text>
-        <Text style={styles.criterionLarge}>{state.theme.criterion}</Text>
       </Reveal>
       {state.figures.map((figure, index) => (
         <Reveal key={figure.id} index={index + 1} reduceMotion={reduceMotion}>
@@ -157,12 +160,6 @@ const styles = StyleSheet.create({
     marginBottom: space.lg,
     maxWidth: 640,
   },
-  title: {
-    fontFamily: fonts.serif,
-    fontSize: 30,
-    lineHeight: 38,
-    color: colors.text,
-  },
   criterionLarge: {
     fontFamily: fonts.serif,
     fontSize: 18,
@@ -175,7 +172,7 @@ const styles = StyleSheet.create({
 
   theme: {
     minHeight: HIT_SIZE,
-    paddingVertical: space.sm,
+    paddingVertical: space.xs,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
     borderTopColor: colors.line,
     outlineWidth: 0,

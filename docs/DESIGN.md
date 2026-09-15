@@ -104,6 +104,16 @@ El identificador cuenta rápido hasta su número, 200 ms. Es el único gesto de
 Con `prefers-reduced-motion`, todo queda en un fundido de 120 ms sin
 desplazamiento ni contador.
 
+## La barra de desplazamiento
+
+Se ve. Está en `public/index.html`, fina y con los colores de la paleta: el
+hilo es `--line` y al pasar por encima sube a `--dim`. No hay color nuevo.
+
+Estaba escondida en las tres columnas, y **una columna que se puede recorrer
+sin decirlo no se recorre**: nadie baja a lo que no sabe que está. Esconderla
+no era sobriedad, era quitar la única señal de que hay más. La sobriedad es que
+sea de un píxel y del color de los filetes.
+
 ## Lo que no se hace
 
 Neón, glow, scanlines, gradientes, glassmorphism, tarjetas redondeadas

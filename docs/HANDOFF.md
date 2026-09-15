@@ -216,6 +216,36 @@ cuarenta y cuatro resultados no es un filtro.
 cosas. El mapa del Atlas solo se medía con la columna y salía más alto que la
 ventana.
 
+### Bajar
+
+Tres columnas con su propio recorrido tienen un problema que no se ve hasta que
+se usa: **la rueda solo mueve aquello que está debajo del cursor**. Sobre el
+menú de la izquierda, sobre la cabecera o sobre el pie no pasaba nada, y la
+barra estaba escondida en las tres, así que tampoco se sabía que hubiera más
+abajo. Ahora:
+
+- La barra se ve, fina y con los colores de la paleta (`public/index.html`).
+- El centro recoge la rueda que **ninguna otra columna ha usado**
+  (`useRecorridoCentral`, en `Shell`). El panel de la derecha conserva la suya:
+  se comprueba antes de robarla.
+- `AvPág`, `RePág`, `Inicio` y `Fin` mueven el centro. En un `ScrollView` no
+  existen, y escribiendo en un campo siguen siendo del campo.
+
+### Lo que mide cada sección
+
+Medido en el DOM a 1440×900, con el centro visible en 776 px. Compactar es
+trabajo de cada sección, no del armazón:
+
+| sección | antes de la fase 16 | ahora |
+|---|---|---|
+| `/archivo` | 2461 · 3,3 pantallas | 1836 · **2,4** |
+| `/biografias` | 1663 · 2,2 | 1451 · **1,9** |
+| `/deriva/<semilla>` | — | 1199 · 1,5 |
+| `/adn` | 972 · 1,3 | 914 · 1,2 |
+| `/figura/<id>` | 945 · 1,3 | 917 · 1,2 |
+| `/atlas` | 871 · 1,2 | 858 · 1,1 |
+| `/e/<id>`, `/tela`, `/i/<semilla>`, un tema | 765 · 1,02 | **cabe entero** |
+
 **Lo que se quitó y no debe volver sin pensarlo:** el anillo de patas en órbita
 alrededor de la araña. Con varias apoyadas, sus hilos cruzaban por encima del
 animal y tapaban justo lo que hay que mirar. Y el reparto viejo —escenario a un
@@ -375,6 +405,11 @@ Cosas que ya costaron una sesión.
   no es el ancho del documento, y `Dimensions` de React Native se queda con el
   de arranque: **para probar el modo compacto hay que recargar después de
   cambiar el tamaño**, no basta con cambiarlo.
+- **Estrechar la caja no ahorra pantalla: la alarga.** Los resultados del
+  archivo se probaron a tres columnas de 267 px y la sección salió *más alta*
+  que a dos de 411: los títulos envolvían a dos líneas y devolvían lo ganado.
+  Lo que compacta de verdad es quitar líneas por fila, no estrechar columnas.
+  Medir antes de dar por buena una rejilla.
 - **El que se queda con la rueda deja la sección sin scroll.** El mapa del
   Atlas llamaba a `preventDefault()` en cada `wheel` para ampliar. Como ocupa
   casi la pantalla, el cursor estaba siempre encima y no había manera de bajar.

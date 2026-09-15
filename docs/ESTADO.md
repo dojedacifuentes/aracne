@@ -71,6 +71,25 @@ conmutador pequeño, con tres colores de selección distintos; ahora es uno
 se puede tocar—. La segunda: los filtros del archivo dejaron de irse con el
 scroll, que era lo que pedía el pendiente de «el archivo son seis pantallas».
 
+La segunda pasada fue sobre el recorrido: **compactar primero y, donde aún haya
+que bajar, que bajar sea fácil**. El marco de la consola —cabecera, pie y caja
+del centro— perdió aire, que son veintiséis píxeles de alto ganados en todas
+las secciones a la vez; y los títulos que la cabecera ya decía se quitaron de
+dentro de las vistas, donde estaban repetidos. Medido en el DOM: el archivo de
+3,3 pantallas a 2,4, las biografías de 2,2 a 1,9, y la ficha de entrada, la
+tela, una invocación y un tema pasan a caber enteros.
+
+De ahí salió una lección contraria a la intuición: **estrechar la caja no
+ahorra pantalla, la alarga**. Los resultados del archivo a tres columnas de
+267 px salían más altos que a dos de 411, porque los títulos envolvían. Lo que
+compacta es quitar líneas por fila —el identificador se fue a la línea de los
+datos—, no estrechar columnas.
+
+Y lo que faltaba para poder bajar: con tres columnas, cada una con su propio
+recorrido, la rueda solo movía lo que estuviera bajo el cursor, y la barra
+estaba escondida en las tres. Ahora la barra se ve, el centro recoge la rueda
+que ninguna otra columna ha usado, y existen las teclas de página.
+
 Y dos hallazgos sobre el Atlas, los dos mirando la pantalla y no el código:
 el mapa se medía solo con la columna, así que salía más alto que la ventana; y
 se quedaba con la rueda del ratón para ampliar, de modo que la sección no se

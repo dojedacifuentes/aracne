@@ -1,5 +1,5 @@
-import { useState, type ReactNode } from 'react';
-import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
+import { Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { useFocusRing } from '../hooks/useFocusRing';
 import { colors, fonts, HIT_SIZE, machine, space } from '../theme';
@@ -21,6 +21,86 @@ export interface ShellItem {
 export interface ShellGroup {
   label: string;
   items: ShellItem[];
+}
+
+/** El nodo del DOM de un `ScrollView`, en web. En nativo no hay tal cosa. */
+function scrollNode(ref: { current: ScrollView | null }): HTMLElement | null {
+  if (Platform.OS !== 'web') return null;
+  const vista = ref.current as unknown as { getScrollableNode?: () => unknown } | null;
+  const nodo = vista?.getScrollableNode?.();
+  return typeof HTMLElement !== 'undefined' && nodo instanceof HTMLElement ? nodo : null;
+}
+
+/**
+ * ¿Hay alguna caja entre `desde` y `hasta` que pueda moverse en ese sentido?
+ * Sirve para no robarle la rueda a quien sí la estaba usando: el panel de la
+ * derecha tiene su propio recorrido y debe quedárselo.
+ */
+function alguienLaUsa(desde: EventTarget | null, hasta: HTMLElement, delta: number): boolean {
+  let nodo = desde instanceof HTMLElement ? desde : null;
+  while (nodo && nodo !== hasta) {
+    const estilo = window.getComputedStyle(nodo);
+    if (/(auto|scroll)/.test(estilo.overflowY) && nodo.scrollHeight > nodo.clientHeight) {
+      const sitioArriba = nodo.scrollTop > 0;
+      const sitioAbajo = nodo.scrollTop + nodo.clientHeight < nodo.scrollHeight - 1;
+      if (delta < 0 ? sitioArriba : sitioAbajo) return true;
+    }
+    nodo = nodo.parentElement;
+  }
+  return false;
+}
+
+/**
+ * El recorrido del centro para quien no está justo encima.
+ *
+ * Cada columna tiene el suyo, así que la rueda solo movía el contenido con el
+ * cursor sobre él: sobre el menú de la izquierda, sobre la cabecera o sobre el
+ * pie no pasaba nada, y como la barra estaba escondida tampoco se veía que
+ * hubiera más abajo. Aquí el centro recoge la rueda que ninguna otra columna
+ * ha usado, y se le añaden las teclas de página, que en un `ScrollView` no
+ * existen. Solo en web: en nativo el gesto ya es del sistema.
+ */
+function useRecorridoCentral(
+  raiz: { current: View | null },
+  centro: { current: ScrollView | null },
+  activo: boolean,
+) {
+  useEffect(() => {
+    if (Platform.OS !== 'web' || !activo) return;
+    const caja = raiz.current as unknown as HTMLElement | null;
+    const lienzo = scrollNode(centro);
+    if (!caja || !lienzo) return;
+
+    const onWheel = (event: WheelEvent) => {
+      if (event.ctrlKey || event.metaKey) return;
+      if (lienzo.contains(event.target as Node)) return;
+      if (alguienLaUsa(event.target, caja, event.deltaY)) return;
+      lienzo.scrollTop += event.deltaY;
+      event.preventDefault();
+    };
+
+    const onKey = (event: KeyboardEvent) => {
+      const destino = event.target as HTMLElement | null;
+      // Escribiendo en un campo, las teclas son del campo.
+      if (destino && (destino.tagName === 'INPUT' || destino.tagName === 'TEXTAREA' || destino.isContentEditable)) {
+        return;
+      }
+      const salto = lienzo.clientHeight * 0.9;
+      if (event.key === 'PageDown') lienzo.scrollTop += salto;
+      else if (event.key === 'PageUp') lienzo.scrollTop -= salto;
+      else if (event.key === 'Home') lienzo.scrollTop = 0;
+      else if (event.key === 'End') lienzo.scrollTop = lienzo.scrollHeight;
+      else return;
+      event.preventDefault();
+    };
+
+    caja.addEventListener('wheel', onWheel, { passive: false });
+    window.addEventListener('keydown', onKey);
+    return () => {
+      caja.removeEventListener('wheel', onWheel);
+      window.removeEventListener('keydown', onKey);
+    };
+  }, [raiz, centro, activo]);
 }
 
 type Props = {
@@ -60,9 +140,13 @@ type Props = {
  * pulsar, se ve; si es texto del archivo, nunca se pinta.
  */
 export function Shell({ groups, title, meta, children, aside, asideFirst, footer, compact }: Props) {
+  const raiz = useRef<View | null>(null);
+  const centro = useRef<ScrollView | null>(null);
+  useRecorridoCentral(raiz, centro, true);
+
   if (compact) {
     return (
-      <View style={styles.stack}>
+      <View ref={raiz} style={styles.stack}>
         <View style={styles.headCompact}>
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.meta}>{meta}</Text>
@@ -77,7 +161,7 @@ export function Shell({ groups, title, meta, children, aside, asideFirst, footer
             <NavItem key={item.id} item={item} compact />
           ))}
         </ScrollView>
-        <ScrollView style={styles.centerCompact} contentContainerStyle={styles.centerContent}>
+        <ScrollView ref={centro} style={styles.centerCompact} contentContainerStyle={styles.centerContent}>
           {aside && asideFirst ? <View style={styles.asideBefore}>{aside}</View> : null}
           {children}
           {aside && !asideFirst ? <View style={styles.asideCompact}>{aside}</View> : null}
@@ -88,7 +172,7 @@ export function Shell({ groups, title, meta, children, aside, asideFirst, footer
   }
 
   return (
-    <View style={styles.columns}>
+    <View ref={raiz} style={styles.columns}>
       <View style={styles.nav}>
         <View style={styles.brand}>
           <Sigil mark="aracne" size={34} />
@@ -97,7 +181,7 @@ export function Shell({ groups, title, meta, children, aside, asideFirst, footer
             <Text style={styles.brandMeta}>archivo sin firma</Text>
           </View>
         </View>
-        <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.navContent}>
+        <ScrollView contentContainerStyle={styles.navContent}>
           {groups.map((group) => (
             <View key={group.label} style={styles.group}>
               <Text style={styles.groupLabel}>{group.label}</Text>
@@ -114,7 +198,8 @@ export function Shell({ groups, title, meta, children, aside, asideFirst, footer
           <Text style={styles.title}>{title}</Text>
           <Text style={styles.meta}>{meta}</Text>
         </View>
-        <ScrollView style={styles.centerScroll} contentContainerStyle={styles.centerContent} showsVerticalScrollIndicator={false}>
+        {/* La barra se ve: es la única manera de saber que hay más abajo. */}
+        <ScrollView ref={centro} style={styles.centerScroll} contentContainerStyle={styles.centerContent}>
           {children}
         </ScrollView>
         {footer ? <View style={styles.footer}>{footer}</View> : null}
@@ -122,11 +207,7 @@ export function Shell({ groups, title, meta, children, aside, asideFirst, footer
 
       {aside ? (
         <View style={styles.asideColumn}>
-          <ScrollView
-            style={styles.aside}
-            contentContainerStyle={styles.asideContent}
-            showsVerticalScrollIndicator={false}
-          >
+          <ScrollView style={styles.aside} contentContainerStyle={styles.asideContent}>
             {aside}
           </ScrollView>
         </View>
@@ -255,10 +336,17 @@ const styles = StyleSheet.create({
   },
 
   center: { flex: 1, minWidth: 0 },
+  /*
+   * El aire de la cabecera, el pie y la caja del centro se recortó a
+   * propósito: cada píxel que se quitan es un píxel que no hay que bajar, y
+   * son los mismos cuarenta y tantos en todas las secciones. La medida de
+   * lectura sigue mandando dentro —los textos largos siguen con su `maxWidth`
+   * de 640—, así que esto aprieta el marco, no la prosa.
+   */
   head: {
-    paddingHorizontal: space.lg,
-    paddingTop: space.md,
-    paddingBottom: space.sm,
+    paddingHorizontal: space.md,
+    paddingTop: space.sm,
+    paddingBottom: space.xs,
     borderBottomWidth: 1,
     borderBottomColor: colors.line,
   },
@@ -271,10 +359,10 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   centerScroll: { flex: 1 },
-  centerContent: { padding: space.lg, paddingBottom: space.xl },
+  centerContent: { paddingHorizontal: space.md, paddingTop: space.md, paddingBottom: space.lg },
   footer: {
-    paddingHorizontal: space.lg,
-    paddingVertical: space.sm,
+    paddingHorizontal: space.md,
+    paddingVertical: space.xs,
     borderTopWidth: 1,
     borderTopColor: colors.line,
   },
