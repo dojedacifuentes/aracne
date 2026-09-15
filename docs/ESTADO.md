@@ -31,6 +31,7 @@ el proyecto y qué conviene hacer. Este archivo es la historia de cada fase.
 | 15 | La consola: tres columnas, las once patas como conmutadores al lado, sellos poligonales, y todo texto exportable a .txt y a .pdf sin dependencias | `78b7b59` |
 | 16 | El panel de la derecha es el instrumento de cada sección: lente y leyenda en el Atlas, pieles y mapas en la tela, facetas en el archivo, patas donde se invoca. El mapa cabe en la pantalla y la rueda vuelve a ser de la página | `96a6a32` … `9375015` |
 | — | La cola editorial: catorce de las quince entradas `unverified` comprobadas contra fuentes pedidas, con la prosa corregida donde decía más que la fuente; queda una | `644b3c6` … `c20e297` |
+| 18 | La araña se puede coger: se posa la mano, se tira con resistencia progresiva y se suelta con retroceso. El hilo de arriba no se mueve y los de las patas están prendidos en la red | `9b9f138` |
 
 En curso: una revisión adversarial de las fases 0–2.
 
@@ -283,7 +284,10 @@ diagramas de Wigmore— y también en el `.docx` de paneles de datos.
   Con 24 el archivo entero se sigue viendo en pocas decenas de pulsaciones. El
   objetivo razonable sigue siendo ~70.
 - Probar el rendimiento en un teléfono real y `prefers-reduced-motion` en un
-  navegador real.
+  navegador real. Con ellos, el gesto de la fase 18: está medido de la
+  traducción de coordenadas hacia dentro, pero los eventos de puntero sobre el
+  botón no se pueden montar en el panel de pruebas, que declara la página
+  oculta.
 - Conectar el repositorio a Vercel y definir `SITE_URL` para las imágenes Open
   Graph.
 - Iconos y splash: siguen siendo la luna del tarot.
