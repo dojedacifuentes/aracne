@@ -13,10 +13,24 @@
     "codigo",
     "interfaz"
   ],
-  "content": "A mediados de los noventa, un dúo de artistas publicó una web que parecía un fallo: caracteres verdes sobre negro, parpadeos, texto que no significaba nada. Quien mirase el código fuente encontraba, dibujado con caracteres, el esquema de una bomba. La obra no simulaba un error. Usaba el navegador exactamente como está hecho y dejaba a la vista lo que normalmente se esconde: que una página es una instrucción antes que una imagen, y que la capa que llamamos interfaz existe para que no tengamos que verlo. El glitch, en ese linaje, no es un adorno: es el momento en que el soporte deja de ser transparente.",
+  "content": "A mediados de los noventa, el dúo JODI publicó una web que parecía un fallo: caracteres verdes sobre negro, parpadeos, texto que no significaba nada. Quien mirase el código fuente encontraba, dibujado con caracteres, el esquema de una bomba. La obra no simulaba un error: según han contado, el desorden empezó siendo uno de verdad, en su primera página, y decidieron publicarlo. Usaba el navegador exactamente como está hecho y dejaba a la vista lo que normalmente se esconde: que una página es una instrucción antes que una imagen, y que la capa que llamamos interfaz existe para que no tengamos que verlo. El glitch, en ese linaje, no es un adorno: es el momento en que el soporte deja de ser transparente.",
   "question": "¿Qué se ve de una herramienta justo cuando deja de funcionar?",
-  "sources": [],
-  "epistemicStatus": "unverified",
+  "sources": [
+    {
+      "label": "JODI, «wwwwwwwww.jodi.org», 1995",
+      "author": "Joan Heemskerk y Dirk Paesmans (JODI)",
+      "work": "wwwwwwwww.jodi.org",
+      "year": 1995,
+      "url": "http://wwwwwwwww.jodi.org/",
+      "kind": "primary"
+    },
+    {
+      "label": "«Digital Art (1960-2000)», ficha de wwwwwwwww.jodi.org",
+      "url": "https://www.digitalcanon.nl/artworks/jodi-joan-heemskerk-dirk-paesmans/",
+      "kind": "reference"
+    }
+  ],
+  "epistemicStatus": "interpretation",
   "scores": {
     "strangeness": 4,
     "darkness": 2,
@@ -28,5 +42,5 @@
     "delyra-0041"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: JODI (Joan Heemskerk y Dirk Paesmans), wwwwwwwww.jodi.org y el esquema oculto en el código fuente."
+  "captureNote": "Comprobado pidiendo la propia página: sigue en línea y su código tiene fondo #000000, texto #00ff00, la etiqueta blink y un diagrama en caracteres con trece piezas numeradas. Que el diagrama es una bomba lo dicen la ficha de «Digital Art (1960-2000)» (bomba nuclear) y ARTnews (bomba atómica, web de 1995), no el código. La misma ficha cita a JODI contando que el desorden nació de un error real en la primera página de su primera web —olvidaron una barra— y que decidieron publicarlo; la cita no lleva referencia precisa, la ficha remite a una bibliografía general, y por eso la entrada dice «según han contado». De «Usaba el navegador» en adelante es lectura del archivo."
 }
