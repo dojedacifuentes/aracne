@@ -55,7 +55,7 @@ export function InvocationView({ invocation, corpus, seed, reduceMotion, compact
     <View>
       <Reveal index={0} reduceMotion={reduceMotion}>
         <Text style={styles.shape}>
-          {SHAPE_LABEL[invocation.shape]} · {seed}
+          {SHAPE_LABEL[invocation.shape]} · {seed} · {steps.length === 1 ? 'el título abre su ficha' : 'cada título abre su ficha'}
         </Text>
       </Reveal>
       <Reveal index={1} reduceMotion={reduceMotion}>
@@ -123,7 +123,10 @@ function EntryLine({
       onBlur={onBlur}
       style={[styles.entry, focusVisible && styles.focus]}
     >
-      <Text style={styles.catalog}>{catalogId(entry.id)}</Text>
+      <View style={styles.entryHead}>
+        <Text style={styles.catalog}>{catalogId(entry.id)}</Text>
+        <Text style={[styles.open, hovered && styles.openOn]}>abrir</Text>
+      </View>
       <Text style={[styles.title, hovered && styles.titleHovered]}>{entry.title}</Text>
       <Text style={styles.meta}>
         {meta}
@@ -158,7 +161,21 @@ const styles = StyleSheet.create({
     marginBottom: space.lg,
   },
   dictumCompact: { fontSize: 24, lineHeight: 31, marginBottom: space.md },
-  entry: { marginBottom: space.md, outlineWidth: 0 },
+  entry: {
+    marginBottom: space.md,
+    paddingLeft: space.sm,
+    borderLeftWidth: 2,
+    borderLeftColor: colors.line,
+    outlineWidth: 0,
+  },
+  entryHead: { flexDirection: 'row', alignItems: 'baseline', justifyContent: 'space-between' },
+  open: {
+    fontFamily: fonts.mono,
+    fontSize: 12,
+    letterSpacing: 0.72,
+    color: colors.line,
+  },
+  openOn: { color: colors.text },
   focus: { outlineColor: colors.accent, outlineStyle: 'solid', outlineWidth: 1, outlineOffset: 4 },
   link: {
     fontFamily: fonts.mono,

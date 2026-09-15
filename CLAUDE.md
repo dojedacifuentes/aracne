@@ -95,6 +95,22 @@ abierta y estable, `works: []` y la ficha lo dice.
 Ninguna figura se representa por su cara: cada una tiene un emblema, un objeto
 de 32×32. Se dibujan mirándolos, no solo escribiéndolos.
 
+## El Atlas de la extinción
+
+`content/atlas/causes.json` y `content/atlas/world.json`: un mapa mundial con un
+score de exposición por país frente a treinta y cuatro finales. Reglas en
+`docs/ATLAS.md`.
+
+Es ficción y lo dice en pantalla, pero **ninguna puntuación se escribe a mano**:
+cada causa trae una regla, la regla lee datos con procedencia (Natural Earth) y
+la ficha enseña la cuenta entera. El score general de un país es el **máximo**
+de sus causas, nunca la suma. Las causas que le tocan igual a todo el mundo
+quedan fuera del reparto, porque no distinguen a nadie.
+
+Una causa que reparte tiene que repartir: si entre el percentil 5 y el 95 no
+hay veinticinco puntos, `npm run validate` falla. Y lo que no tiene población no
+se puntúa.
+
 ## Los dictámenes
 
 El motor compone una línea críptica en cada invocación, sin IA, a partir de
@@ -123,7 +139,9 @@ metadatos, no para párrafos ni para titulares.
 Un solo momento de movimiento: la aparición de la entrada, 320 ms.
 `prefers-reduced-motion` lo reduce a un fundido.
 
-**Una excepción, y solo una**: la piel `flujo` de `/tela` está viva. Por sus
+**Dos excepciones, y solo dos.**
+
+La primera: la piel `flujo` de `/tela` está viva. Por sus
 trazas corren pulsos y el nodo del centro respira, porque ahí el dibujo no
 ilustra el archivo, **es** el archivo leído como circuito. Decisión expresa de
 quien dirige el proyecto, tomada sabiendo lo que dice el párrafo anterior. Las
@@ -131,6 +149,13 @@ condiciones: no sale de esa piel —la de seda está quieta y hay una comprobaci
 de que lo está—, no usa más color que el acento de siempre, se apaga entera con
 `prefers-reduced-motion`, y si el bucle no corre el diagrama se ve igual. No la
 borres por doctrina: la doctrina ya la contempla aquí.
+
+La segunda: **el Atlas de la extinción tiene rampa de calor**. Un mapa de calor
+sin rampa es una mancha. También es decisión expresa, y también viene con
+condiciones: no hay color nuevo, hay uno estirado —la rampa va de la ceniza a
+la llama pasando por el acento de siempre—, no sale de `/atlas`, y el frío de
+la máquina (retículas, escuadras, barrido) es del instrumento y nunca del
+contenido. Razones en `docs/ATLAS.md`.
 
 ## Cómo trabajas
 

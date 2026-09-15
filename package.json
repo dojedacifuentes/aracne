@@ -18,7 +18,8 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test": "vitest run",
-    "sprites": "node scripts/sprites.mjs"
+    "sprites": "node scripts/sprites.mjs",
+    "atlas": "node scripts/atlas.mjs"
   },
   "dependencies": {
     "@expo-google-fonts/jetbrains-mono": "^0.4.1",

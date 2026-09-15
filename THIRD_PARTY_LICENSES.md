@@ -1,5 +1,25 @@
 # Licencias de terceros
 
+## Geometría y datos del Atlas de la extinción
+
+`content/atlas/world.json`
+
+- **Obra original:** Natural Earth, *admin 0 – countries*, escala 1:110m.
+- **Fuente:** https://github.com/nvkelso/natural-earth-vector — archivo
+  `geojson/ne_110m_admin_0_countries.geojson`, descargado por
+  `scripts/atlas.mjs`.
+- **Licencia:** dominio público. Natural Earth no exige atribución; se cita
+  igualmente, y el propio archivo generado la lleva dentro en su campo
+  `source`.
+- **Cambios:** se simplificaron los contornos con Douglas-Peucker (tolerancia
+  0,32°, dos decimales), se descartaron los anillos menores de 0,7° salvo el
+  mayor de cada territorio, y se conservaron solo los atributos que el Atlas
+  usa para calcular: nombre en español, continente, subregión, población,
+  PIB, grupo económico, grupo de renta y punto de etiqueta.
+
+Los scores que el Atlas dibuja encima son ficción declarada y no proceden de
+Natural Earth: se calculan con las reglas de `content/atlas/causes.json`.
+
 ## Modelo 3D de la araña
 
 `public/models/spider/huntsman-spider.glb`

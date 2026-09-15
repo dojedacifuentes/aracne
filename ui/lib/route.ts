@@ -19,6 +19,8 @@ export type Route =
   // La tela tiene sitio propio: una entrada en el centro y el resto tejido a
   // su alrededor. Sin foco, el archivo entero.
   | { name: 'web'; focus: string | null; skin: WebSkin }
+  // El Atlas: un país en la ficha y una causa como lente. Los dos opcionales.
+  | { name: 'atlas'; country: string | null; lens: string | null }
   | { name: 'shape' };
 
 export const HOME: Route = { name: 'home' };
@@ -26,6 +28,7 @@ export const LIVES: Route = { name: 'lives' };
 export const ARCHIVE: Route = { name: 'archive', filters: NO_FILTERS };
 export const SHAPE: Route = { name: 'shape' };
 export const WEB: Route = { name: 'web', focus: null, skin: 'tela' };
+export const ATLAS: Route = { name: 'atlas', country: null, lens: null };
 
 const SLUG = /^[a-z0-9-]+$/;
 /** El mismo formato que `EntrySchema`: aquí solo decide si la ruta existe. */
@@ -36,6 +39,9 @@ const LIVES_PATH = new RegExp('^/(?:biografias|gabinete)/?$');
 const THEME_PATH = new RegExp('^/(?:biografias|gabinete)/([^/]+)/?$');
 /** `/tela` y `/tela/<id>`, por el mismo motivo que la anterior. */
 const WEB_PATH = new RegExp('^/tela(?:/([^/]+))?/?$');
+/** `/atlas` y `/atlas/<código>`, con la causa en la query. */
+const ATLAS_PATH = new RegExp('^/atlas(?:/([A-Za-z]{2,3}))?/?$');
+const COUNTRY_CODE = /^[A-Z]{2,3}$/;
 const ENTRY_ID = /^delyra-\d{4}$/;
 
 /**
@@ -76,6 +82,17 @@ export function parseRoute(pathname: string, search: string): Route {
     const skin: WebSkin = new URLSearchParams(search).get('vista') === 'flujo' ? 'flujo' : 'tela';
     const focus = web[1] ?? '';
     return { name: 'web', focus: ENTRY_ID.test(focus) ? focus : null, skin };
+  }
+
+  const atlas = ATLAS_PATH.exec(pathname);
+  if (atlas) {
+    const codigo = (atlas[1] ?? '').toUpperCase();
+    const causa = new URLSearchParams(search).get('causa') ?? '';
+    return {
+      name: 'atlas',
+      country: COUNTRY_CODE.test(codigo) ? codigo : null,
+      lens: SLUG.test(causa) ? causa : null,
+    };
   }
 
   if (/^\/adn\/?$/.test(pathname)) return SHAPE;
@@ -119,6 +136,10 @@ export function routeToUrl(route: Route): string {
     case 'web': {
       const path = route.focus ? `/tela/${route.focus}` : '/tela';
       return route.skin === 'flujo' ? `${path}?vista=flujo` : path;
+    }
+    case 'atlas': {
+      const path = route.country ? `/atlas/${route.country}` : '/atlas';
+      return route.lens ? `${path}?causa=${route.lens}` : path;
     }
     case 'shape':
       return '/adn';

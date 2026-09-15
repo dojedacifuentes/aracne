@@ -12,6 +12,7 @@ import path from "node:path";
 
 import { legStates, parseCorpus } from "../lib/content/corpus";
 import { themeStates } from "../lib/museum/themes";
+import { CauseSchema, WorldSchema, dominant, type Cause } from "../lib/atlas/world";
 import type { ValidationIssue } from "../lib/schema";
 
 const ROOT = process.cwd();
@@ -102,6 +103,79 @@ console.log(
 for (const state of themeStates(corpus.figures, corpus.themes)) {
   const ligadas = state.entries.length > 0 ? `${state.entries.length} entradas` : "sin entradas ligadas";
   console.log(`  ${state.theme.name.padEnd(30)}${String(state.figures.length).padStart(3)}   ${ligadas}`);
+}
+
+// ── El Atlas de la extinción ──────────────────────────────────────────────
+// Sus puntuaciones son ficción, pero la ficción también se valida: si una
+// causa no reparte, el mapa entero sale del mismo color y deja de ser un mapa.
+const rawWorld = readJson(path.join(CONTENT, "atlas", "world.json"));
+const rawCauses = readJson(path.join(CONTENT, "atlas", "causes.json"));
+const worldParsed = WorldSchema.safeParse(rawWorld);
+if (!worldParsed.success) {
+  for (const issue of worldParsed.error.issues) {
+    issues.push({ id: "atlas/world.json", message: issue.path.join(".") + ": " + issue.message });
+  }
+} else if (Array.isArray(rawCauses)) {
+  const causes: Cause[] = [];
+  rawCauses.forEach((raw, index) => {
+    const parsed = CauseSchema.safeParse(raw);
+    if (parsed.success) causes.push(parsed.data);
+    else {
+      const id = (raw as { id?: string })?.id ?? `causas[${index}]`;
+      for (const issue of parsed.error.issues) {
+        issues.push({ id, message: `causa: ${issue.path.join(".")}: ${issue.message}` });
+      }
+    }
+  });
+
+  const world = worldParsed.data;
+  const legIds = new Set(corpus.categories.map((c) => c.id));
+  const vistos = new Set<string>();
+  for (const cause of causes) {
+    if (vistos.has(cause.id)) issues.push({ id: cause.id, message: "causa duplicada" });
+    vistos.add(cause.id);
+    for (const leg of cause.categories) {
+      if (!legIds.has(leg)) issues.push({ id: cause.id, message: `pata inexistente: ${leg}` });
+    }
+    if (cause.uniform && cause.rule.factors.length > 0) {
+      issues.push({ id: cause.id, message: "una causa uniforme no puede tener factores" });
+    }
+    const palabras = cause.literary.trim().split(/\s+/).length;
+    if (palabras < 60 || palabras > 140) {
+      warnings.push({ id: cause.id, message: `texto de ${palabras} palabras (se piden 60-140)` });
+    }
+    // La prueba de que la regla reparte: entre el percentil 5 y el 95 tiene
+    // que haber al menos veinticinco puntos. Si no, esa causa no dice nada
+    // de nadie y está ocupando sitio.
+    if (!cause.uniform) {
+      const valores = world.countries
+        .map((country) => dominant(country, [cause])?.score ?? 0)
+        .sort((a, b) => a - b);
+      const p5 = valores[Math.floor(valores.length * 0.05)];
+      const p95 = valores[Math.floor(valores.length * 0.95)];
+      if (p95 - p5 < 25) {
+        issues.push({ id: cause.id, message: `la regla no reparte: de ${p5} a ${p95} en todo el mundo` });
+      }
+    }
+  }
+
+  const reparto = new Map<string, number>();
+  const generales: number[] = [];
+  for (const country of world.countries) {
+    const top = dominant(country, causes);
+    if (!top) continue;
+    reparto.set(top.cause.id, (reparto.get(top.cause.id) ?? 0) + 1);
+    generales.push(top.score);
+  }
+  generales.sort((a, b) => a - b);
+  console.log(
+    `${world.countries.length} territorios · ${causes.length} causas (${causes.filter((c) => c.uniform).length} uniformes) · ` +
+      `${reparto.size} causas dominantes · scores de ${generales[0]} a ${generales[generales.length - 1]}`,
+  );
+  // El Atlas se anunció con treinta causas: puede tener más, nunca menos.
+  if (causes.length < 30) {
+    issues.push({ id: "atlas", message: `solo hay ${causes.length} causas y el Atlas se anunció con treinta` });
+  }
 }
 
 for (const warning of warnings) console.warn(`aviso  ${warning.id}  ${warning.message}`);

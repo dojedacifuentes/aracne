@@ -4,6 +4,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 
 import type { ArchiveFilters } from '../../lib/archive/filter';
 import { usableLegs } from '../../lib/content/corpus';
+import { loadAtlas } from '../../lib/atlas/loader';
 import { loadArchive } from '../../lib/content/loader';
 import { pressSeed } from '../../lib/oracle';
 import { pushHistory } from '../../lib/oracle/history';
@@ -12,6 +13,7 @@ import type { DriftMode, WebSkin } from '../../lib/drift/modes';
 import { invoke } from '../../lib/oracle/invoke';
 import { freshSeed } from '../../lib/oracle/rng';
 import { ArchiveView } from '../components/ArchiveView';
+import { AtlasView } from '../components/AtlasView';
 import { LivesView, ThemeView } from '../components/LivesView';
 import { CommandPalette, type Command } from '../components/CommandPalette';
 import { DriftView } from '../components/DriftView';
@@ -27,7 +29,7 @@ import { Spider } from '../components/spider/Spider';
 import { TextButton } from '../components/TextButton';
 import { useRoute } from '../hooks/useRoute';
 import { canvasSize, getLayoutMode, MAX_CONTENT_WIDTH } from '../lib/layout';
-import { ARCHIVE, HOME, LIVES, SHAPE, WEB } from '../lib/route';
+import { ARCHIVE, ATLAS, HOME, LIVES, SHAPE, WEB } from '../lib/route';
 import { readHistory, rememberEntries } from '../lib/storedHistory';
 import { colors, fonts, space } from '../theme';
 
@@ -170,6 +172,22 @@ export function HomeScreen({ reduceMotion }: Props) {
 
   const openArchive = useCallback(() => navigate(ARCHIVE), [navigate]);
   const openWeb = useCallback(() => navigate(WEB), [navigate]);
+  const openAtlas = useCallback(() => navigate(ATLAS), [navigate]);
+  /** En el Atlas, el país y la lente viajan en la URL como todo lo demás. */
+  const setAtlasCountry = useCallback(
+    (id: string | null) => {
+      if (route.name !== 'atlas') return;
+      navigate({ ...route, country: id });
+    },
+    [route, navigate],
+  );
+  const setAtlasLens = useCallback(
+    (id: string | null) => {
+      if (route.name !== 'atlas') return;
+      navigate({ ...route, lens: id });
+    },
+    [route, navigate],
+  );
   const weave = useCallback(
     (id: string | null) => {
       if (route.name !== 'web') return;
@@ -254,8 +272,14 @@ export function HomeScreen({ reduceMotion }: Props) {
   const isReading = route.name !== 'invocation' && route.name !== 'home';
   const panelShare = isReading ? 0.78 : 0.5;
 
-  /** La tela pide la pantalla entera: ahí el escenario se retira. */
-  const wide = route.name === 'web';
+  /**
+   * Rutas que piden la pantalla entera y retiran el escenario.
+   *
+   * La invocación está aquí por decisión expresa: **lo que sale al pulsar es
+   * para leerlo**, y mientras se lee, la araña y las once patas no hacen
+   * nada salvo ocupar la mitad del ancho. Se vuelve a ellas con «volver».
+   */
+  const wide = route.name === 'web' || route.name === 'atlas' || route.name === 'invocation';
 
   const lit = legs.filter((leg) => leg.visible).length;
   const latest = legs.find((leg) => leg.category.id === selected[selected.length - 1]);
@@ -367,6 +391,16 @@ export function HomeScreen({ reduceMotion }: Props) {
         onOpen={openEntry}
         onMap={openMap}
       />
+    ) : route.name === 'atlas' ? (
+      <AtlasView
+        atlas={loadAtlas()}
+        focus={route.country}
+        lens={route.lens}
+        width={portrait ? Math.min(width - space.md * 2, 420) : Math.min(width - space.lg * 4, 980)}
+        reduceMotion={reduceMotion}
+        onFocus={setAtlasCountry}
+        onLens={setAtlasLens}
+      />
     ) : route.name === 'shape' ? (
       <ShapeView corpus={corpus} legs={legs} />
     ) : route.name === 'archive' ? (
@@ -419,7 +453,7 @@ export function HomeScreen({ reduceMotion }: Props) {
         <TextButton label="invocar" onPress={press} />
         <TextButton label="volver" onPress={back} />
       </View>
-    ) : route.name === 'web' ? (
+    ) : route.name === 'web' || route.name === 'atlas' ? (
       <View style={styles.buttons}>
         <TextButton label="invocar" onPress={press} />
         <TextButton label="volver" onPress={back} />
@@ -433,6 +467,7 @@ export function HomeScreen({ reduceMotion }: Props) {
       <View style={styles.buttons}>
         <TextButton label="invocar" onPress={press} />
         <TextButton label="la tela" onPress={openWeb} hint="la red entera, y los mapas que la leen" />
+        <TextButton label="el atlas" onPress={openAtlas} hint="el mapa del mundo y sus treinta finales" />
         <TextButton label="biografías" onPress={openLives} />
         <TextButton label="archivo" onPress={openArchive} />
         <TextButton label={panel === 'proposito' ? 'patas' : 'propósito'} onPress={togglePanel} />
@@ -487,14 +522,18 @@ export function HomeScreen({ reduceMotion }: Props) {
 
   return (
     <SafeAreaView style={styles.root} edges={['bottom', 'left', 'right']}>
-      <View style={styles.stagePortrait}>
-        {spider}
-        <View style={[styles.headerOverlay, { top: insets.top + space.md }]}>{header}</View>
-      </View>
-      <View style={styles.panel}>
+      {wide ? (
+        <View style={[styles.portraitHead, { paddingTop: insets.top + space.md }]}>{header}</View>
+      ) : (
+        <View style={styles.stagePortrait}>
+          {spider}
+          <View style={[styles.headerOverlay, { top: insets.top + space.md }]}>{header}</View>
+        </View>
+      )}
+      <View style={[styles.panel, wide && styles.panelWide]}>
         {reading ? (
           <ScrollView
-            style={{ maxHeight: Math.round(height * panelShare) }}
+            style={wide ? styles.panelScroll : { maxHeight: Math.round(height * panelShare) }}
             contentContainerStyle={styles.panelContent}
             showsVerticalScrollIndicator={false}
           >
@@ -548,6 +587,9 @@ const styles = StyleSheet.create({
   sideContent: { flexGrow: 1, justifyContent: 'center', paddingVertical: space.md },
 
   stagePortrait: { flex: 1 },
+  portraitHead: { paddingHorizontal: space.md },
+  panelWide: { flex: 1 },
+  panelScroll: { flex: 1 },
   headerOverlay: { position: 'absolute', left: space.md, right: space.md, pointerEvents: 'box-none' },
   panel: { paddingBottom: space.md },
   panelContent: { paddingHorizontal: space.md, paddingTop: space.sm },

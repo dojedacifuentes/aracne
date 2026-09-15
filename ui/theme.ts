@@ -28,6 +28,26 @@ export const fonts = {
   }),
 } as const;
 
+/**
+ * La rampa del Atlas de la extinción, y el único sitio del proyecto donde hay
+ * una. `docs/DESIGN.md` prohíbe los degradados y el segundo acento, y esto es
+ * una excepción pedida expresamente: un mapa de calor sin rampa no es un mapa
+ * de calor, es una mancha.
+ *
+ * Las condiciones de la excepción: **no hay color nuevo, hay uno estirado**.
+ * La rampa va de la ceniza a la llama pasando por `--accent`, que es el tercer
+ * tramo, así que el Atlas no introduce una familia de color ajena al resto.
+ * Y no sale de `/atlas`.
+ */
+export const heat = ['#1C1A17', '#4A2C20', '#8C3A22', '#B5432E', '#E2703A'] as const;
+
+/**
+ * El frío de la máquina: retículas, escuadras, barrido y cifras vivas. Es el
+ * contraste que hace que la brasa se lea como brasa. Solo en el Atlas, solo
+ * en la capa del instrumento, nunca en el contenido.
+ */
+export const machine = '#5FCBC3';
+
 export const space = {
   xs: 6,
   sm: 12,
