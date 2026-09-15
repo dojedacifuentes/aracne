@@ -13,10 +13,25 @@
     "excepcion",
     "alegoria"
   ],
-  "content": "Una epidemia deja ciegos a los habitantes de una ciudad sin nombre. No ven negro: ven un blanco lechoso. El gobierno los encierra en un manicomio abandonado, pone soldados en la puerta con orden de disparar y deja de intervenir. Dentro, la organización se degrada deprisa: jerarquías, hambre, violencia. Ningún personaje tiene nombre; se los llama por su función. Solo una mujer conserva la vista y no lo dice, y es la que sostiene al grupo. La novela funciona como un experimento con una sola variable: se retira la mirada de los demás y se observa qué queda de las normas cuando nadie puede verificar quién hizo qué.",
+  "content": "En Ensayo sobre la ceguera, de José Saramago, una epidemia deja ciegos a casi todos los habitantes de una ciudad sin nombre. No ven negro: ven un blanco lechoso. Las autoridades encierran a los primeros en un antiguo manicomio vigilado por soldados, que acaban disparando contra ellos, y el ejército termina abandonándolos. Dentro, la organización se degrada deprisa: jerarquías, hambre, violencia. Ningún personaje tiene nombre; se los llama con descripciones, como la mujer del médico o el primer ciego. Solo esa mujer conserva la vista, y lo oculta para no separarse de su marido; es la que sostiene al grupo. La novela funciona como un experimento con una sola variable: se retira la mirada de los demás y se observa qué queda de las normas cuando nadie puede verificar quién hizo qué.",
   "question": "¿Cuánto de lo que llamamos ética depende de que alguien esté mirando?",
-  "sources": [],
-  "epistemicStatus": "unverified",
+  "sources": [
+    {
+      "label": "Saramago, «Ensaio sobre a Cegueira», 1995",
+      "author": "José Saramago",
+      "work": "Ensaio sobre a Cegueira",
+      "year": 1995,
+      "url": "https://www.josesaramago.org/en/book/blindness-essay/",
+      "kind": "primary"
+    },
+    {
+      "label": "Blindness (novel)",
+      "work": "Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Blindness_(novel)",
+      "kind": "reference"
+    }
+  ],
+  "epistemicStatus": "fiction",
   "scores": {
     "strangeness": 4,
     "darkness": 5,
@@ -29,5 +44,5 @@
     "delyra-0023"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: José Saramago, Ensaio sobre a Cegueira (1995), traducido como Ensayo sobre la ceguera."
+  "captureNote": "Comprobado: novela de José Saramago de 1995. La página de la Fundação José Saramago la describe como una «ceguera blanca» que se extiende sin control, recoge en las reseñas de sus ediciones que envuelve a la víctima en una blancura luminosa semejante a un mar de leche y que los ciegos son encerrados en un antiguo manicomio, y lista la traducción de Basilio Losada en Alfaguara. El argumento, en la Wikipedia inglesa: la epidemia alcanza a casi todos en una ciudad nunca nombrada; los soldados que vigilan el asilo disparan contra los internos y el ejército acaba abandonándolo; un grupo armado controla la comida; los personajes no tienen nombre propio y se los designa con descripciones; la mujer del médico es la única que no pierde la vista, finge estar ciega para no separarse de su marido y dirige al grupo. Corregido: el manicomio no estaba «abandonado» sino en desuso, la «orden de disparar» y que el gobierno «deja de intervenir» no están en las fuentes, y los nombres no son funciones sino descripciones. El título español, Ensayo sobre la ceguera, en la ficha de Alfaguara en Penguin Random House."
 }
