@@ -13,10 +13,27 @@
     "red",
     "metodo"
   ],
-  "content": "La propuesta es dejar de explicar las cosas por «lo social» y dedicarse a rastrear asociaciones: no dar por hecho que dos elementos están relacionados, sino reconstruir la cadena de mediaciones que hizo posible esa relación. Aplicado a un grafo, la pregunta deja de ser quién dibujó la red y pasa a ser qué serie de pasos hizo aparecer esta línea entre estos dos puntos. Un documento se extrae, un nombre se normaliza, una regla decide que dos registros son la misma persona, una clasificación la llama relación comercial y un diseño la dibuja gruesa. La línea visible es el final de la cadena, no su principio.",
+  "content": "Bruno Latour propuso dejar de usar «lo social» como explicación y dedicarse a rastrear asociaciones: no dar por hecho de qué está hecho un vínculo, sino reconstruir la cadena de mediaciones que lo hizo posible. Aplicado a un grafo, la pregunta deja de ser quién dibujó la red y pasa a ser qué serie de pasos hizo aparecer esta línea entre estos dos puntos. Un documento se extrae, un nombre se normaliza, una regla decide que dos registros son la misma persona, una clasificación la llama relación comercial y un diseño la dibuja gruesa. La línea visible es el final de la cadena, no su principio.",
   "question": "¿Cuántas decisiones hay detrás de una línea que parece un hecho?",
-  "sources": [],
-  "epistemicStatus": "unverified",
+  "sources": [
+    {
+      "label": "Latour, «Reassembling the Social: An Introduction to Actor-Network-Theory», 2005",
+      "author": "Bruno Latour",
+      "work": "Reassembling the Social: An Introduction to Actor-Network-Theory",
+      "year": 2005,
+      "url": "https://doi.org/10.1093/oso/9780199256044.001.0001",
+      "kind": "primary"
+    },
+    {
+      "label": "Tripier, «Reensamblar lo social», CONfines, 2009",
+      "author": "Pierre Tripier",
+      "work": "Reensamblar lo social",
+      "year": 2009,
+      "url": "https://www.scielo.org.mx/scielo.php?script=sci_arttext&pid=S1870-35692009000200007",
+      "kind": "secondary"
+    }
+  ],
+  "epistemicStatus": "interpretation",
   "scores": {
     "strangeness": 3,
     "darkness": 2,
@@ -29,5 +46,5 @@
     "delyra-0034"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: Bruno Latour, Reassembling the Social (2005), traducido como Reensamblar lo social."
+  "captureNote": "Comprobado: Oxford University Press, 28 de julio de 2005; el resumen del editor dice que Latour discute las «explicaciones sociales» y llama a su enfoque una sociología de las asociaciones, y la introducción se titula «How to Resume the Task of Tracing Associations». Traducido como Reensamblar lo social: una introducción a la teoría del actor-red (Manantial, Buenos Aires, 2008, trad. Gabriel Zadunaisky), según la página del propio Latour. Los mediadores, en la reseña de Tripier, que cita a Latour sobre ellos. Corregido: la entrada no nombraba a Latour, y decía «no dar por hecho que dos elementos están relacionados», cuando lo que Latour discute es que se dé por hecho de qué está hecho lo reunido. De «Aplicado a un grafo» en adelante es aplicación del archivo, no de Latour."
 }
