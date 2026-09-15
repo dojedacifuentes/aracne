@@ -13,10 +13,26 @@
     "saber",
     "institucion"
   ],
-  "content": "Foucault llamó dispositivo a un conjunto que no tiene una sola sustancia: discursos, instituciones, edificios, reglamentos, leyes, medidas administrativas, enunciados científicos y proposiciones filosóficas. Lo que lo vuelve uno no es su contenido, sino la red que se establece entre esos elementos. La consecuencia incomoda a cualquier sistema de información: no basta preguntar qué contiene la base de datos. Hay que preguntar qué puede entrar en ella, quién puede nombrarlo, quién puede conectarlo, quién puede verlo y qué decisiones se toman a partir de esa visibilidad. Hacer algo visible no solo lo vuelve conocible: lo vuelve clasificable, comparable y administrable.",
+  "content": "En una entrevista de 1977, Foucault llamó dispositivo a un conjunto resueltamente heterogéneo: discursos, instituciones, disposiciones arquitectónicas, decisiones reglamentarias, leyes, medidas administrativas, enunciados científicos, proposiciones filosóficas, morales y filantrópicas; lo dicho y también lo no dicho. Esos son los elementos; el dispositivo mismo es la red que se puede establecer entre ellos. La consecuencia incomoda a cualquier sistema de información: no basta preguntar qué contiene la base de datos. Hay que preguntar qué puede entrar en ella, quién puede nombrarlo, quién puede conectarlo, quién puede verlo y qué decisiones se toman a partir de esa visibilidad. Hacer algo visible no solo lo vuelve conocible: lo vuelve clasificable, comparable y administrable.",
   "question": "¿Qué se vuelve posible hacerle a algo por el solo hecho de haberlo hecho visible?",
-  "sources": [],
-  "epistemicStatus": "unverified",
+  "sources": [
+    {
+      "label": "Foucault, «Le jeu de Michel Foucault», entrevista de 1977",
+      "author": "Michel Foucault",
+      "work": "Dits et écrits III, 1976-1979",
+      "year": 1977,
+      "kind": "primary"
+    },
+    {
+      "label": "Agamben, «Che cos'è un dispositivo?», 2006",
+      "author": "Giorgio Agamben",
+      "work": "Che cos'è un dispositivo?",
+      "year": 2006,
+      "url": "https://www.edizioninottetempo.it/it/che-cos-un-dispositivo",
+      "kind": "secondary"
+    }
+  ],
+  "epistemicStatus": "interpretation",
   "scores": {
     "strangeness": 3,
     "darkness": 4,
@@ -29,5 +45,5 @@
     "delyra-0031"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: la definición procede de una entrevista de Foucault de 1977 recogida en Dits et écrits, y es la que reconstruye Agamben en «¿Qué es un dispositivo?»."
+  "captureNote": "Comprobado: la definición está en «Le jeu de Michel Foucault», entrevista de 1977 recogida en Dits et écrits III, 1976-1979 (Gallimard, 1994), pp. 299-300; el texto francés, con la página, en el glosario de Pascal Nicolas-Le Strat. Agamben abre con ese pasaje «Che cos'è un dispositivo?» (nottetempo, 2006; en francés, Payot & Rivages, 2007), y así se lee en el texto italiano. Corregido: la lista estaba recortada —«edificios» donde Foucault dice aménagements architecturaux, y faltaban las proposiciones morales y filantrópicas y lo no dicho— y «lo que lo vuelve uno no es su contenido» era una glosa; ahora dice lo que dice Foucault. De «La consecuencia» en adelante es aplicación del archivo."
 }
