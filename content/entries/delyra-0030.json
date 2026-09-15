@@ -13,10 +13,18 @@
     "representacion",
     "tejido"
   ],
-  "content": "Velázquez pintó un taller de tapices: mujeres cardando lana, un torno girando tan deprisa que los radios desaparecen. Al fondo, tras un arco iluminado, hay otra escena con figuras vestidas de otro modo y un tapiz que representa el rapto de Europa. Durante siglos el cuadro se catalogó como una escena de oficio. La lectura que hoy se sostiene es que el fondo es el momento del mito de Aracne y que el primer plano son las tejedoras que compiten. El cuadro sería entonces una pintura sobre pintar: una obra que representa a una artista representando, dentro de un taller que fabrica representaciones.",
+  "content": "Velázquez pintó un taller de tapicería: en primer plano, mujeres hilando y una rueca pintada en pleno giro; al fondo, unas damas de pie ante un tapiz que reproduce El rapto de Europa de Tiziano. Durante mucho tiempo se vio en él solo una escena de oficio, y ayudaron a verlo así las bandas que se le añadieron en el siglo XVIII, con el arco de arriba, que alejaron el fondo. Un inventario de 1664 lo registra como Fábula de Aracne: la dama del casco es Minerva, que discute con Aracne sobre quién teje mejor, y el rapto es una de las historias que Aracne se atrevió a tejer. Velázquez dejó la historia principal al fondo. El cuadro sería entonces una pintura sobre pintar: una obra que representa a una artista representando, dentro de un taller que fabrica representaciones.",
   "question": "¿Dónde termina el oficio y empieza la obra?",
-  "sources": [],
-  "epistemicStatus": "unverified",
+  "sources": [
+    {
+      "label": "Velázquez, «Las hilanderas o la fábula de Aracne», 1655–1660",
+      "author": "Diego Rodríguez de Silva y Velázquez",
+      "work": "Las hilanderas o la fábula de Aracne",
+      "url": "https://www.museodelprado.es/coleccion/obra-de-arte/las-hilanderas-o-la-fabula-de-aracne/3d8e510d-2acf-4efb-af0c-8ffd665acd8d",
+      "kind": "primary"
+    }
+  ],
+  "epistemicStatus": "interpretation",
   "scores": {
     "strangeness": 4,
     "darkness": 2,
@@ -28,5 +36,5 @@
     "delyra-0026"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: fecha (hacia 1657), ficha del Museo del Prado de «Las hilanderas o La fábula de Aracne» e identificación del fondo con el mito de Ovidio."
+  "captureNote": "Comprobado en la ficha del Museo del Prado (P001173): fechado en 1655–1660, no hacia 1657; la banda superior con el arco y las laterales son añadidos del siglo XVIII que alejaron la escena del fondo; el tema lo confirmó el inventario de Pedro de Arce de 1664; al fondo, Palas con casco discute con Aracne ante un tapiz que reproduce El rapto de Europa de Tiziano. Corregido respecto al material: el arco no es de Velázquez, y la ficha no identifica el primer plano con las que compiten, así que la entrada ya no lo afirma. La última frase es interpretación; la ficha recoge lecturas en esa clave, como una defensa de la nobleza de la pintura. La URL que da el buscador para este título es la de una fototipia de 1903 (HF05549), no la del óleo."
 }
