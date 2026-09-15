@@ -13,10 +13,32 @@
     "mutacion",
     "medio"
   ],
-  "content": "En una película de 1983 un hombre encuentra una señal de televisión que emite tortura sin argumento ni pausa. Mirarla le produce un tumor, el tumor le produce alucinaciones, y en el abdomen se le abre una ranura por la que se introducen cintas de vídeo. La película no trata de una pantalla peligrosa: trata de una pantalla que deja de estar enfrente. El cuerpo no es invadido desde fuera, sino que se reorganiza para alojar el medio, y a partir de cierto momento ya no hay manera de saber qué parte de lo que vemos ocurre. El director resumió su tema diciendo que el cuerpo es la realidad.",
+  "content": "En Videodrome, de David Cronenberg (1983), el presidente de un canal de televisión de Toronto encuentra una señal que emite tortura sin argumento. La señal, le cuentan, produce tumores cerebrales; él empieza a alucinar, en el abdomen se le abre una ranura y por ella le introducen una cinta de vídeo. La película no trata de una pantalla peligrosa: trata de una pantalla que deja de estar enfrente. El cuerpo no es invadido desde fuera, sino que se reorganiza para alojar el medio, y a partir de cierto momento ya no hay manera de saber qué parte de lo que vemos ocurre. Termina con una consigna: larga vida a la nueva carne. En 2025, Cronenberg lo dijo de todo su cine: el cuerpo es la realidad.",
   "question": "¿Qué le pasa a un cuerpo cuando el medio deja de estar enfrente?",
-  "sources": [],
-  "epistemicStatus": "unverified",
+  "sources": [
+    {
+      "label": "Cronenberg, «Videodrome», 1983",
+      "author": "David Cronenberg",
+      "work": "Videodrome",
+      "year": 1983,
+      "url": "https://www.criterion.com/films/240-videodrome",
+      "kind": "primary"
+    },
+    {
+      "label": "Videodrome",
+      "work": "Wikipedia",
+      "url": "https://en.wikipedia.org/wiki/Videodrome",
+      "kind": "reference"
+    },
+    {
+      "label": "Global News, «'The body is reality': Canadian filmmaker David Cronenberg on mortality and making movies», 2025",
+      "author": "David Cronenberg",
+      "year": 2025,
+      "url": "https://globalnews.ca/news/11161431/the-body-is-reality-canadian-filmmaker-david-cronenberg-on-mortality-and-making-movies/",
+      "kind": "primary"
+    }
+  ],
+  "epistemicStatus": "fiction",
   "scores": {
     "strangeness": 5,
     "darkness": 5,
@@ -28,5 +50,5 @@
     "delyra-0043"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: David Cronenberg, Videodrome (1983), y la cita «el cuerpo es la realidad», que en el material aparece atribuida a una entrevista sin referencia comprobable."
+  "captureNote": "Comprobado: película de David Cronenberg de 1983 (ficha de Criterion: una emisión pirata de un programa de tortura, alucinaciones, transformación corporal). El argumento, en la Wikipedia inglesa: Max Renn preside CIVIC-TV, un canal de Toronto; Videodrome es un programa sin argumento de víctimas torturadas; le dicen que la señal produce tumores cerebrales; alucina una ranura en el abdomen; le introducen en el torso una cinta Betamax; y la película termina con «Long live the new flesh». La cita existe, pero no donde decía el material: Cronenberg dijo «The body is reality» en una entrevista con Global News publicada el 3 de mayo de 2025, hablando de la muerte y de todo su cine («then you have my movies»), no de Videodrome. Corregido: «ni pausa» y la cadena causal tumor-alucinaciones no están en las fuentes, y la cita se data y se atribuye a lo que de verdad resumía. La lectura central es del archivo."
 }
