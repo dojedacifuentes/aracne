@@ -13,10 +13,24 @@
     "indicio",
     "conjetura"
   ],
-  "content": "La deducción va de la regla al caso y no añade nada nuevo. La inducción va de los casos a la regla y necesita muchos. Peirce describió un tercer movimiento que no garantiza nada: partir de un hecho sorprendente e inventar la hipótesis que, de ser cierta, lo volvería esperable. Es el único de los tres que produce ideas y el único que puede equivocarse por completo. Un diagnóstico, una atribución y una investigación criminal funcionan así: no demuestran su conclusión, la proponen como la mejor explicación disponible y la someten después a prueba. El salto es inevitable; lo que se puede exigir es que se declare.",
+  "content": "Peirce llamó abducción a un movimiento distinto de la deducción y de la inducción: se observa un hecho sorprendente; si cierta hipótesis fuera verdad, ese hecho sería de esperar; luego hay razones para sospechar que la hipótesis es verdad. No garantiza nada, y según Peirce es la única operación lógica que introduce ideas nuevas. Las otras dos llegan después: la deducción saca de la hipótesis consecuencias que se pueden poner a prueba, y la inducción las contrasta y dicta un veredicto. Un diagnóstico, una atribución y una investigación criminal empiezan así: no demuestran su conclusión, la conjeturan y la someten después a prueba. El salto es inevitable; lo que se puede exigir es que se declare.",
   "question": "¿Qué obliga a preferir una explicación sobre otra igual de compatible con los hechos?",
-  "sources": [],
-  "epistemicStatus": "unverified",
+  "sources": [
+    {
+      "label": "Peirce, «Collected Papers», vol. 5, §§ 5.172 y 5.189",
+      "author": "Charles Sanders Peirce",
+      "work": "Collected Papers of Charles Sanders Peirce",
+      "kind": "primary"
+    },
+    {
+      "label": "Douven, «Peirce on Abduction», Stanford Encyclopedia of Philosophy",
+      "author": "Igor Douven",
+      "work": "Abduction",
+      "url": "https://plato.stanford.edu/entries/abduction/peirce.html",
+      "kind": "reference"
+    }
+  ],
+  "epistemicStatus": "interpretation",
   "scores": {
     "strangeness": 4,
     "darkness": 2,
@@ -29,5 +43,5 @@
     "delyra-0027"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: formulación de la abducción en Charles Sanders Peirce y su relación con el paradigma indiciario."
+  "captureNote": "Comprobado en «Peirce on Abduction», suplemento de la entrada «Abduction» de Igor Douven en la Stanford Encyclopedia of Philosophy: el esquema del hecho sorprendente es CP 5.189; la abducción como la única operación lógica que introduce alguna idea nueva, CP 5.172; y en Peirce la deducción y la inducción vienen después, a sacar consecuencias comprobables y a dictar un veredicto. Corregido: la deducción «de la regla al caso» y la inducción «de los casos a la regla» no salían de ninguna fuente comprobada y se sustituyen por el papel que Peirce les da; «la única que puede equivocarse por completo» no está en Peirce; y «la mejor explicación disponible» es la concepción moderna de la abducción, que la SEP distingue de la de Peirce. La relación con el paradigma indiciario no se comprobó —The Sign of Three (Eco y Sebeok, Indiana University Press, 1983) existe, pero no se pudo ver su índice— y la entrada no la afirma. De «Un diagnóstico» en adelante es del archivo."
 }
