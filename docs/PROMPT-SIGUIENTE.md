@@ -20,33 +20,29 @@ sobre todo.
 Arranque: npm install → npm run validate (obligatorio, escribe el índice que
 typecheck y test necesitan) → npm run web.
 
-LO PRIMERO, ANTES DE ESCRIBIR CÓDIGO: comprueba si Vercel ya desplegó el último
-commit. Al cerrar la sesión anterior, main estaba en 78b7b59 y producción seguía
-sirviendo f908546: el gancho de GitHub → Vercel no disparó, aunque el CI daba
-verde. Míralo así:
+LO PRIMERO, ANTES DE ESCRIBIR CÓDIGO: comprueba que Vercel sirve el último
+commit de main. No compares el nombre del paquete: el build de Vercel y el de
+esta máquina nunca salen byte a byte iguales. Compáralos por contenido, como
+dice docs/HANDOFF.md §6.1: partidos por «;», el único tramo distinto tiene que
+ser el polyfill de consola. Si no coincide, dímelo y lo arreglo yo en el panel
+de Vercel (Deployments → Redeploy); no empujes commits vacíos para forzarlo.
 
-    curl -s "https://aracne-mu.vercel.app/?t=$(date +%s)" | grep -o 'index-[a-f0-9]*\.js'
+Qué hay pendiente, por orden (desarrollado en docs/HANDOFF.md §6):
 
-y compáralo con el paquete de dist/ tras un npm run build. Si no coincide, dímelo
-y lo arreglo yo en el panel de Vercel (Deployments → Redeploy); no empujes
-commits vacíos para forzarlo sin preguntarme.
-
-Qué hay pendiente, por orden (está desarrollado en docs/HANDOFF.md §6):
-
-1. El panel de la derecha no cambia según la sección: siempre enseña las once
-   patas. Debería enseñar el instrumento de lo que hay delante — en el Atlas la
-   lente y la leyenda, en la tela las pieles y los mapas, en el archivo las
-   facetas. Shell ya recibe `aside` como propiedad.
-2. Contenido: las 15 entradas unverified (cada una dice en captureNote qué hay
-   que comprobar), las 13 biografías sin obra enlazada, y las entradas ligadas
-   mal repartidas entre temas.
-3. HTML prerenderizado para buscadores, y SITE_URL sin definir en Vercel.
+1. Contenido: las 13 biografías sin obra enlazada, y las entradas ligadas mal
+   repartidas entre temas (La hora del búho tiene una sola).
+2. Una decisión que es mía: delyra-0034, la única unverified que queda. Su
+   taxonomía no está en ninguna fuente abierta y la entrada no atribuye nada a
+   nadie. Pregúntame antes de cambiarle el estado.
+3. Las biografías no tienen instrumento propio en el panel de la derecha.
+4. HTML prerenderizado para buscadores, y SITE_URL sin definir en Vercel.
 
 Cómo trabajas, que está en CLAUDE.md y lo resumo: una cosa por sesión; antes de
 escribir código dime en cinco líneas qué archivos vas a tocar y por qué; al
 terminar, npm run validate, npm test, npm run build y un resumen de lo que
-cambió y lo que quedó pendiente. Commits: `fase(N): qué cambió`. No empujes a
-GitHub sin que yo lo pida.
+cambió y lo que quedó pendiente. Commits: `fase(N): qué cambió` para código y
+`entrada: título` para contenido, uno por entrada. No empujes a GitHub sin que
+yo lo pida.
 
 Tres cosas que este proyecto hace distinto y conviene que entiendas antes:
 
@@ -55,12 +51,16 @@ Tres cosas que este proyecto hace distinto y conviene que entiendas antes:
   encuentra; el score de un país sale de una regla declarada y la ficha enseña
   la cuenta entera.
 - Nada inventado. Si una fuente no se puede verificar: unverified y sources: [].
-  Una URL no se escribe de memoria, se pide y se comprueba: al redactar las
-  obras de las biografías, una URL de Gutenberg recordada «con seguridad»
-  devolvió una obra de Shakespeare.
-- La doctrina visual de docs/DESIGN.md tiene exactamente tres excepciones, todas
-  pedidas expresamente y escritas en CLAUDE.md: el flujo vivo de /tela, la rampa
-  de calor del Atlas y la consola de tres columnas. No las borres por doctrina.
+  Una URL no se escribe de memoria, se pide y se comprueba: una URL de
+  Gutenberg recordada «con seguridad» devolvió una obra de Shakespeare, y la
+  ficha del Prado que daba el buscador para Las hilanderas era la de una
+  fototipia. Y se comprueba cada frase, no solo la referencia: al revisar la
+  cola editorial, las referencias eran buenas y los errores estaban en lo que
+  la prosa añadía.
+- La doctrina visual de docs/DESIGN.md tiene tres excepciones pedidas
+  expresamente: el flujo vivo de /tela y la rampa de calor del Atlas, escritas
+  en CLAUDE.md, y la consola de tres columnas, que de momento solo está escrita
+  en docs/HANDOFF.md §4. No las borres por doctrina.
 
 Y dos trampas que ya costaron una sesión cada una:
 
@@ -75,7 +75,12 @@ Y dos trampas que ya costaron una sesión cada una:
 
 ## Cómo se usó esto la última vez
 
-El prompt de la sesión anterior traía además un resumen de qué contenía el
-handoff, sección por sección. No hace falta: si el handoff está al día, basta
-con mandar a leerlo. Lo que sí conviene repetir siempre son las tres reglas
-duras y las dos trampas, porque son lo que un modelo nuevo rompe primero.
+El prompt de la sesión del 15 de septiembre se escribió antes de la fase 16 y
+no se regeneró al cerrarla. Mandaba a hacer el panel de la derecha, que ya
+estaba hecho, y a comparar hashes de paquete, que ya se sabía que no sirven. Se
+detectó leyendo el historial antes de tocar nada, pero conviene no depender de
+eso: **este archivo se reescribe al cerrar cada sesión**, en el mismo commit que
+el handoff.
+
+Lo que sí conviene repetir siempre son las tres reglas duras y las dos trampas,
+porque son lo que un modelo nuevo rompe primero.

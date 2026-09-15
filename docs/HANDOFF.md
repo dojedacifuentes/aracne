@@ -140,12 +140,13 @@ Cifras reales, no estimaciones. Salen de `npm run validate` y `npm test`.
 | emblemas dibujados | 44 de 44 |
 | Atlas | 177 territorios · 34 causas (10 uniformes) · 11 dominantes |
 | scores del Atlas | de 45 a 98 |
-| estados epistémicos | 17 `fact` · 15 `unverified` · 6 `interpretation` · 5 `fiction` · 1 `controversial` |
+| estados epistémicos | 20 `fact` · 15 `interpretation` · 7 `fiction` · 1 `controversial` · 1 `unverified` |
 | pruebas | 160, en 14 archivos |
 | bundle web | ~2,0 MB |
 
-**Las 15 `unverified` siguen siendo la cola editorial.** Cada una lleva en
-`captureNote` la referencia exacta que hay que comprobar.
+**La cola editorial está casi vacía.** De las quince `unverified`, catorce se
+comprobaron el 15 de septiembre de 2026 contra fuentes pedidas, y cada una dice
+en `captureNote` qué se comprobó y qué se corrigió. Queda una. Ver §6.3.
 
 ---
 
@@ -161,6 +162,7 @@ Cifras reales, no estimaciones. Salen de `npm run validate` y `npm test`.
 | 14 | El Atlas de la extinción: mapa Robinson, 177 territorios, 34 causas con regla, ficha por país. |
 | 15 | La consola: tres columnas, las patas como conmutadores, sellos poligonales, y exportación a texto y PDF. |
 | 16 | El panel de la derecha es el instrumento de cada sección; el mapa del Atlas cabe en la pantalla y devuelve la rueda a la página. |
+| — | La cola editorial: 14 de las 15 entradas `unverified` comprobadas, con la prosa corregida allí donde decía más que la fuente. Un commit por entrada. |
 
 ---
 
@@ -181,7 +183,10 @@ Cifras reales, no estimaciones. Salen de `npm run validate` y `npm test`.
 ### Las tres excepciones a la doctrina visual
 
 `docs/DESIGN.md` prohíbe movimiento, degradados y segundos colores. Hay tres
-excepciones, **todas pedidas expresamente y todas escritas en `CLAUDE.md`**:
+excepciones, **todas pedidas expresamente**. Las dos primeras están escritas en
+`CLAUDE.md`. **La tercera no está escrita ni en `CLAUDE.md` ni en
+`docs/DESIGN.md`**: la fase 15 no tocó ninguno de los dos (comprobado en el
+historial), así que hoy solo la protege este archivo.
 
 1. **La piel `flujo` de `/tela` está viva.** Pulsos con estela por las trazas y
    el nodo del centro respirando. No sale de esa piel; la de seda está quieta y
@@ -287,6 +292,18 @@ Si la marca no está, entonces sí: *Deployments → Redeploy* en el panel. Elig
 una cadena que el commit que quieres comprobar haya introducido, y confírmalo
 con `git log -S "la cadena" -- ui/`.
 
+Hay una comprobación más fuerte que una marca: partir los dos paquetes por `;`
+y compararlos después de un `npm run build`. El 15 de septiembre, con
+`9375015`, salió un único tramo distinto —las sentencias 42 a 97 del paquete
+local, el polyfill de consola que el build de Vercel no mete— y las otras
+16 051, iguales. Eso es el mismo código.
+
+```bash
+tr ';' '\n' < dist/_expo/static/js/web/index-*.js > local.txt
+curl -s "https://aracne-mu.vercel.app/_expo/static/js/web/<paquete>" | tr ';' '\n' > prod.txt
+diff local.txt prod.txt | grep -v '^[<>-]'   # un solo tramo: el polyfill
+```
+
 ### 6.2 El panel de la derecha ya cambia de sección
 
 Hecho en la fase 16. En el Atlas, la lente y la leyenda; en la tela, las pieles,
@@ -301,8 +318,19 @@ las tres que se hicieron.
 
 ### 6.3 Contenido, que es lo que más falta
 
-- **Las 15 entradas `unverified`**, cada una con su `captureNote` diciendo qué
-  comprobar. El trabajo mejor definido que hay.
+- **La cola editorial, hecha salvo una.** Catorce de las quince `unverified` se
+  comprobaron (los commits `entrada: …` del 15 de septiembre). Queda
+  `delyra-0034`, *Ocho cosas que puede decir una línea*: su taxonomía viene del
+  material y no aparece en *Analysis of Evidence* ni en ninguna fuente que se
+  haya podido pedir. La entrada no atribuye la lista a nadie ni afirma nada
+  sobre el mundo, así que podría pasar a `interpretation` sin fuentes. **Es una
+  decisión editorial, no técnica, y no se ha tomado.** Si se toma, ojo:
+  `tests/export.test.ts` busca una `unverified` en el corpus y fallaría; la
+  prueba tendría que construir su propia entrada.
+- **Lo que eso cambió en el motor.** El modo `material` de
+  `lib/oracle/weighted.ts` da peso 0 a las `unverified`: catorce entradas que en
+  ese modo no salían ahora pueden salir, y una semilla compartida en modo
+  `material` puede devolver otra cosa. Es lo mismo que pasa al añadir entradas.
 - **Trece biografías sin obra enlazada**, todas de autores vivos o recientes.
 - **Las entradas ligadas están mal repartidas** entre temas: *La hora del búho*
   tiene una sola.
@@ -410,6 +438,19 @@ Cosas que ya costaron una sesión.
   que a dos de 411: los títulos envolvían a dos líneas y devolvían lo ganado.
   Lo que compacta de verdad es quitar líneas por fila, no estrechar columnas.
   Medir antes de dar por buena una rejilla.
+- **El buscador da la URL de otra cosa.** Para *Las hilanderas*, la ficha del
+  Prado que devolvía la búsqueda, con el mismo título, era la de una fototipia
+  de 1903 del cuadro. Se comprueba el número de catálogo, no el título.
+- **Los catálogos grandes contestan 403 a `curl`.** El Prado, Cairn, Oxford
+  Academic y Porto Editora ponen un desafío anti-bots. El panel del navegador
+  sí entra, y el texto entero suele estar en el JSON-LD de la página aunque la
+  vista lo corte. Y no te fíes del resumen de `WebFetch` para verificar: pide
+  la página y busca la frase literal.
+- **La nota dice qué referencia comprobar; los errores estaban en la prosa.**
+  Las referencias del material eran casi todas buenas. Lo que no aguantaba eran
+  las frases que decían más que la fuente: «varias veces por segundo» donde la
+  FAA dice una, «casi todas las aeronaves», una cita de Cronenberg real pero
+  pegada a la película equivocada. Se comprueba cada frase, no solo la ficha.
 - **El que se queda con la rueda deja la sección sin scroll.** El mapa del
   Atlas llamaba a `preventDefault()` en cada `wheel` para ampliar. Como ocupa
   casi la pantalla, el cursor estaba siempre encima y no había manera de bajar.
