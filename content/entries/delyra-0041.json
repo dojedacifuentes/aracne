@@ -13,10 +13,19 @@
     "escala",
     "percepcion"
   ],
-  "content": "Hay una obra que proyecta datos a una velocidad a la que nadie puede leerlos, acompañados de tonos en los límites de lo audible. El propósito no es informar. Es hacer perceptible algo que por tamaño y por velocidad queda fuera de la percepción: la sustancia invisible de la que está hecha una infraestructura de información. Al convertir números en luz y en sonido, la obra hace evidente que también convertirlos en un gráfico legible es una decisión, y que esa decisión elige qué parte del dato sobrevive. Un gráfico claro no es más verdadero que un destello ilegible: es otra traducción, hecha para otra cosa.",
+  "content": "En los conciertos de datamatics, Ryoji Ikeda proyecta datos a una velocidad que pone a prueba los umbrales de la percepción, con un sonido construido, igual que la imagen, a partir de datos puros. El propósito no es informar. Es hacer perceptible algo que por escala y por velocidad queda fuera de la percepción: lo que el proyecto llama la multisustancia invisible de los datos que impregnan el mundo. Al convertir números en luz y en sonido, la obra hace evidente que también convertirlos en un gráfico legible es una decisión, y que esa decisión elige qué parte del dato sobrevive. Un gráfico claro no es más verdadero que un destello ilegible: es otra traducción, hecha para otra cosa.",
   "question": "¿Qué se pierde cada vez que un dato se vuelve legible?",
-  "sources": [],
-  "epistemicStatus": "unverified",
+  "sources": [
+    {
+      "label": "Ryoji Ikeda, «datamatics», desde 2006",
+      "author": "Ryoji Ikeda",
+      "work": "datamatics",
+      "year": 2006,
+      "url": "https://www.ryojiikeda.com/project/datamatics/",
+      "kind": "primary"
+    }
+  ],
+  "epistemicStatus": "interpretation",
   "scores": {
     "strangeness": 4,
     "darkness": 2,
@@ -28,5 +37,5 @@
     "delyra-0040"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: Ryoji Ikeda, serie datamatics (desde 2006) y la formulación sobre percibir la sustancia invisible de los datos."
+  "captureNote": "Comprobado en la página del proyecto en la web de Ryoji Ikeda: datamatics (2006 en adelante) «explores the potential to perceive the invisible multi-substance of data that permeates our world», en conciertos audiovisuales, instalaciones, publicaciones y discos. Del concierto datamatics [ver.2.0]: usa datos puros como fuente del sonido y de la imagen, y sus velocidades de fotograma extremadamente altas «challenge and explore the thresholds of our perceptions»; se estrenó en su primera versión en marzo de 2006. Corregido: «a una velocidad a la que nadie puede leerlos» y «tonos en los límites de lo audible» no los dice la fuente; «la sustancia invisible de la que está hecha una infraestructura de información» era una glosa de la frase del proyecto, que ahora se sigue. Desde «Al convertir números» es lectura del archivo."
 }
