@@ -13,10 +13,19 @@
     "centro",
     "jerarquia"
   ],
-  "content": "El rizoma se definió contra el árbol: cualquier punto puede conectarse con cualquier otro, sin raíz, sin jerarquía y sin un centro que ordene. Suele citarse como sinónimo de red, pero una telaraña no es un rizoma. La telaraña clásica tiene una araña reconocible, una posición relativamente central y unos hilos que llevan los acontecimientos hacia ella. Son dos modelos distintos de lo mismo, y la diferencia se puede comprobar en cualquier sistema que se presente como una red: basta preguntar si existe algún sitio que decida qué relaciones son posibles. Una interfaz puede parecer rizomática y estar gobernada por una arquitectura perfectamente arbórea.",
+  "content": "Deleuze y Guattari definieron el rizoma contra el árbol: cualquier punto puede conectarse con cualquier otro, sin raíz, sin jerarquía y sin un centro que ordene. Es tentador leerlo como sinónimo de red, pero una telaraña no es un rizoma. La telaraña clásica tiene una araña reconocible, una posición relativamente central y unos hilos que llevan los acontecimientos hacia ella. Son dos modelos distintos de lo mismo, y la diferencia se puede comprobar en cualquier sistema que se presente como una red: basta preguntar si existe algún sitio que decida qué relaciones son posibles. Una interfaz puede parecer rizomática y estar gobernada por una arquitectura perfectamente arbórea.",
   "question": "¿Dónde está el centro de una red que asegura no tener ninguno?",
-  "sources": [],
-  "epistemicStatus": "unverified",
+  "sources": [
+    {
+      "label": "Deleuze y Guattari, «Mille plateaux», 1980",
+      "author": "Gilles Deleuze y Félix Guattari",
+      "work": "Capitalisme et schizophrénie 2 : Mille plateaux",
+      "year": 1980,
+      "url": "https://www.leseditionsdeminuit.fr/livre-Capitalisme_et_schizophr%C3%A9nie_2___Mille_plateaux-2015-1-1-0-1.html",
+      "kind": "primary"
+    }
+  ],
+  "epistemicStatus": "interpretation",
   "scores": {
     "strangeness": 4,
     "darkness": 2,
@@ -28,5 +37,5 @@
     "delyra-0031"
   ],
   "addedAt": "2026-09-14",
-  "captureNote": "Del material de investigación reunido para el archivo. Pendiente de verificar: Deleuze y Guattari, Mille plateaux (1980), principios de conexión y heterogeneidad del rizoma."
+  "captureNote": "Comprobado: Mille plateaux (Minuit, 1980, colección Critique). En la introducción, «Rhizome», el principio de conexión y heterogeneidad —cualquier punto de un rizoma puede conectarse con cualquier otro, a diferencia del árbol, que fija un punto y un orden— está en la p. 13, citado así por la Chaire de Philosophie à l'Hôpital; y el rizoma se define como un sistema acentrado, no jerárquico y no significante, frente a los sistemas centrados de comunicación jerárquica. Corregido: la entrada no nombraba a los autores, y «suele citarse como sinónimo de red» afirmaba un uso que no se comprobó. La distinción entre telaraña y rizoma es del archivo."
 }
