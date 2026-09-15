@@ -29,7 +29,7 @@ el proyecto y qué conviene hacer. Este archivo es la historia de cada fase.
 | 13 | El flujo vivo: trazas en ángulo recto sobre rejilla, pulsos con estela y el nodo del centro respirando; y el lienzo que no puede medir menos que nada | `32270c5` … `80a4d9d` |
 | 14 | El Atlas de la extinción: 177 territorios de Natural Earth en proyección Robinson, 34 causas con regla declarada, ficha por país y cruce con el archivo | `f908546` |
 | 15 | La consola: tres columnas, las once patas como conmutadores al lado, sellos poligonales, y todo texto exportable a .txt y a .pdf sin dependencias | `78b7b59` |
-| 16 | El panel de la derecha es el instrumento de cada sección: lente y leyenda en el Atlas, pieles y mapas en la tela, facetas en el archivo, patas donde se invoca. El mapa cabe en la pantalla y la rueda vuelve a ser de la página | — |
+| 16 | El panel de la derecha es el instrumento de cada sección: lente y leyenda en el Atlas, pieles y mapas en la tela, facetas en el archivo, patas donde se invoca. El mapa cabe en la pantalla y la rueda vuelve a ser de la página | `96a6a32` |
 
 En curso: una revisión adversarial de las fases 0–2.
 
