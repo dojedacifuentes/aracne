@@ -284,10 +284,10 @@ diagramas de Wigmore— y también en el `.docx` de paneles de datos.
   Con 24 el archivo entero se sigue viendo en pocas decenas de pulsaciones. El
   objetivo razonable sigue siendo ~70.
 - Probar el rendimiento en un teléfono real y `prefers-reduced-motion` en un
-  navegador real. Con ellos, el gesto de la fase 18: está medido de la
-  traducción de coordenadas hacia dentro, pero los eventos de puntero sobre el
-  botón no se pueden montar en el panel de pruebas, que declara la página
-  oculta.
+  navegador real. Del gesto de la fase 18 queda por ver lo mismo en un teléfono,
+  y que Enter y Espacio activen el botón de la araña: el panel de pruebas inyecta
+  la tecla pero no su acción por omisión, y no activa ningún botón de la
+  aplicación. Lo demás está comprobado en producción con eventos reales.
 - Conectar el repositorio a Vercel y definir `SITE_URL` para las imágenes Open
   Graph.
 - Iconos y splash: siguen siendo la luna del tarot.

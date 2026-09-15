@@ -351,10 +351,16 @@ uno de 820 px, 0,70 —la cifra que predice la curva—; la seda sale del borde
 superior por el mismo sitio con el cuerpo 142 px a la derecha; al soltar, el
 sobrepaso es de 0,12 envergaduras y vuelve a su sitio.
 
-**No verificado todavía:** los eventos de puntero sobre el elemento real. El
-panel de pruebas declara la página oculta, y con la página oculta no corren ni
-`requestAnimationFrame` ni `ResizeObserver`; sin `ResizeObserver` no hay
-`onLayout`, y sin `onLayout` el botón de la araña no llega a montarse. Se
-comprobó que eso ya pasaba antes de este cambio. Se ha podido medir todo lo que
-va del traductor de coordenadas hacia dentro; falta pasar el ratón y el dedo por
-encima en un navegador de verdad, y probarlo en un teléfono.
+**Comprobado en producción**, en https://aracne-mu.vercel.app y con eventos
+reales del navegador: el botón de la araña se monta como `button` con tabulador,
+`touch-action: pan-y` y `user-select: none`, o sea que el gesto se enganchó; un
+arrastre de ratón desplaza el cuerpo, deja la seda prendida arriba y en diagonal,
+y lo devuelve a su sitio en un par de segundos **sin invocar**; una pulsación sin
+recorrido sí invoca, y sale `/i/<semilla>`. El foco de teclado llega al botón y
+activarlo desde ahí invoca.
+
+**No verificado todavía:** que Enter y Espacio activen el botón, porque el panel
+de pruebas inyecta la tecla pero no su acción por omisión —no activa tampoco
+ningún otro botón de la aplicación, incluidos los que esta fase no toca, así que
+no dice nada de este—; el tacto en un teléfono de verdad; y
+`prefers-reduced-motion` en un navegador.
