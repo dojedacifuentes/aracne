@@ -1,6 +1,6 @@
 # Estado
 
-Última actualización: 14 de septiembre de 2026.
+Última actualización: 15 de septiembre de 2026.
 
 Para retomar en otra sesión, lee antes **`docs/HANDOFF.md`**: dice dónde está
 el proyecto y qué conviene hacer. Este archivo es la historia de cada fase.
@@ -26,8 +26,35 @@ el proyecto y qué conviene hacer. Este archivo es la historia de cada fase.
 | 10 | Las once patas en órbita alrededor de la araña, los sellos geométricos de patas y botones, y la tela fuera de la portada: `/tela`, con retejido y dos pieles | `b435d30` |
 | 11 | Las biografías sustituyen al gabinete: nueve temas en vez de siete salas, idea y hecho por figura, 31 obras enlazadas y comprobadas, los 44 emblemas dibujados | `d07f160` |
 | 12 | Fluidez: marca de arranque sin JavaScript, tope al escalonado de la aparición y los hilos de la tela fuera del camino del cursor | `0eb5c0e` |
+| 13 | El flujo vivo: trazas en ángulo recto sobre rejilla, pulsos con estela y el nodo del centro respirando; y el lienzo que no puede medir menos que nada | `32270c5` … `80a4d9d` |
+| 14 | El Atlas de la extinción: 177 territorios de Natural Earth en proyección Robinson, 34 causas con regla declarada, ficha por país y cruce con el archivo | `f908546` |
+| 15 | La consola: tres columnas, las once patas como conmutadores al lado, sellos poligonales, y todo texto exportable a .txt y a .pdf sin dependencias | `78b7b59` |
 
 En curso: una revisión adversarial de las fases 0–2.
+
+### Lo que se decidió en las fases 13 a 15
+
+El anillo de patas en órbita, construido en la fase 10, se quitó en la 15: con
+varias patas apoyadas sus hilos cruzaban por encima de la araña y tapaban justo
+lo que hay que mirar. En su lugar hay una consola de tres columnas —secciones a
+la izquierda, contenido en el centro, instrumentos a la derecha— y las once
+patas son once conmutadores.
+
+Con ella entraron tres excepciones a `docs/DESIGN.md`, todas pedidas
+expresamente y todas escritas en `CLAUDE.md`: el movimiento de la piel
+`flujo`, la rampa de calor del Atlas y las superficies y el frío de máquina de
+la consola. La regla que queda en pie: **el frío es de lo que se puede tocar y
+el cálido es del contenido**.
+
+El Atlas trajo tres decisiones que la investigación aportada no había visto: el
+score general es el máximo y nunca la suma, las causas uniformes quedan fuera
+del reparto —si no, el mapa entero diría «asteroide, 100»— y el calor va por
+cuantiles, porque con cortes redondos ciento veinte países caían en el mismo
+tramo.
+
+La exportación a PDF se escribió a mano, doscientas líneas con las fuentes base
+del formato, en vez de añadir medio megabyte de librería a un paquete que ya
+pesa dos.
 
 ### Lo que se decidió en la fase 11
 

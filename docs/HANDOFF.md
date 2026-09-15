@@ -14,7 +14,7 @@ estás parado y qué conviene hacer a continuación**.
 |---|---|
 | repositorio | `https://github.com/dojedacifuentes/aracne.git` |
 | rama de trabajo | `main` |
-| otra rama viva | `diseno-denso` (rediseño a medias, ver §3) |
+| otra rama viva | `diseno-denso` (rediseño viejo, superado por la fase 15) |
 | ruta local | `C:\Users\Asus\Desktop\aracne` |
 | desplegado en | `https://aracne-mu.vercel.app` |
 | plataforma | Vercel, `buildCommand: npm run build`, salida `dist` |
@@ -30,7 +30,8 @@ docs/
   ARANA-3D.md          por qué la araña es 3D y cómo se comporta
   DESIGN.md            paleta, tipografía, qué no se hace nunca
   BIOGRAFIAS.md        reglas de las biografías: temas, ideas, enlaces, emblemas
-  PROMPTS.md           las fases 0 a 9, en orden
+  ATLAS.md             reglas del Atlas de la extinción
+  PROMPTS.md           las fases 0 a 9, en orden (histórico)
   TAROT.md             qué se heredó del proyecto anterior
 
 content/               EL ARCHIVO. Sin base de datos: JSON versionado.
@@ -38,45 +39,57 @@ content/               EL ARCHIVO. Sin base de datos: JSON versionado.
   categories.json      las once patas, con su posición en el anillo y glifo
   figures.json         44 biografías: tema, idea, hecho, obras, emblema
   themes.json          los nueve temas y su criterio
+  atlas/world.json     177 territorios de Natural Earth, simplificados
+  atlas/causes.json    34 causas de extinción, con su regla y sus tags
   index.generated.ts   lo escribe `npm run validate`. No editar.
 
 lib/                   el motor. Puro, sin React, probable sin pantalla.
-  schema.ts            fuente de verdad del modelo de datos (zod)
+  schema.ts            fuente de verdad del modelo de entradas (zod)
   labels.ts            los ids van en inglés; la interfaz habla español
-  content/corpus.ts    parseo y validación cruzada del contenido
+  content/corpus.ts    parseo y validación cruzada; esquemas de figura y tema
   content/loader.ts    carga el archivo una vez
   oracle/rng.ts        el PRNG sembrado. TODA la aleatoriedad pasa por aquí.
   oracle/invoke.ts     qué sale al pulsar: formas, puentes, fallas, dictámenes
   oracle/weighted.ts   los cuatro modos. PESOS PROVISIONALES desde la fase 0.
   oracle/index.ts      draw() y pressSeed(), con anti-repetición
-  oracle/history.ts    memoria corta de lo que ya salió
   aleph/tension.ts     física del anillo: legAngle, alephState, muelles
-  drift/graph.ts       el grafo: scoreLink, neighbours, buildDrift, shortestPath
-  drift/layout.ts      dónde se dibuja cada entrada sobre el anillo
-  drift/modes.ts       dos mundos y distancia (diámetro del grafo)
+  drift/graph.ts       scoreLink, neighbours, buildDrift, shortestPath, withinSteps
+  drift/layout.ts      dónde cae cada entrada, y el trazado en ángulo recto
+  drift/modes.ts       dos mundos, distancia, y las dos pieles de la tela
   archive/filter.ts    filtros, facetas y búsqueda local con acentos plegados
   archive/shape.ts     la forma del archivo para /adn
   museum/themes.ts     temas calculados desde las figuras
+  atlas/score.ts       el motor de scores: factores, reglas, la cuenta explicada
+  atlas/world.ts       esquemas del Atlas, dominante, fondo, escala del calor
+  atlas/projection.ts  Robinson, zoom, encuadre. Puro.
+  atlas/bridge.ts      el cruce Atlas ↔ archivo, por tags y patas
+  atlas/loader.ts      carga y valida el Atlas una vez
+  export/pdf.ts        un PDF escrito a mano. Sin dependencias.
+  export/sheet.ts      la hoja: de ella salen el texto crudo y el PDF
 
 ui/
-  theme.ts             los seis colores y las dos familias. No hay más.
-  screens/HomeScreen.tsx   UNA sola escena; la ruta decide qué muestra el panel
+  theme.ts             seis colores, dos familias, la rampa del Atlas y el frío
+  screens/HomeScreen.tsx   UNA sola escena; la ruta decide qué va en el centro
   lib/route.ts         todas las rutas y su ida y vuelta a la URL
   lib/copy.ts          textos del resultado. Solo leen metadatos reales.
   lib/epistemic.ts     STATUS_BORDER y THREAD_STYLE: el trazo codifica certeza
-  components/          Tela, Tejido, DriftView, EntryView, ArchiveView,
-                       LivesView, FigureView, ShapeView, CommandPalette,
-                       LegRing, Sigil, Emblem, Reveal…
-  lib/sigil.ts         los sellos: geometría simétrica, calculada y probada
+  lib/sigil.ts         los sellos: marco poligonal, estrella y remates
+  lib/download.ts      portapapeles, .txt y .pdf. Solo web.
+  components/Shell.tsx     el armazón de tres columnas
+  components/LegPanel.tsx  las once patas, como conmutadores
+  components/          Tela, Tejido, AtlasView, LivesView, FigureView,
+                       EntryView, InvocationView, ArchiveView, ShapeView,
+                       CommandPalette, ExportRow, Sigil, Emblem, Reveal…
   components/spider/   la araña 3D: rig, escena, seda, config, fallback SVG
 
 scripts/
-  validate.ts          valida y genera el índice. Corre antes de todo.
+  validate.ts          valida TODO el contenido y genera el índice
+  atlas.mjs            descarga y simplifica el mundo (npm run atlas)
   og.mjs               permalinks + imagen Open Graph por entrada, en build
-  sprites.mjs          dibuja los emblemas de las biografías
+  sprites.mjs          dibuja los 44 emblemas
   capture.mjs          alta de entrada por consola
 
-tests/                 12 archivos, 110 pruebas
+tests/                 14 archivos, 160 pruebas
 public/figures/        44 emblemas SVG de 44
 public/models/spider/  el GLB de la araña (87 000 triángulos)
 ```
@@ -85,11 +98,12 @@ public/models/spider/  el GLB de la araña (87 000 triángulos)
 
 | ruta | qué |
 |---|---|
-| `/` | la portada: la araña, y las once patas en órbita a su alrededor |
+| `/` | la portada: la araña sola en el centro |
 | `/i/<semilla>?patas=…&sala=…` | una invocación, reproducible y compartible |
 | `/e/<id>` | una entrada. Tiene HTML propio con Open Graph. |
-| `/deriva/<semilla>?modo=…` | la red dibujada. Modos: deriva, dos-mundos, distancia. |
-| `/tela` · `/tela/<id>?vista=flujo` | la red entera, o tejida en torno a una entrada |
+| `/tela` · `/tela/<id>?vista=flujo` | la red, entera o tejida en torno a una entrada |
+| `/atlas` · `/atlas/<ISO>?causa=…` | el mapa del mundo y sus finales |
+| `/deriva/<semilla>?modo=…` | los tres mapas de la red |
 | `/biografias` · `/biografias/<tema>` · `/figura/<id>` | las vidas (antes `/gabinete`, que sigue valiendo) |
 | `/archivo?categorias=…&tipos=…&q=…` | filtros y búsqueda, todo en la URL |
 | `/adn` | la forma del archivo |
@@ -102,38 +116,36 @@ cualquier ruta a `/`, salvo los `dist/e/<id>/index.html` que genera `og.mjs`.
 ## 1. Qué es esto, en una frase
 
 Un archivo para encontrar lo que no estabas buscando. Once categorías son las
-patas de una araña; se apoyan las que se quieran, se pulsa el animal y sale una
-entrada, un par con lo que los une y lo que los separa, una constelación o una
-deriva. Detrás hay un grafo real de entradas, y ese grafo se dibuja.
+patas de una araña; se apoyan las que se quieran, se pulsa y sale una entrada,
+un par con lo que los une y lo que los separa, una constelación o una deriva.
+Detrás hay un grafo real de entradas, y ese grafo se dibuja. Alrededor hay un
+gabinete de biografías y un atlas de extinciones, los dos calculados.
 
-El archivo no lleva firma. Ninguna entrada dice quién la escribió y el motor no
-distingue autores.
+El archivo no lleva firma. Ninguna entrada dice quién la escribió, el motor no
+distingue autores y **lo que se exporta tampoco lleva firma**.
 
 ---
 
 ## 2. Estado medido
 
-Cifras reales, no estimaciones. Se obtienen con `npm run validate` y el
-diagnóstico de la sección 8.
+Cifras reales, no estimaciones. Salen de `npm run validate` y `npm test`.
 
 | | |
 |---|---|
 | entradas | 44 |
 | patas encendidas | 11 de 11 |
 | grado medio del grafo | 18,2 vecinos |
-| hilos dibujados | 139, de los que 27 cruzan el anillo |
-| diámetro de la red | 3 pasos (*La habitación china* → *Un río que es alguien*) |
+| diámetro de la red | 3 pasos |
 | biografías | 44, en 9 temas · 31 con obra enlazada |
 | emblemas dibujados | 44 de 44 |
-| medias | extrañeza 3,8 · oscuridad 2,8 · ficción 2,0 |
+| Atlas | 177 territorios · 34 causas (10 uniformes) · 11 dominantes |
+| scores del Atlas | de 45 a 98 |
 | estados epistémicos | 17 `fact` · 15 `unverified` · 6 `interpretation` · 5 `fiction` · 1 `controversial` |
-| pruebas | 110, en 12 archivos |
-| bundle web | ~2 MB |
+| pruebas | 160, en 14 archivos |
+| bundle web | ~2,0 MB |
 
-**Las 15 `unverified` no son un descuido: son la cola editorial.** Cada una
-lleva en `captureNote` la referencia exacta que hay que comprobar para
-promoverla a `fact` con `sources` reales. Ese es el trabajo de contenido mejor
-definido que hay ahora mismo.
+**Las 15 `unverified` siguen siendo la cola editorial.** Cada una lleva en
+`captureNote` la referencia exacta que hay que comprobar.
 
 ---
 
@@ -141,229 +153,122 @@ definido que hay ahora mismo.
 
 | fase | qué |
 |---|---|
-| 0 | Andamio sobre Expo 57 + React Native Web + three.js sin React Three Fiber. Motores del kit reconstruidos. |
-| 1 | La araña 3D colgando de su hilo; física en `lib/aleph/tension.ts`. |
-| 2 | Pulsar invoca. `/i/<semilla>?patas=…`, compartible y reproducible. |
-| 3 | Ficha de entrada, permalink `/e/<id>`, Open Graph generado en build. |
-| 4 | Contenido: de 17 a 44 entradas, las once patas encendidas. |
-| 5 | **La red dibujada**: `/deriva/<semilla>` con tres modos, y la tela permanente. |
-| 6 | El gabinete: `/gabinete`, salas, figuras, `invocar desde esta sala`. |
-| 7 | `/archivo` con filtros en la URL, búsqueda local y paleta ⌘K. |
-| 8 | `/adn`: la forma del archivo. Repartos por pata, tipo y estado, medias y tags. |
-| 10 | Las once patas en órbita, los sellos geométricos y la tela con sitio propio en `/tela`. |
-| 11 | El gabinete deja de ser salas y pasa a biografías por temas, con idea, obra enlazada y los 44 emblemas. |
-
-**No está hecho:** fase 9 (`/hoy`, accesibilidad, repaso de microcopy).
-
-En la rama `diseno-denso` hay un rediseño a medias, sin verificar en pantalla:
-tipografía unificada en siete cuerpos —eso sí está terminado y con prueba— más
-un carril permanente de patas y una columna de vínculos.
+| 0–9 | Andamio, araña 3D, invocación, ficha, contenido, la red dibujada, gabinete, archivo, `/adn`, economía cognitiva. Detalle en `docs/ESTADO.md`. |
+| 10 | Los sellos geométricos, y la tela fuera de la portada: `/tela`, con retejido y dos pieles. |
+| 11 | Las biografías por temas: nueve temas, idea y hecho por figura, 31 obras enlazadas y comprobadas, los 44 emblemas. |
+| 12 | Fluidez: marca de arranque sin JavaScript, tope al escalonado, hilos fuera del camino del cursor. |
+| 13 | El flujo vivo: trazas en ángulo recto sobre rejilla, pulsos con estela, el nodo del centro respirando. |
+| 14 | El Atlas de la extinción: mapa Robinson, 177 territorios, 34 causas con regla, ficha por país. |
+| 15 | La consola: tres columnas, las patas como conmutadores, sellos poligonales, y exportación a texto y PDF. |
 
 ---
 
 ## 4. Lo que no se toca
 
-Está en `CLAUDE.md` y en `docs/DESIGN.md`, pero conviene repetir lo que más
-tienta romper:
-
 - **Sin base de datos.** Un JSON por entrada en `content/entries/`.
 - **Sin API de IA en el núcleo.** El motor funciona y se prueba sin red.
 - **Sin `Math.random()`.** Todo pasa por el PRNG sembrado. Hay una prueba.
-- **Nada inventado.** Sin fuente verificada: `unverified` y `sources: []`.
-- **Un solo color de acento**, y ocupa menos del 5% de la pantalla.
-- **Nada de** neón, glow, gradientes, glassmorphism, partículas, scanlines,
-  sombras difusas bajo todo, bento grids ni un segundo acento.
-- **Un solo momento de movimiento**: la aparición, 320 ms.
+- **Nada inventado.** Sin fuente verificada: `unverified` y `sources: []`. Una
+  URL no se escribe de memoria: se pide y se comprueba. Al escribir las obras
+  de las biografías, una URL de Gutenberg recordada «con seguridad» devolvió
+  una obra de Shakespeare.
+- **La posición manda en la tela.** No es un layout de fuerzas y no debe serlo.
+- **Un mapa que dice lo mismo en todas partes no es un mapa.** De ahí las dos
+  reglas del Atlas: una causa que reparte tiene que separar 25 puntos entre el
+  percentil 5 y el 95, y lo que no tiene población no se puntúa.
 
-La referencia no es una terminal de ciencia ficción. Es un catálogo razonado de
-museo impreso en papel oscuro.
+### Las tres excepciones a la doctrina visual
+
+`docs/DESIGN.md` prohíbe movimiento, degradados y segundos colores. Hay tres
+excepciones, **todas pedidas expresamente y todas escritas en `CLAUDE.md`**:
+
+1. **La piel `flujo` de `/tela` está viva.** Pulsos con estela por las trazas y
+   el nodo del centro respirando. No sale de esa piel; la de seda está quieta y
+   hay una comprobación de que lo está.
+2. **El Atlas tiene rampa de calor.** De la ceniza a la llama pasando por el
+   acento de siempre: no hay color nuevo, hay uno estirado.
+3. **La consola de la fase 15**: superficies, retículas y un frío de máquina
+   (`machine`) para lo interactivo. La regla que queda en pie: **el frío es de
+   lo que se puede tocar y el cálido es del contenido**.
+
+No las borres por doctrina: la doctrina ya las contempla.
 
 ---
 
-## 5. La tela es la pieza central
+## 5. Cómo está montada la pantalla
 
-Lo más importante que hay que conservar y ampliar.
+Tres columnas (`ui/components/Shell.tsx`):
 
-`lib/drift/layout.ts` coloca cada entrada **en el sector de su categoría sobre
-el anillo de las once patas**, reusando `legAngle` de la física de la araña. No
-es un layout de fuerzas y no debe serlo: un layout de fuerzas ordena los puntos
-por una física que aquí no significa nada, y convierte el dibujo en adorno.
+- **Izquierda**: las secciones, agrupadas, con barra de activo y una línea en
+  mono que dice qué hace cada una.
+- **Centro**: el contenido, con todo el ancho. En la portada, la araña sola.
+- **Derecha**: las once patas como conmutadores (`LegPanel`) y el estado.
 
-Con este layout la posición afirma algo:
+En vertical se apila: cabecera, fila de secciones, contenido, panel.
 
-- dos puntos próximos comparten pata;
-- **un hilo que atraviesa el centro une dos patas lejanas**, y como el orden del
-  anillo es afinidad, un hilo largo es un cruce improbable;
-- los círculos huecos con borde de acento son las entradas sin verificar, así
-  que se ve de un vistazo qué parte del archivo está pendiente.
+**Lo que se quitó y no debe volver sin pensarlo:** el anillo de patas en órbita
+alrededor de la araña. Con varias apoyadas, sus hilos cruzaban por encima del
+animal y tapaban justo lo que hay que mirar. Y el reparto viejo —escenario a un
+lado, sección al otro— dejaba cada sección con media pantalla.
 
-Hay una prueba que lo protege: *dos entradas de la misma pata caen, de media,
-más cerca que dos de patas opuestas*. Si alguien cambia el layout y esa prueba
-falla, el dibujo ha dejado de significar algo.
-
-**La tela ya no vive al fondo de la portada.** Hasta la fase 10 se dibujaba
-tenue detrás de la araña en todas las rutas; molestaba, y por decisión expresa
-se mudó a `/tela`, que se abre con un botón pequeño. Ahí se dibuja con más
-hilos, se reteje alrededor de la entrada que se pulse y se puede leer con dos
-pieles: seda o circuito.
-
-**La piel `flujo` está viva** (fase 13, también por decisión expresa). Las
-trazas van en ángulo recto, los codos caen en una rejilla —eso es lo que la
-hace parecer una placa y no veinte líneas sueltas—, por las más fuertes corre
-un pulso con estela y el nodo del centro respira. La velocidad del pulso es
-proporcional a la fuerza del vínculo, así que **el movimiento también dice
-algo**. Es la única excepción a «un solo momento de movimiento» y está escrita
-en `CLAUDE.md`: no se borra por doctrina. La piel de seda sigue quieta, con una
-comprobación de que lo está.
-
-Lo que **no** cambió y no debe cambiar: la semilla sigue fija —si cambiara en
-cada visita los puntos saltarían de sitio y dejaría de ser un mapa—, la posición
-la sigue mandando la pata, y la prueba del layout sigue en verde. Las dos pieles
-dibujan el hilo de otra manera **entre los mismos puntos**.
+**Medir con la columna, no con la ventana.** Todos los lienzos —araña, tela,
+atlas— se dimensionan con el ancho del centro. Calcularlos con
+`useWindowDimensions` hacía que la araña se saliera por encima del menú. Y un
+`ScrollView` crece por defecto: la columna lateral necesita un `View` con ancho
+fijo por fuera.
 
 ---
 
 ## 6. Qué hacer a continuación
 
-Por orden. Las tres primeras son las que más cambian la experiencia y ninguna
-necesita servicios externos.
+### 6.1 Vercel no desplegó la fase 15 — *lo primero*
 
-### 6.0 Lo que se hizo en las fases 10 y 11
+Al cerrar la sesión, `main` estaba en `78b7b59` y **producción seguía sirviendo
+`f908546`** (la fase 14). No es el build: GitHub Actions da el commit en verde,
+y el registro de despliegues del repositorio no llega a crear ninguno para
+`78b7b59`. El gancho de GitHub → Vercel no disparó.
 
-Tres cosas que estaban aquí como pendientes y ya no lo están:
+Se arregla en el panel de Vercel: *Deployments → Redeploy*, o revisando
+*Settings → Git*. Compruébalo antes de seguir: si no, lo que se ve en línea no
+es lo que hay en el repositorio.
 
-- **Las once patas en órbita** (era 6.1). Cada pata está en el ángulo que
-  `legAngle` calcula para la física, apoyarla tensa un hilo hacia el animal y la
-  araña se desplaza hacia las que se apoyan. En vertical no cabe un anillo de
-  once, así que ahí siguen en fila.
-- **La red contextual** (era 6.2, `/tejido`). Vive en `/tela`. Pulsar un nodo lo
-  pone en el centro, enciende a sus vecinos directos y deja el resto en sombra
-  —no borrado: se puede saltar lejos—. A dos pasos no se recortaba nada: con
-  grado medio 18 sobre 44, a dos pasos está el archivo entero.
-- **Los 44 emblemas** (era 6.3). Están los 44. Cuatro hubo que tirarlos después
-  de verlos: el nudo de Gödel parecía un reloj de pared, el guante de Deleuze un
-  peine, las sillas de montar un borrón y la torre sin ventanas tenía una
-  ventana. **Se dibujan mirándolos**, en `public/figures/`, no leyendo el código.
+```bash
+# qué paquete sirve producción ahora mismo
+curl -s "https://aracne-mu.vercel.app/?t=$(date +%s)" | grep -o 'index-[a-f0-9]*\.js'
+```
 
-### 6.3 Lo que le falta a las biografías
+### 6.2 El panel de la derecha no cambia de sección
 
-El gabinete de siete salas ya no existe: las figuras se agrupan por nueve temas
-—problemas, no circunstancias— y cada una lleva idea, hecho y, si la hay, obra
-enlazada. Reglas en `docs/BIOGRAFIAS.md`. Lo que queda:
+Hoy enseña siempre las once patas, esté uno en la portada o en el Atlas. Lo
+suyo es que enseñe el instrumento de lo que hay delante: en el Atlas, la lente
+y la leyenda; en la tela, las pieles y los mapas; en el archivo, las facetas.
+`Shell` ya recibe `aside` como propiedad, así que es cosa de decidir qué va en
+cada ruta.
 
-- **Trece figuras sin obra que abrir**, todas de autores vivos o recientes. Si
-  aparece una edición abierta y estable, entra; si no, la ficha sigue diciendo
-  que no la hay. Una URL no se escribe de memoria: se comprueba pidiéndola.
-- **Las entradas ligadas están mal repartidas**: *La hora del búho* tiene una
-  sola. Ligar entradas a figuras es trabajo de contenido, no de código.
-- Los temas son nueve y las patas once, y no se corresponden a propósito. Si
-  alguien los alinea, que sea por una razón escrita.
+### 6.3 Contenido, que es lo que más falta
 
-### 6.3bis Lo que ya se aplicó de la literatura de UX
+- **Las 15 entradas `unverified`**, cada una con su `captureNote` diciendo qué
+  comprobar. El trabajo mejor definido que hay.
+- **Trece biografías sin obra enlazada**, todas de autores vivos o recientes.
+- **Las entradas ligadas están mal repartidas** entre temas: *La hora del búho*
+  tiene una sola.
+- **Vincular causas del Atlas con entradas concretas.** Hoy el cruce se calcula
+  por tags y patas (`lib/atlas/bridge.ts`), que funciona y se ve en las dos
+  direcciones —en la lente del Atlas y en la ficha de entrada—, pero un vínculo
+  anotado a mano diría más.
 
-De una investigación sobre interfaces de colecciones digitales se aplicaron
-tres cosas; el resto se descartó y está en la sección 7.
+### 6.4 Lo que quedó apuntado de antes
 
-- **«No todos los enlaces deben mostrarse igual.»** Los hilos de la tela ya no
-  se dibujan todos con el mismo trazo: la razón del vínculo decide el estilo,
-  siguiendo la gramática que el proyecto ya usaba para el estado epistémico —
-  **el trazo codifica la certeza, nunca el color**. Continuo lo que el archivo
-  declara, discontinuo la misma pata, punteado el mismo tipo. Está en
-  `THREAD_STYLE` (`ui/lib/epistemic.ts`), con leyenda y tres pruebas, una de
-  ellas para que nadie meta color ahí dentro.
-- **«¿Por qué aparece este enlace?»** Pulsar un hilo dice por qué existe,
-  usando el mismo `linkText()` que nombra los pasos de la deriva: un vínculo no
-  puede llamarse de dos maneras según dónde se lea.
-- **«Interfaz generosa» (Whitelaw).** Buscar obliga a preguntar y esconde el
-  resto. `/adn` enseña cuánto hay y cómo está repartido, con barras de una
-  línea sin librería de gráficos: la longitud da la proporción y el número da
-  el dato exacto.
-
-### 6.4 En cada entrada: por qué llegaste aquí
-
-Dos añadidos pequeños con mucho efecto:
-
-- una miga de pan con la genealogía — `telarañas → borges → autorreferencia`, o
-  `apareció por: telarañas + lógica` si vino del oráculo;
-- una sección **hilos conectados** con 3–5 entradas vecinas y la razón de cada
-  una.
-
-Lo segundo está calculado y probado; solo hay que mostrarlo en la ficha. Es la
-diferencia entre que Aracne parezca inteligente o parezca aleatoria.
-
-### 6.5 Una sola frase de bienvenida
-
-En la primera visita, una línea: `elige una o más patas, o pulsa la araña.`
-Después desaparece para siempre, en `localStorage`. Nada de tour de tres pasos:
-el problema de una interfaz misteriosa no es el misterio, es no saber qué se
-puede tocar.
-
-### 6.6 HTML previo para buscadores y para compartir
-
-Estado real, comprobado sobre el despliegue:
-
-- **Las entradas sí tienen metadatos.** `scripts/og.mjs` genera, en cada build,
-  un `dist/e/<id>/index.html` con su propio `<title>`, su `og:description` y una
-  imagen Open Graph de 1200×630 por entrada. Verificado en producción: el título
-  de `/e/delyra-0020` llega como *La araña en las meninges · aracne*.
-- **Lo que falta** es el *cuerpo*: el HTML de todas las rutas es la cáscara de
-  la SPA, así que un rastreador sin JavaScript no lee ni una línea de texto.
-- **Y falta el resto de rutas**: portada, `/gabinete`, `/figura/<id>` y
-  `/archivo` no tienen título ni descripción propios.
-
-El arreglo no necesita cambiar de framework. `og.mjs` ya escribe cáscaras por
-entrada: basta con inyectar además el texto de la entrada dentro de un
-`<noscript>` o del propio `<div id="root">`, y generar cáscaras equivalentes
-para la portada y las figuras.
-
-### 6.7 Estado de carga
-
-El bundle pesa 1,72 MB. Hasta que arranca, la pantalla está en negro sin nada.
-Una marca mínima en el `index.html` —el identificador en mono, sin animación—
-evita el rebote. Es barato y no toca la doctrina visual.
-
-### 6.8 Exportar la tela
-
-Un botón que baje el SVG de la red tal y como está en pantalla. Es casi gratis,
-porque ya se dibuja con `react-native-svg`, y hace el trabajo portátil.
+- **HTML previo para buscadores.** `og.mjs` ya escribe cáscaras por entrada con
+  su Open Graph; falta meter el *cuerpo* en un `<noscript>` y generar cáscaras
+  para la portada, el Atlas y las figuras.
+- **`SITE_URL` sigue sin definirse en Vercel**, así que `og:image` sale con URL
+  relativa y algunas redes no la leen. Se arregla en el panel.
+- **El archivo sigue en unas seis pantallas de scroll.** Los filtros podrían
+  quedarse fijos mientras solo scrollean los resultados.
+- **Exportar la tela** como SVG: casi gratis, ya se dibuja con `react-native-svg`.
 
 ---
-
-## 6bis. Economía cognitiva: lo que ya se hizo y lo que falta
-
-El área de lectura eran **254 px de una pantalla de 720**: el resto se lo comían
-la tela, el encabezado y los botones, mientras media pantalla de ancho quedaba
-vacía. Medido antes y después, en pantallas de scroll:
-
-| | antes | ahora |
-|---|---|---|
-| alto útil de lectura | 254 px | **520 px** |
-| entrada | 3,92 | **1,45** |
-| figura | 2,95 | **1,38** |
-| sala del gabinete | 6,40 | **1,44** |
-| gabinete | 4,42 | **2,06** |
-| archivo | 21,44 | **6,65** |
-| portada | — | **cabe entera** |
-
-Cómo, sin encoger ni una letra: la tela salió del flujo vertical al fondo del
-escenario; el escenario cedió ancho a la columna de lectura; los metadatos de la
-ficha pasaron a una banda estrecha **al lado** del texto, que es la disposición
-del catálogo de museo; y las listas de figuras y de resultados van en dos
-columnas.
-
-Una lección que conviene no perder: **dos columnas no siempre ahorran**. Las
-salas del gabinete empeoraron al partirlas, porque su contenido es un criterio
-en prosa y estrechar la caja lo alarga. Se dejaron a una columna. La rejilla
-sirve para filas cortas, no para párrafos.
-
-Lo que queda por hacer en esta línea:
-
-- El archivo sigue en 6,65 pantallas. Es una lista de 44 resultados, así que
-  algo de scroll es legítimo, pero los filtros podrían quedarse fijos mientras
-  solo scrollean los resultados.
-- La entrada está en 1,45. Lo que sobra es el final del cuerpo; con la ficha
-  dividida en dos columnas de altura desigual hay hueco bajo los metadatos que
-  todavía no se aprovecha.
 
 ## 7. Lo que se descartó, y por qué
 
@@ -371,21 +276,15 @@ Para que nadie lo vuelva a proponer sin saber que ya se pensó.
 
 | propuesta | por qué no |
 |---|---|
-| `@xyflow/react`, `vis-network` u otra librería de grafos | La tela son ~150 líneas con `react-native-svg`, que ya era dependencia. Y un layout de fuerzas destruiría lo único que hace informativo el dibujo: que la posición sea la categoría. `CLAUDE.md`: no instalar dependencias sin justificar. |
-| Framer Motion, bento grid, glassmorphism, gradientes, fondo de puntos, segundo color | Prohibidos explícitamente en `docs/DESIGN.md`. Es lo que convertiría Aracne en otro proyecto oscuro genérico. |
-| Observatorio con datos en vivo (sismos, vuelos, viento) | Depende de APIs externas, y la regla 2 dice que el motor tiene que funcionar y probarse sin red. Las entradas que hablan de esos portales ya existen como texto. |
-| Plantillas de un clic | Aracne no es un lienzo donde el visitante cree cosas. No hay nada que plantillar. |
-| Tour guiado de tres pasos | Demasiado para esta voz. Basta la frase de 6.5. |
-| Paleta de comandos ⌘K | **Ya existe** desde la fase 7: buscar, invocar, saltar a pata, abrir sala. |
-| Cuentas de usuario, colecciones personales, comentarios, rutas compartidas | Piden un backend con estado. `CLAUDE.md`: sin base de datos. |
-| Google Analytics, Hotjar, mapas de calor, A/B testing | Servicios externos y datos de navegación de terceros. Las métricas que sí se pueden medir se miden aquí sobre el contenido, no sobre las personas. |
-| Neo4j, Sigma.js, ReGraph, D3 | El grafo son 44 entradas en archivos JSON y el dibujo son 150 líneas. Un motor de grafos no resuelve ningún problema que exista. |
-| Botón «explorar aleatoriamente» | **Ya existe, y es la araña.** Todo el oráculo es serendipia por diseño desde la fase 2. |
-| Tour guiado, modales de onboarding, tooltips de ayuda | Contradice la voz: ningún botón debe sonar a instrucción. Basta la frase de 6.5. |
-
-Dos correcciones a auditorías externas que circulan sobre el proyecto: **no es
-React/Vite/Next**, es Expo + React Native Web + three.js; y **las entradas sí
-tienen Open Graph** desde la fase 3.
+| Librería de grafos (`@xyflow/react`, `vis-network`, D3, Sigma, Neo4j) | La tela son ~150 líneas con `react-native-svg`. Un layout de fuerzas destruiría lo único que hace informativo el dibujo: que la posición sea la categoría. |
+| Librería de PDF | El PDF de texto cabe en 200 líneas con las fuentes base. Media dependencia de un megabyte para esto no se sostiene. |
+| Matriz de scores del Atlas escrita a mano por país | Escribir a mano lo que se puede calcular es exactamente lo que el Atlas evita: la regla se declara y la ficha enseña la cuenta. |
+| Incluir las causas uniformes en el reparto del Atlas | El asteroide vale 100 en todas partes: el mapa entero diría lo mismo. Van aparte, como el fondo. |
+| Observatorio con datos en vivo (sismos, vuelos, viento) | Depende de APIs externas; el motor tiene que probarse sin red. |
+| Cuentas, colecciones personales, comentarios | Piden un backend con estado. |
+| Analytics, mapas de calor de navegación, A/B testing | Servicios externos y datos de terceros. Lo que se mide se mide sobre el contenido, no sobre las personas. |
+| Tour guiado, modales de onboarding | Contradice la voz. Basta la línea de la portada. |
+| El anillo de patas en órbita | Se construyó en la fase 10 y se quitó en la 15: con varias apoyadas, los hilos cruzaban por encima de la araña. |
 
 ---
 
@@ -401,104 +300,71 @@ npm run validate   # OBLIGATORIO: escribe content/index.generated.ts
 npm run web        # servidor de desarrollo en :8081
 ```
 
-`typecheck` y `test` fallan si no has corrido `validate` antes: necesitan el
-índice generado.
-
 ```bash
-npm install
-npm run validate   # valida el contenido y escribe content/index.generated.ts
-npm run web        # servidor de desarrollo
-npm test           # 88 pruebas
+npm test           # 160 pruebas
+npm run typecheck
+npm run lint
 npm run build      # validate + expo export + permalinks con Open Graph
-npm run sprites    # redibuja los emblemas de las biografías
+npm run sprites    # redibuja los 44 emblemas
+npm run atlas      # vuelve a bajar y simplificar el mundo
 ```
 
-`validate` es obligatorio antes de `typecheck` y `test`: escribe el índice que
-los dos necesitan. El CI corre `validate`, `typecheck` y `test`, **pero no
-`build`**: un fallo del build de producción no lo detecta GitHub.
+`validate` es obligatorio antes de `typecheck` y `test`. El CI corre
+`validate`, `typecheck` y `test`, **pero no `build`**.
 
-Para medir el archivo, un diagnóstico desechable:
-
-```ts
-// scripts/_diag.ts — bórralo al terminar
-import { loadArchive } from "../lib/content/loader";
-import { neighbours } from "../lib/drift/graph";
-import { longestReach } from "../lib/drift/modes";
-const { corpus } = loadArchive();
-const E = corpus.entries;
-let t = 0; for (const e of E) t += neighbours(e, E).length;
-console.log("grado medio", (t / E.length).toFixed(1), "· diámetro", longestReach(E)?.steps);
-```
-
-**Commits:** `fase(N): qué cambió` para código, `entrada: título` para contenido
-nuevo, un commit por entrada. El historial es parte del artefacto.
-
-**Una fase por sesión.** Inspecciona el repo, di qué archivos vas a tocar y por
-qué en cinco líneas, y al terminar pasa las tres comprobaciones y resume lo
-que quedó pendiente.
+**Commits:** `fase(N): qué cambió` para código, `entrada: título` para
+contenido nuevo. El historial es parte del artefacto.
 
 ---
 
 ## 9. Trampas conocidas
 
-Cosas que ya costaron una sesión y no hace falta redescubrir.
+Cosas que ya costaron una sesión.
 
 - **`requestAnimationFrame` no siempre dispara** (pestaña de fondo, ahorro de
-  energía, captura). Ha mordido **tres veces**: el contador del identificador
-  mostraba un número de catálogo falso, la aparición del texto lo dejaba a
-  opacidad cero, y la araña se queda fuera del encuadre porque su descenso lo
-  mueve el bucle de render. Los tres se asientan ahora con un plazo. Si añades
-  animación, haz lo mismo: **la animación puede faltar, lo que se mira no**.
-- **El plazo de la araña está verificado.** La corrección de
-  `SpiderScene.web.tsx` comprueba si el bucle se paró, no si nunca arrancó —que
-  era el error de la primera versión—. Medido el 2026-09-14 montando la app con
-  `requestAnimationFrame` neutralizado desde antes del arranque, que es la
-  condición exacta de una pestaña de fondo: la app pidió dos fotogramas, ninguno
-  se sirvió, y aun así el lienzo quedó pintado —el hilo de 2 px bajando desde el
-  borde superior y el cuerpo, de 114 a 165 px de ancho, entre el 44% y el 61%
-  del alto—. La araña queda en su sitio sin un solo fotograma.
-  Cómo repetirlo: el panel de vista previa **no sirve**, ni repinta el lienzo a
-  demanda ni marca como ocultas sus pestañas de fondo. La medida se toma
-  leyendo píxeles con `readPixels` sobre un iframe del mismo origen al que se le
-  mata `requestAnimationFrame` y se le fuerza `preserveDrawingBuffer`. Una
-  captura de pantalla no es prueba aquí: el WebGL no sale en ella.
-- **`@vercel/og` no arranca fuera del runtime de Vercel.** `og.mjs` usa `satori`
-  —su motor— y `sharp` directamente.
+  energía, captura). Ha mordido cuatro veces. Todo lo que se mira tiene que
+  estar dibujado aunque el bucle no corra: **la animación puede faltar, lo que
+  se mira no**.
+- **La caché de Metro se queda con archivos borrados.** Si al mover o borrar un
+  componente la app deja de montar con un `X is not defined` o un
+  `Unable to resolve module`, no es el código: para el servidor y arráncalo de
+  nuevo. Pasó cuatro veces en una sola sesión.
+- **Medir con la ventana en vez de con la columna.** Ver §5.
+- **Un `ScrollView` crece por defecto.** Ver §5.
+- **`String.replace` interpreta `$'` y `$&` en el reemplazo.** Un script de
+  edición automática se comió media línea de `route.ts` por esto. Pasa una
+  función como reemplazo.
 - **Los archivos del repo están en CRLF.** Un script que busque `\n` no casa
-  nada: normaliza al leer y guarda en LF.
-- **`files/`, `files2/` y los tres `.zip` de la raíz** son restos del kit
-  original. No los usa nadie. Conviene borrarlos.
-- **Vercel no tiene `SITE_URL` definida**, así que `og:image` sale con URL
-  relativa y algunas redes no la leen. Se arregla en el panel, no en el código.
+  nada: normaliza al leer y guarda en LF (git lo convierte de vuelta).
+- **`@vercel/og` no arranca fuera del runtime de Vercel.** `og.mjs` usa
+  `satori` y `sharp` directamente.
+- **El plazo de la araña está verificado** (2026-09-14): montando la app con
+  `requestAnimationFrame` neutralizado, pidió dos fotogramas, no se sirvió
+  ninguno y el animal quedó igualmente en su sitio. El panel de vista previa
+  **no sirve** para comprobarlo: ni repinta el lienzo a demanda ni marca como
+  ocultas sus pestañas de fondo. Se mide con `readPixels` sobre un iframe del
+  mismo origen al que se le mata `requestAnimationFrame`.
+- **El panel de vista previa escala la ventana.** Lo que se ve en una captura no
+  coincide con lo que dice `getBoundingClientRect`. Ante la duda, manda el DOM.
 
 ---
 
 ## 10. Primer día: qué hacer y qué no
 
-Si retomas esto sin contexto, en este orden:
-
 1. **Lee `CLAUDE.md` entero.** Manda sobre cualquier cosa que diga este archivo.
-2. **Corre `npm run validate`.** Te dice en dos segundos si el archivo está sano
-   y te imprime el reparto por pata y por sala.
-3. **Abre `/adn` y `/deriva/<cualquier-semilla>`.** En un minuto ves qué hay y
-   cómo está conectado, sin leer una línea de código.
-4. **Elige UNA fase** de la sección 6 y quédate en ella. `CLAUDE.md` pide una
-   fase por sesión, decir antes qué archivos vas a tocar en cinco líneas, y
-   terminar con `validate`, `test` y `build`.
+2. **`npm install && npm run validate`.** En dos segundos sabes si el contenido
+   está sano, y te imprime el reparto por pata, por tema y por causa.
+3. **`npm run web`** y mira la portada, `/tela`, `/atlas` y una invocación.
+4. **Elige UNA cosa** de la sección 6 y quédate en ella.
 
 Lo que más tienta y más daño hace:
 
-- **Instalar una librería de grafos.** El dibujo son ~150 líneas y su valor está
-  en que la posición es la categoría. Un layout de fuerzas lo destruye.
-- **Meter color para distinguir cosas.** El proyecto distingue con el trazo.
-  Hay una prueba que falla si metes color en `THREAD_STYLE`.
+- **Instalar una librería** para algo ya resuelto en doscientas líneas.
+- **Meter color para distinguir cosas.** El proyecto distingue con el trazo,
+  salvo en el Atlas, donde la rampa está justificada y acotada.
 - **Rellenar entradas sin verificar la fuente.** Si no la compruebas:
-  `unverified` y `sources: []`. Nunca un autor, un año o una URL inventados.
+  `unverified` y `sources: []`.
 - **Tocar `weighted.ts` a ciegas.** Sus pesos son provisionales desde la fase 0
   y cambiarlos cambia lo que devuelve cada semilla ya compartida.
-- **Añadir animación sin plazo de seguridad.** Ver §9: ya ha mordido tres veces.
-
-Y lo que está listo para empezar sin pensar mucho: **dibujar emblemas**
-(§6.3, quedan 38, son diez líneas cada uno en `scripts/sprites.mjs`) y
-**verificar las 15 entradas pendientes** (§2, cada una dice en `captureNote`
-exactamente qué comprobar).
+- **Añadir animación sin plazo de seguridad.** Ver §9.
+- **Creer a la captura de pantalla.** Ver §9.
