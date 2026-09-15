@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { loadArchive } from '../lib/content/loader';
 import { withinSteps, neighbours } from '../lib/drift/graph';
 import { pointOnRoute, routeLength, TRACE_GRID, traceRoute } from '../lib/drift/layout';
+import { canvasSize, MIN_CANVAS } from '../ui/lib/layout';
 import { legSigil, markSigil, sigil, type Point } from '../ui/lib/sigil';
 import { parseRoute, routeToUrl, WEB } from '../ui/lib/route';
 
@@ -190,5 +191,23 @@ describe('las trazas del flujo', () => {
   it('avanza: dos instantes distintos no dan el mismo punto', () => {
     const ruta = traceRoute(a, b, 'avance');
     expect(pointOnRoute(ruta, 0.25)).not.toEqual(pointOnRoute(ruta, 0.75));
+  });
+});
+
+describe('el lado de un cuadro de dibujo', () => {
+  it('nunca es negativo, por baja que sea la ventana', () => {
+    // El fallo que lo trajo: la altura de la ventana menos 240. Una pestaña
+    // oculta reporta 0×0, así que la resta daba -240 y el SVG salía con
+    // width="-40", que no es un SVG pequeño sino un SVG inválido.
+    for (const alto of [0, 1, 100, 239, 240, 300, 900]) {
+      const lado = canvasSize(Math.round(1280 * 0.38), alto - 120);
+      expect(lado, `alto ${alto}`).toBeGreaterThanOrEqual(MIN_CANVAS);
+    }
+    expect(canvasSize(-500, -20, 720)).toBe(MIN_CANVAS);
+  });
+
+  it('con sitio de sobra, manda el candidato más pequeño', () => {
+    expect(canvasSize(600, 500, 720)).toBe(500);
+    expect(canvasSize(1000, 900, 720)).toBe(720);
   });
 });

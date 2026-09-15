@@ -26,7 +26,7 @@ import { PurposeView } from '../components/PurposeView';
 import { Spider } from '../components/spider/Spider';
 import { TextButton } from '../components/TextButton';
 import { useRoute } from '../hooks/useRoute';
-import { getLayoutMode, MAX_CONTENT_WIDTH } from '../lib/layout';
+import { canvasSize, getLayoutMode, MAX_CONTENT_WIDTH } from '../lib/layout';
 import { ARCHIVE, HOME, LIVES, SHAPE, WEB } from '../lib/route';
 import { readHistory, rememberEntries } from '../lib/storedHistory';
 import { colors, fonts, space } from '../theme';
@@ -64,9 +64,9 @@ export function HomeScreen({ reduceMotion }: Props) {
   const presses = useRef(0);
   const [palette, setPalette] = useState(false);
   // El escenario: cuadrado, sin pasarse de alto, y con sitio para el anillo.
-  const stageWeb = Math.min(Math.round(width * 0.38), height - 120);
+  const stageWeb = canvasSize(Math.round(width * 0.38), height - 120);
   // La tela, cuando tiene la pantalla para ella sola.
-  const webSize = Math.min(Math.round(width - space.lg * 4), height - 240, 720);
+  const webSize = canvasSize(Math.round(width - space.lg * 4), height - 240, 720);
 
   useEffect(() => {
     let alive = true;
@@ -360,7 +360,7 @@ export function HomeScreen({ reduceMotion }: Props) {
         corpus={corpus}
         focus={route.focus}
         skin={route.skin}
-        size={portrait ? Math.min(width - space.md * 2, 420) : webSize}
+        size={portrait ? canvasSize(width - space.md * 2, 420) : webSize}
         reduceMotion={reduceMotion}
         onFocus={weave}
         onSkin={setSkin}
