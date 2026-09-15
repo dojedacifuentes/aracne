@@ -8,7 +8,9 @@ import type { Invocation } from '../../lib/oracle/invoke';
 import type { Entry } from '../../lib/schema';
 import { useFocusRing } from '../hooks/useFocusRing';
 import { bridgeText, dictumText, faultText, linkText, SHAPE_LABEL } from '../lib/copy';
+import { invocationSheet } from '../../lib/export/sheet';
 import { colors, fonts, space } from '../theme';
+import { ExportRow } from './ExportRow';
 import { Reveal } from './Reveal';
 
 type Props = {
@@ -91,6 +93,18 @@ export function InvocationView({ invocation, corpus, seed, reduceMotion, compact
           <Section label="la pregunta" text={invocation.entries[0].question} />
         </Reveal>
       )}
+
+      <Reveal index={after + 3} reduceMotion={reduceMotion}>
+        <ExportRow
+          sheet={invocationSheet(
+            invocation,
+            corpus,
+            dictumText(invocation, categoryName),
+            bridgeText(invocation, categoryName),
+            faultText(invocation),
+          )}
+        />
+      </Reveal>
     </View>
   );
 }

@@ -19,7 +19,7 @@ const rotate = (p: Point, angle: number): Point => {
   };
 };
 
-const points = (s: ReturnType<typeof sigil>): Point[] => [...s.star.flat(), ...s.core.flat()];
+const points = (s: ReturnType<typeof sigil>): Point[] => [...s.star.flat(), ...s.frame, ...s.studs];
 
 const near = (a: Point, b: Point) => Math.hypot(a.x - b.x, a.y - b.y) < 1e-9;
 

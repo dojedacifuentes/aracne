@@ -16,29 +16,48 @@ type Props = {
 };
 
 /**
- * Dibuja un sello. Trazo de un píxel, sin relleno y sin color propio: el
- * estado se dice subiendo el trazo de `--line` a `--text`, nunca con un
- * segundo color (docs/DESIGN.md).
+ * Dibuja un sello: el marco poligonal, la estrella y los remates de los
+ * vértices. Trazo fino, sin relleno salvo el fondo del marco, y sin color
+ * propio: el estado se dice subiendo el trazo de `--line` a `--text` y
+ * engordándolo un pelo, nunca con un segundo color (docs/DESIGN.md).
  */
 export function Sigil({ leg, mark, size, hollow = false, strong = false }: Props) {
   const shape: Shape = leg === undefined ? markSigil(mark ?? '') : legSigil(leg);
   const stroke = strong ? colors.text : colors.line;
   const P = (v: number) => v * size;
-  const points = (cycle: Shape['star'][number]) => cycle.map((p) => `${P(p.x)},${P(p.y)}`).join(' ');
+  const points = (cycle: readonly { x: number; y: number }[]) =>
+    cycle.map((p) => `${P(p.x)},${P(p.y)}`).join(' ');
+  // A tamaño de icono, medio píxel de más ensucia; a tamaño de pata, hace falta.
+  const grosor = size >= 32 ? (strong ? 1.25 : 1) : strong ? 1 : 0.85;
 
   return (
     <Svg width={size} height={size} pointerEvents="none">
-      {shape.rings.map((r) => (
-        <Circle key={r} cx={P(0.5)} cy={P(0.5)} r={P(r)} fill="none" stroke={stroke} strokeWidth={1} />
-      ))}
+      {/* El marco, con el fondo dentro: separa el sello de lo que haya detrás. */}
+      <Polygon
+        points={points(shape.frame)}
+        fill={colors.bg}
+        fillOpacity={0.55}
+        stroke={stroke}
+        strokeWidth={grosor}
+        strokeLinejoin="round"
+      />
       {shape.star.map((cycle, i) => (
-        <Polygon key={`s${i}`} points={points(cycle)} fill="none" stroke={stroke} strokeWidth={1} />
+        <Polygon
+          key={`s${i}`}
+          points={points(cycle)}
+          fill="none"
+          stroke={stroke}
+          strokeWidth={grosor * (hollow ? 0.75 : 1)}
+          strokeLinejoin="round"
+          opacity={hollow ? 0.55 : 1}
+        />
       ))}
-      {hollow
-        ? null
-        : shape.core.map((cycle, i) => (
-            <Polygon key={`c${i}`} points={points(cycle)} fill="none" stroke={stroke} strokeWidth={1} />
-          ))}
+      {/* Los remates. Son lo que hace que se lea como grabado. */}
+      {size >= 28
+        ? shape.studs.map((p, i) => (
+            <Circle key={`v${i}`} cx={P(p.x)} cy={P(p.y)} r={grosor * 0.9} fill={stroke} />
+          ))
+        : null}
     </Svg>
   );
 }

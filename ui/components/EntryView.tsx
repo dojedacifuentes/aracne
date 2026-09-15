@@ -3,10 +3,14 @@ import { Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Corpus } from '../../lib/content/corpus';
 import { catalogId, STATUS_LABEL, TYPE_LABEL } from '../../lib/labels';
+import { causesForEntry } from '../../lib/atlas/bridge';
+import { loadAtlas } from '../../lib/atlas/loader';
 import { figuresOfEntry } from '../../lib/museum/themes';
 import type { Entry } from '../../lib/schema';
 import { STATUS_BORDER, type StatusBorder } from '../lib/epistemic';
 import { colors, fonts, space } from '../theme';
+import { entrySheet } from '../../lib/export/sheet';
+import { ExportRow } from './ExportRow';
 import { Reveal } from './Reveal';
 
 type Props = {
@@ -17,6 +21,8 @@ type Props = {
   compact: boolean;
   /** Abre la figura del gabinete que reclama esta entrada. */
   onOpenFigure: (id: string) => void;
+  /** Abre el Atlas con esta causa puesta como lente. */
+  onOpenCause: (id: string) => void;
 };
 
 /** El identificador cuenta hasta su número en 200 ms: el único gesto de «procesamiento». */
@@ -28,7 +34,7 @@ const COUNTER_MS = 200;
  * el borde izquierdo, la pregunta tras un blanco generoso y los metadatos
  * colgados al pie en dos columnas. Aparece escalonada, una sola vez.
  */
-export function EntryView({ entry, corpus, reduceMotion, compact, onOpenFigure }: Props) {
+export function EntryView({ entry, corpus, reduceMotion, compact, onOpenFigure, onOpenCause }: Props) {
   // docs/MUSEO.md: la navegación va en los dos sentidos, y el vínculo solo
   // está escrito del lado de la figura.
   const figures = figuresOfEntry(entry.id, corpus.figures);
@@ -91,6 +97,31 @@ export function EntryView({ entry, corpus, reduceMotion, compact, onOpenFigure }
               )}
             </View>
           </View>
+          {(() => {
+            // Bajo qué finales cae esta entrada. Como en el gabinete, el
+            // vínculo no está escrito a mano: lo declaran los dos extremos
+            // con sus tags y sus patas, y se calcula.
+            const causas = causesForEntry(entry, loadAtlas().causes).slice(0, 3);
+            if (causas.length === 0) return null;
+            return (
+              <View style={styles.metaRow}>
+                <Text style={styles.metaLabel}>en el atlas</Text>
+                <View style={styles.metaValues}>
+                  {causas.map((cause) => (
+                    <Pressable
+                      key={cause.id}
+                      accessibilityRole="link"
+                      accessibilityLabel={cause.name}
+                      accessibilityHint="abre el atlas con esta causa"
+                      onPress={() => onOpenCause(cause.id)}
+                    >
+                      <Text style={[styles.metaValue, styles.link]}>{cause.name.toLowerCase()}</Text>
+                    </Pressable>
+                  ))}
+                </View>
+              </View>
+            );
+          })()}
           {figures.length > 0 ? (
             <View style={styles.metaRow}>
               <Text style={styles.metaLabel}>en el gabinete</Text>
@@ -110,6 +141,7 @@ export function EntryView({ entry, corpus, reduceMotion, compact, onOpenFigure }
             </View>
           ) : null}
           <MetaRow label="añadida" value={entry.addedAt} />
+          <ExportRow sheet={entrySheet(entry, corpus)} />
         </View>
       </Reveal>
       </View>

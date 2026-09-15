@@ -13,6 +13,7 @@ import path from "node:path";
 import { legStates, parseCorpus } from "../lib/content/corpus";
 import { themeStates } from "../lib/museum/themes";
 import { CauseSchema, WorldSchema, dominant, type Cause } from "../lib/atlas/world";
+import { entriesForCause } from "../lib/atlas/bridge";
 import type { ValidationIssue } from "../lib/schema";
 
 const ROOT = process.cwd();
@@ -130,12 +131,21 @@ if (!worldParsed.success) {
 
   const world = worldParsed.data;
   const legIds = new Set(corpus.categories.map((c) => c.id));
+  const tagIds = new Set(corpus.entries.flatMap((entry) => entry.tags));
   const vistos = new Set<string>();
   for (const cause of causes) {
     if (vistos.has(cause.id)) issues.push({ id: cause.id, message: "causa duplicada" });
     vistos.add(cause.id);
     for (const leg of cause.categories) {
       if (!legIds.has(leg)) issues.push({ id: cause.id, message: `pata inexistente: ${leg}` });
+    }
+    for (const tag of cause.tags) {
+      if (!tagIds.has(tag)) {
+        issues.push({ id: cause.id, message: `tag que no existe en ninguna entrada: ${tag}` });
+      }
+    }
+    if (entriesForCause(cause, corpus.entries).length === 0) {
+      warnings.push({ id: cause.id, message: "no cruza con ninguna entrada del archivo" });
     }
     if (cause.uniform && cause.rule.factors.length > 0) {
       issues.push({ id: cause.id, message: "una causa uniforme no puede tener factores" });

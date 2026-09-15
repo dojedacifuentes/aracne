@@ -3,16 +3,22 @@ import { rngFromString } from '../../lib/oracle/rng';
 /**
  * Los sellos.
  *
- * Cada pata y cada botón llevan una marca geométrica: un polígono estrellado
- * inscrito en una circunferencia. No es adorno esotérico: es el mismo
- * vocabulario que ya usa el archivo —un anillo y unas cuerdas que lo cruzan—
- * reducido a veintiocho píxeles. Una marca con k ejes de simetría se reconoce
- * de un vistazo y se distingue de otra con k+1 sin tener que leer nada.
+ * Cada pata y cada botón llevan una marca geométrica. No es adorno esotérico:
+ * es el mismo vocabulario que ya usa el archivo —un anillo y unas cuerdas que
+ * lo cruzan— reducido a cuarenta píxeles.
  *
- * Todo se calcula, nada se dibuja a mano: así una pata nueva tiene su sello el
- * día que entra, sin que nadie abra un editor. Y todo es determinista —sin
- * `Math.random`, como manda CLAUDE.md—, de modo que la misma pata lleva
- * siempre el mismo sello.
+ * La segunda versión cambia el marco: antes todos los sellos iban dentro del
+ * **mismo círculo**, así que a tamaño de icono los once se parecían a once
+ * medallas iguales con un glifo distinto dentro. Ahora el marco es un
+ * **polígono de k lados**, y k cambia de pata en pata: a un vistazo se
+ * distinguen el triángulo, el cuadrado, el pentágono, el hexágono y el
+ * heptágono aunque el glifo no se llegue a leer. Dentro va la estrella {k/2},
+ * y en cada vértice un remate, que es lo que hace que parezca grabado y no
+ * autoformas.
+ *
+ * Todo se calcula, nada se dibuja a mano: una pata nueva tiene su sello el día
+ * que entra. Y todo es determinista —sin `Math.random`, como manda
+ * CLAUDE.md—, así que la misma pata lleva siempre el mismo sello.
  */
 
 export interface Point {
@@ -25,12 +31,12 @@ export interface Sigil {
   folds: number;
   /** Salto del polígono estrellado {folds/step}. */
   step: number;
-  /** Circunferencias concéntricas, en radios de 0 a 0.5. */
-  rings: number[];
-  /** El exterior: la estrella. Polilíneas cerradas, coordenadas 0..1. */
+  /** El marco: un polígono de `folds` lados. */
+  frame: Point[];
+  /** La estrella interior. Polilíneas cerradas, coordenadas 0..1. */
   star: Point[][];
-  /** El interior: un polígono girado media vuelta de sector. */
-  core: Point[][];
+  /** Remates en los vértices del marco. */
+  studs: Point[];
 }
 
 /** Arriba, como la pata 0 del anillo. */
@@ -38,6 +44,17 @@ const PHASE = -Math.PI / 2;
 
 const MIN_FOLDS = 3;
 const FOLD_RANGE = 5;
+
+/** Radio del marco. Deja un pelo de aire dentro de su caja. */
+const FRAME_R = 0.46;
+/** Radio de la estrella. Por debajo del marco, para que no lo toque. */
+const STAR_R = 0.33;
+
+const vertices = (folds: number, radius: number, phase: number): Point[] =>
+  Array.from({ length: folds }, (_, i) => {
+    const angle = phase + (i * 2 * Math.PI) / folds;
+    return { x: 0.5 + Math.cos(angle) * radius, y: 0.5 + Math.sin(angle) * radius };
+  });
 
 /**
  * Los vértices de {folds/step}, en ciclos. Cuando el salto y el número de
@@ -64,26 +81,26 @@ function cycles(folds: number, step: number, radius: number, phase: number): Poi
 
 /**
  * Un sello de k ejes. El salto es dos en cuanto hay vértices suficientes para
- * que la estrella se cruce consigo misma; por debajo, el polígono simple.
+ * que la estrella se cruce consigo misma; por debajo, el polígono simple
+ * girado media vuelta de sector, que da la estrella de seis puntas.
  */
 export function sigil(folds: number): Sigil {
   const k = Math.max(MIN_FOLDS, Math.round(folds));
   const step = k >= 5 ? 2 : 1;
+  const phase = k >= 5 ? PHASE : PHASE + Math.PI / k;
   return {
     folds: k,
     step,
-    rings: [0.47],
-    star: cycles(k, step, 0.4, PHASE),
-    // Girado medio sector: el interior nunca se apoya en los mismos radios que
-    // la estrella, y el sello se lee como dos figuras y no como una sola sucia.
-    core: cycles(k, 1, 0.17, PHASE + Math.PI / k),
+    frame: vertices(k, FRAME_R, PHASE),
+    star: cycles(k, step, STAR_R, phase),
+    studs: vertices(k, FRAME_R, PHASE),
   };
 }
 
 /**
  * El sello de una pata. Los ejes salen de su posición en el anillo, así que
  * dependen del orden —que es afinidad— y no de su nombre: patas vecinas llevan
- * sellos distintos y el anillo entero recorre las cinco formas.
+ * marcos distintos y el anillo entero recorre las cinco formas.
  */
 export function legSigil(leg: number): Sigil {
   return sigil(MIN_FOLDS + (((leg % FOLD_RANGE) + FOLD_RANGE) % FOLD_RANGE));

@@ -24,6 +24,9 @@ import {
   type Country,
 } from '../../lib/atlas/world';
 import { readCountry } from '../../lib/atlas/score';
+import { bridgeText, entriesForCause } from '../../lib/atlas/bridge';
+import type { Corpus } from '../../lib/content/corpus';
+import { catalogId } from '../../lib/labels';
 import { useFocusRing } from '../hooks/useFocusRing';
 import { colors, fonts, heat, HIT_SIZE, machine, space } from '../theme';
 
@@ -35,6 +38,8 @@ interface Camera {
 
 type Props = {
   atlas: Atlas;
+  /** El archivo, para poder cruzar cada causa con lo que ya está escrito. */
+  corpus: Corpus;
   /** País en el panel, por su código. */
   focus: string | null;
   /** Causa con la que se pinta el mapa. null es el score general. */
@@ -43,6 +48,7 @@ type Props = {
   reduceMotion: boolean;
   onFocus: (id: string | null) => void;
   onLens: (id: string | null) => void;
+  onOpenEntry: (id: string) => void;
 };
 
 /** Proporción del lienzo. El mundo de Robinson es 2:1; se deja aire para el zoom. */
@@ -100,7 +106,17 @@ const miles = (n: number) => n.toLocaleString('es-ES');
  *    igual a todo el mundo, así que no distingue a nadie: si entrara, el mapa
  *    entero diría «100» y no sería un mapa. Se enseñan aparte, como el fondo.
  */
-export function AtlasView({ atlas, focus, lens, width, reduceMotion, onFocus, onLens }: Props) {
+export function AtlasView({
+  atlas,
+  corpus,
+  focus,
+  lens,
+  width,
+  reduceMotion,
+  onFocus,
+  onLens,
+  onOpenEntry,
+}: Props) {
   const height = Math.round(width * RATIO);
   const [camera, setCamera] = useState<Camera>({ zoom: MIN_ZOOM, center: { x: 0.5, y: 0.5 } });
   const [hovered, setHovered] = useState<string | null>(null);
@@ -480,6 +496,33 @@ export function AtlasView({ atlas, focus, lens, width, reduceMotion, onFocus, on
           <Text style={styles.premise}>{lensCause.premise}</Text>
           <Text style={styles.literary}>{lensCause.literary}</Text>
           <Text style={styles.terminal}>{lensCause.terminal}</Text>
+          {(() => {
+            // Lo que el archivo ya tenía escrito sobre esto. No se lista a
+            // mano: se cruza por tags y patas, así que una entrada nueva
+            // aparece aquí sola el día que se escribe.
+            const puentes = entriesForCause(lensCause, corpus.entries).slice(0, 4);
+            if (puentes.length === 0) return null;
+            return (
+              <View style={styles.block}>
+                <Text style={styles.label}>en el archivo</Text>
+                {puentes.map((puente) => (
+                  <Pressable
+                    key={puente.entry.id}
+                    accessibilityRole="link"
+                    accessibilityLabel={puente.entry.title}
+                    accessibilityHint="abre la entrada"
+                    onPress={() => onOpenEntry(puente.entry.id)}
+                    style={styles.bridge}
+                  >
+                    <Text style={styles.bridgeCatalog}>{catalogId(puente.entry.id)}</Text>
+                    <Text style={styles.bridgeTitle}>{puente.entry.title}</Text>
+                    <Text style={styles.bridgeWhy}>{bridgeText(puente, corpus.categories)}</Text>
+                  </Pressable>
+                ))}
+              </View>
+            );
+          })()}
+
           {lensCause.inspiration.length > 0 ? (
             <Text style={styles.inspiration}>
               a partir de{' '}
@@ -747,6 +790,10 @@ const styles = StyleSheet.create({
   rowName: { flex: 1, fontFamily: fonts.serif, fontSize: 16, lineHeight: 24, color: colors.text },
 
   hint: { fontFamily: fonts.serif, fontSize: 16, lineHeight: 26, color: colors.dim, marginTop: space.md },
+  bridge: { minHeight: 44, justifyContent: 'center', paddingVertical: space.xs, outlineWidth: 0 },
+  bridgeCatalog: { fontFamily: fonts.mono, fontSize: 12, letterSpacing: 0.72, color: colors.accent },
+  bridgeTitle: { fontFamily: fonts.serif, fontSize: 18, lineHeight: 26, color: colors.text },
+  bridgeWhy: { fontFamily: fonts.mono, fontSize: 12, letterSpacing: 0.72, lineHeight: 18, color: colors.dim },
   colophon: {
     fontFamily: fonts.mono,
     fontSize: 12,

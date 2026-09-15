@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { Platform, ScrollView, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { Platform, StyleSheet, Text, useWindowDimensions, View } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import type { ArchiveFilters } from '../../lib/archive/filter';
 import { usableLegs } from '../../lib/content/corpus';
@@ -22,13 +22,13 @@ import { Tejido } from '../components/Tejido';
 import { EntryView } from '../components/EntryView';
 import { FigureView } from '../components/FigureView';
 import { InvocationView } from '../components/InvocationView';
-import { LegButton } from '../components/LegButton';
-import { LegRing } from '../components/LegRing';
+import { LegPanel } from '../components/LegPanel';
+import { ASIDE_WIDTH, NAV_WIDTH, Shell, type ShellGroup } from '../components/Shell';
 import { PurposeView } from '../components/PurposeView';
 import { Spider } from '../components/spider/Spider';
 import { TextButton } from '../components/TextButton';
 import { useRoute } from '../hooks/useRoute';
-import { canvasSize, getLayoutMode, MAX_CONTENT_WIDTH } from '../lib/layout';
+import { canvasSize, getLayoutMode } from '../lib/layout';
 import { ARCHIVE, ATLAS, HOME, LIVES, SHAPE, WEB } from '../lib/route';
 import { readHistory, rememberEntries } from '../lib/storedHistory';
 import { colors, fonts, space } from '../theme';
@@ -56,7 +56,6 @@ const LEAD = 'apoya las patas que quieras y pulsa la araña. lo que salga no lo 
  */
 export function HomeScreen({ reduceMotion }: Props) {
   const { width, height } = useWindowDimensions();
-  const insets = useSafeAreaInsets();
   const portrait = getLayoutMode(width, height) === 'mobilePortrait';
   const { corpus, legs } = loadArchive();
   const [route, navigate] = useRoute();
@@ -65,10 +64,16 @@ export function HomeScreen({ reduceMotion }: Props) {
   const [history, setHistory] = useState<readonly string[]>(NONE);
   const presses = useRef(0);
   const [palette, setPalette] = useState(false);
-  // El escenario: cuadrado, sin pasarse de alto, y con sitio para el anillo.
-  const stageWeb = canvasSize(Math.round(width * 0.38), height - 120);
-  // La tela, cuando tiene la pantalla para ella sola.
-  const webSize = canvasSize(Math.round(width - space.lg * 4), height - 240, 720);
+  /**
+   * El ancho de la columna central. Todo lo que se dibuja va medido con esto
+   * y no con el de la ventana: la araña se calculaba con la ventana entera y
+   * se salía por encima del menú de la izquierda.
+   */
+  const centro = portrait
+    ? width - space.md * 2
+    : Math.max(360, width - NAV_WIDTH - ASIDE_WIDTH - space.lg * 2);
+  const stageWeb = canvasSize(Math.round(centro * 0.74), height - 300, 460);
+  const webSize = canvasSize(centro, height - 260, 720);
 
   useEffect(() => {
     let alive = true;
@@ -173,6 +178,11 @@ export function HomeScreen({ reduceMotion }: Props) {
   const openArchive = useCallback(() => navigate(ARCHIVE), [navigate]);
   const openWeb = useCallback(() => navigate(WEB), [navigate]);
   const openAtlas = useCallback(() => navigate(ATLAS), [navigate]);
+  /** Desde una entrada se salta al Atlas con esa causa ya puesta. */
+  const openCause = useCallback(
+    (id: string) => navigate({ name: 'atlas', country: null, lens: id }),
+    [navigate],
+  );
   /** En el Atlas, el país y la lente viajan en la URL como todo lo demás. */
   const setAtlasCountry = useCallback(
     (id: string | null) => {
@@ -259,41 +269,8 @@ export function HomeScreen({ reduceMotion }: Props) {
     navigate(HOME);
   }, [active, navigate]);
 
-  const togglePanel = useCallback(() => {
-    setPanel((current) => (current === 'proposito' ? 'patas' : 'proposito'));
-  }, []);
-
-  /**
-   * En vertical, la araña y el panel se reparten la pantalla. Leyendo una
-   * ficha, el gabinete o el archivo no se está consultando al oráculo: manda
-   * el texto y la araña se queda en una franja. En una invocación no, porque
-   * ahí la araña es parte del resultado.
-   */
-  const isReading = route.name !== 'invocation' && route.name !== 'home';
-  const panelShare = isReading ? 0.78 : 0.5;
-
-  /**
-   * Rutas que piden la pantalla entera y retiran el escenario.
-   *
-   * La invocación está aquí por decisión expresa: **lo que sale al pulsar es
-   * para leerlo**, y mientras se lee, la araña y las once patas no hacen
-   * nada salvo ocupar la mitad del ancho. Se vuelve a ellas con «volver».
-   */
-  const wide = route.name === 'web' || route.name === 'atlas' || route.name === 'invocation';
-
   const lit = legs.filter((leg) => leg.visible).length;
   const latest = legs.find((leg) => leg.category.id === selected[selected.length - 1]);
-
-  const header = (
-    <View>
-      <Text style={styles.name} accessibilityRole="header">
-        aracne
-      </Text>
-      <Text style={styles.meta}>
-        {corpus.entries.length} entradas · {lit} de {legs.length} patas
-      </Text>
-    </View>
-  );
 
   const spider = (
     <Spider
@@ -306,21 +283,6 @@ export function HomeScreen({ reduceMotion }: Props) {
       style={StyleSheet.absoluteFill}
     />
   );
-
-  const legRow = () =>
-    legs.map((leg) => (
-      <LegButton
-        key={leg.category.id}
-        leg={leg.category.leg}
-        glyph={leg.category.glyph}
-        name={leg.category.name}
-        count={leg.count}
-        lit={leg.visible}
-        missing={leg.missing}
-        selected={selected.includes(leg.category.id)}
-        onPress={() => toggle(leg.category.id)}
-      />
-    ));
 
   const reading =
     route.name === 'invocation' ? (
@@ -343,6 +305,7 @@ export function HomeScreen({ reduceMotion }: Props) {
           reduceMotion={reduceMotion}
           compact={portrait}
           onOpenFigure={openFigure}
+          onOpenCause={openCause}
         />
       ) : (
         <Text style={styles.missing}>no hay ninguna entrada con ese identificador. vuelve y pulsa.</Text>
@@ -375,7 +338,7 @@ export function HomeScreen({ reduceMotion }: Props) {
         mode={route.mode}
         leg={route.leg}
         // El cuadro nunca es mayor que la columna que lo contiene.
-        size={Math.min(portrait ? width - space.md * 2 : 380, 420)}
+        size={Math.min(centro, 460)}
         onOpen={openEntry}
         onMode={setDriftMode}
       />
@@ -384,7 +347,7 @@ export function HomeScreen({ reduceMotion }: Props) {
         corpus={corpus}
         focus={route.focus}
         skin={route.skin}
-        size={portrait ? canvasSize(width - space.md * 2, 420) : webSize}
+        size={webSize}
         reduceMotion={reduceMotion}
         onFocus={weave}
         onSkin={setSkin}
@@ -394,12 +357,14 @@ export function HomeScreen({ reduceMotion }: Props) {
     ) : route.name === 'atlas' ? (
       <AtlasView
         atlas={loadAtlas()}
+        corpus={corpus}
         focus={route.country}
         lens={route.lens}
-        width={portrait ? Math.min(width - space.md * 2, 420) : Math.min(width - space.lg * 4, 980)}
+        width={Math.min(centro, 1000)}
         reduceMotion={reduceMotion}
         onFocus={setAtlasCountry}
         onLens={setAtlasLens}
+        onOpenEntry={openEntry}
       />
     ) : route.name === 'shape' ? (
       <ShapeView corpus={corpus} legs={legs} />
@@ -465,95 +430,136 @@ export function HomeScreen({ reduceMotion }: Props) {
       </View>
     ) : (
       <View style={styles.buttons}>
-        <TextButton label="invocar" onPress={press} />
-        <TextButton label="la tela" onPress={openWeb} hint="la red entera, y los mapas que la leen" />
-        <TextButton label="el atlas" onPress={openAtlas} hint="el mapa del mundo y sus treinta finales" />
-        <TextButton label="biografías" onPress={openLives} />
-        <TextButton label="archivo" onPress={openArchive} />
-        <TextButton label={panel === 'proposito' ? 'patas' : 'propósito'} onPress={togglePanel} />
-        <TextButton label="la forma" onPress={openShape} />
+        <TextButton label="invocar" onPress={press} hint="pulsa la araña y sale algo que no buscabas" />
       </View>
     );
 
-  if (!portrait) {
-    return (
-      <SafeAreaView style={styles.root} edges={['bottom', 'left', 'right']}>
-        <View style={styles.columns}>
-          {/* El escenario: la tela al fondo y la araña encima. Las dos son
-              ambiente, no contenido, así que no ocupan altura de lectura. */}
-          {/* La tela ya no vive aquí: tiene su propia pantalla. El
-              escenario es del animal y de sus once patas, que es lo único
-              que hay que entender para empezar. */}
-          {wide ? null : (
-            <View style={styles.stageWide}>
-              {/* La araña y el anillo comparten caja cuadrada: si no, el
-                  centro del anillo y el cuerpo del animal no coinciden y los
-                  hilos apuntan a cualquier parte. */}
-              <View style={{ width: stageWeb, height: stageWeb }}>
-                {spider}
-                <LegRing
-                  legs={legs}
-                  selected={active}
-                  size={stageWeb}
-                  center={{ x: 0.5, y: 0.5 }}
-                  onToggle={toggle}
-                />
-              </View>
-            </View>
-          )}
-          <View style={[styles.side, wide && styles.sideWide, { paddingTop: insets.top + space.lg }]}>
-            {header}
-            <ScrollView
-              style={styles.sideScroll}
-              contentContainerStyle={styles.sideContent}
-              showsVerticalScrollIndicator={false}
-            >
-              {reading ?? <Text style={styles.lead}>{LEAD}</Text>}
-            </ScrollView>
-            {buttons}
-          </View>
-        </View>
-        {palette ? (
-          <CommandPalette corpus={corpus} legs={legs} onRun={run} onClose={() => setPalette(false)} />
-        ) : null}
-      </SafeAreaView>
-    );
-  }
+  /**
+   * Las secciones, a la izquierda. Antes eran una botonera que envolvía en
+   * dos filas descuadradas al pie del texto; ahora son una columna con su
+   * estado, como una consola. Invocar está arriba del todo porque es lo
+   * único que hace algo en vez de llevar a otro sitio.
+   */
+  const groups: ShellGroup[] = [
+    {
+      label: 'el oráculo',
+      items: [
+        { id: 'invocar', label: 'invocar', hint: 'pulsa la araña', onPress: press },
+        {
+          id: 'portada',
+          label: 'la araña',
+          hint: 'el animal y sus once patas',
+          onPress: () => navigate(HOME),
+          active: route.name === 'home' && panel === 'patas',
+        },
+        {
+          id: 'proposito',
+          label: 'propósito',
+          hint: 'para qué es esto',
+          onPress: () => {
+            setPanel('proposito');
+            navigate(HOME);
+          },
+          active: route.name === 'home' && panel === 'proposito',
+        },
+      ],
+    },
+    {
+      label: 'la red',
+      items: [
+        { id: 'tela', label: 'la tela', hint: 'el grafo, vivo', onPress: openWeb, active: route.name === 'web' },
+        {
+          id: 'atlas',
+          label: 'el atlas',
+          hint: 'el mapa y sus finales',
+          onPress: openAtlas,
+          active: route.name === 'atlas',
+        },
+        { id: 'forma', label: 'la forma', hint: 'cómo está repartido', onPress: openShape, active: route.name === 'shape' },
+      ],
+    },
+    {
+      label: 'el archivo',
+      items: [
+        { id: 'archivo', label: 'archivo', hint: 'filtros y búsqueda', onPress: openArchive, active: route.name === 'archive' },
+        {
+          id: 'biografias',
+          label: 'biografías',
+          hint: 'vidas por temas',
+          onPress: openLives,
+          active: route.name === 'lives' || route.name === 'theme' || route.name === 'figure',
+        },
+      ],
+    },
+  ];
+
+  /**
+   * El centro. En la portada, el animal y nada más: es lo que se pulsa.
+   * En cualquier sección, la sección sola, con todo el ancho.
+   */
+  const contenido = reading ?? (
+    <View style={styles.hero}>
+      <View style={{ width: stageWeb, height: stageWeb }}>{spider}</View>
+      <Text style={styles.lead}>{LEAD}</Text>
+      {latest ? <Text style={styles.latest}>última pata apoyada: {latest.category.name}</Text> : null}
+    </View>
+  );
+
+  /** La derecha: las once patas como interruptores, y el estado del archivo. */
+  const aside = (
+    <View>
+      <LegPanel legs={legs} selected={active} onToggle={toggle} onClear={() => setSelected(NONE)} />
+      <View style={styles.readout}>
+        <Text style={styles.readoutLabel}>estado</Text>
+        <Text style={styles.readoutLine}>{corpus.entries.length} entradas · {lit} de {legs.length} patas</Text>
+        <Text style={styles.readoutLine}>{corpus.figures.length} biografías · {corpus.themes.length} temas</Text>
+        {route.name === 'invocation' ? <Text style={styles.readoutLine}>semilla {route.seed}</Text> : null}
+        <Text style={styles.readoutHint}>⌘K abre la paleta</Text>
+      </View>
+    </View>
+  );
+
+  const titulo =
+    route.name === 'home'
+      ? 'aracne'
+      : route.name === 'invocation'
+        ? 'invocación'
+        : route.name === 'entry'
+          ? (entry?.title ?? 'entrada')
+          : route.name === 'web'
+            ? 'la tela'
+            : route.name === 'atlas'
+              ? 'el atlas de la extinción'
+              : route.name === 'archive'
+                ? 'el archivo'
+                : route.name === 'shape'
+                  ? 'la forma del archivo'
+                  : route.name === 'figure'
+                    ? (figure?.name ?? 'figura')
+                    : route.name === 'theme'
+                      ? (themeState?.theme.name ?? 'tema')
+                      : 'biografías';
+
+  const metaLinea =
+    route.name === 'invocation'
+      ? `${route.seed} · ${active.length} patas apoyadas`
+      : `${corpus.entries.length} entradas · ${lit} de ${legs.length} patas`;
 
   return (
     <SafeAreaView style={styles.root} edges={['bottom', 'left', 'right']}>
-      {wide ? (
-        <View style={[styles.portraitHead, { paddingTop: insets.top + space.md }]}>{header}</View>
-      ) : (
-        <View style={styles.stagePortrait}>
-          {spider}
-          <View style={[styles.headerOverlay, { top: insets.top + space.md }]}>{header}</View>
-        </View>
-      )}
-      <View style={[styles.panel, wide && styles.panelWide]}>
-        {reading ? (
-          <ScrollView
-            style={wide ? styles.panelScroll : { maxHeight: Math.round(height * panelShare) }}
-            contentContainerStyle={styles.panelContent}
-            showsVerticalScrollIndicator={false}
-          >
-            {reading}
-          </ScrollView>
-        ) : (
-          <>
-            <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.legRow}>
-              {legRow()}
-            </ScrollView>
-            <Text style={styles.latest} numberOfLines={1}>
-              {latest ? latest.category.name : 'apoya una pata'}
-            </Text>
-          </>
-        )}
-        <View style={styles.panelButtons}>{buttons}</View>
-      </View>
-        {palette ? (
-          <CommandPalette corpus={corpus} legs={legs} onRun={run} onClose={() => setPalette(false)} />
-        ) : null}
+      <Shell
+        groups={groups}
+        title={titulo}
+        meta={metaLinea}
+        aside={aside}
+        footer={buttons}
+        compact={portrait}
+      >
+        {contenido}
+      </Shell>
+      {palette ? (
+        <CommandPalette corpus={corpus} legs={legs} onRun={run} onClose={() => setPalette(false)} />
+      ) : null}
     </SafeAreaView>
   );
 }
@@ -561,67 +567,61 @@ export function HomeScreen({ reduceMotion }: Props) {
 const styles = StyleSheet.create({
   root: { flex: 1, backgroundColor: colors.bg },
 
-  columns: {
-    flex: 1,
-    flexDirection: 'row',
-    width: '100%',
-    maxWidth: MAX_CONTENT_WIDTH,
-    alignSelf: 'center',
-  },
-  stageWide: { flex: 0.85, justifyContent: 'center', alignItems: 'center' },
-  side: {
-    flex: 1.15,
-    maxWidth: 680,
-    paddingHorizontal: space.lg,
-    paddingBottom: space.lg,
-  },
-  sideWide: { flex: 1, maxWidth: MAX_CONTENT_WIDTH },
-  sideScroll: { flex: 1, marginTop: space.md },
+  // La portada: el animal grande y una sola línea debajo.
+  hero: { alignItems: 'center', paddingTop: space.sm },
   lead: {
     fontFamily: fonts.serif,
     fontSize: 19,
     lineHeight: 30,
     color: colors.dim,
-    maxWidth: 420,
+    maxWidth: 460,
+    textAlign: 'center',
+    marginTop: space.md,
   },
-  sideContent: { flexGrow: 1, justifyContent: 'center', paddingVertical: space.md },
-
-  stagePortrait: { flex: 1 },
-  portraitHead: { paddingHorizontal: space.md },
-  panelWide: { flex: 1 },
-  panelScroll: { flex: 1 },
-  headerOverlay: { position: 'absolute', left: space.md, right: space.md, pointerEvents: 'box-none' },
-  panel: { paddingBottom: space.md },
-  panelContent: { paddingHorizontal: space.md, paddingTop: space.sm },
-  panelButtons: { paddingHorizontal: space.md },
-  legRow: { paddingHorizontal: space.sm },
   latest: {
-    fontFamily: fonts.serif,
-    fontSize: 17,
-    color: colors.text,
-    paddingHorizontal: space.md,
+    fontFamily: fonts.mono,
+    fontSize: 11,
+    letterSpacing: 1.2,
+    color: colors.line,
+    marginTop: space.sm,
+  },
+
+  // El estado, bajo los interruptores: cifras, no prosa.
+  readout: {
+    marginTop: space.lg,
+    paddingTop: space.sm,
+    borderTopWidth: 1,
+    borderTopColor: colors.line,
+  },
+  readoutLabel: {
+    fontFamily: fonts.mono,
+    fontSize: 10,
+    letterSpacing: 2,
+    color: colors.dim,
+    textTransform: 'uppercase',
+    marginBottom: space.xs,
+  },
+  readoutLine: {
+    fontFamily: fonts.mono,
+    fontSize: 11,
+    letterSpacing: 1,
+    lineHeight: 18,
+    color: colors.dim,
+  },
+  readoutHint: {
+    fontFamily: fonts.mono,
+    fontSize: 10,
+    letterSpacing: 1.2,
+    lineHeight: 16,
+    color: colors.line,
     marginTop: space.xs,
   },
 
-
-  buttons: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginTop: space.md },
+  buttons: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
   missing: {
     fontFamily: fonts.serif,
     fontSize: 18,
     lineHeight: 28,
     color: colors.dim,
-  },
-
-  name: {
-    fontFamily: fonts.serif,
-    fontSize: 30,
-    color: colors.text,
-  },
-  meta: {
-    fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
-    color: colors.dim,
-    marginTop: space.xs,
   },
 });

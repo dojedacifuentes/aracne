@@ -88,6 +88,11 @@ export const CauseSchema = z.object({
   /** Patas del anillo con las que esta causa cruza. */
   categories: z.array(z.string()).default([]),
   /**
+   * Tags del archivo con los que cruza. Tienen que existir ya en alguna
+   * entrada: el Atlas no inventa vocabulario, lo usa.
+   */
+  tags: z.array(z.string()).default([]),
+  /**
    * De dónde sale la idea. Obras reales, citadas como inspiración y nunca
    * como aval: el escenario es de este Atlas, no de quien lo inspiró.
    */

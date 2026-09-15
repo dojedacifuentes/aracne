@@ -42,6 +42,10 @@
         "author": "Cormac McCarthy",
         "year": "2006"
       }
+    ],
+    "tags": [
+      "control",
+      "poder"
     ]
   },
   {
@@ -83,6 +87,11 @@
         "author": "Richard Matheson",
         "year": "1954"
       }
+    ],
+    "tags": [
+      "epidemia",
+      "cuarentena",
+      "alegoria"
     ]
   },
   {
@@ -128,6 +137,11 @@
         "author": "Elizabeth Kolbert",
         "year": "2014"
       }
+    ],
+    "tags": [
+      "planeta",
+      "toxicidad",
+      "escala"
     ]
   },
   {
@@ -151,6 +165,10 @@
         "author": "P. D. James",
         "year": "1992"
       }
+    ],
+    "tags": [
+      "maternidad",
+      "ausencia"
     ]
   },
   {
@@ -174,6 +192,10 @@
         "author": "Álvarez, Álvarez, Asaro y Michel",
         "year": "1980"
       }
+    ],
+    "tags": [
+      "cielo",
+      "planeta"
     ]
   },
   {
@@ -196,6 +218,10 @@
         "label": "La hipótesis del estallido de rayos gamma en la extinción del Ordovícico",
         "author": "Melott y Thomas"
       }
+    ],
+    "tags": [
+      "cielo",
+      "emision"
     ]
   },
   {
@@ -237,6 +263,12 @@
         "author": "Isaac Asimov",
         "year": "1950"
       }
+    ],
+    "tags": [
+      "ia",
+      "algoritmo",
+      "turing",
+      "imitacion"
     ]
   },
   {
@@ -278,6 +310,11 @@
         "author": "Jack Finney",
         "year": "1955"
       }
+    ],
+    "tags": [
+      "conciencia",
+      "mutacion",
+      "protesis"
     ]
   },
   {
@@ -319,6 +356,11 @@
         "author": "Karen Russell",
         "year": "2014"
       }
+    ],
+    "tags": [
+      "locura",
+      "delirio",
+      "psiquiatria"
     ]
   },
   {
@@ -360,6 +402,11 @@
         "author": "Samuel R. Delany",
         "year": "1966"
       }
+    ],
+    "tags": [
+      "lenguaje",
+      "olvido",
+      "signo"
     ]
   },
   {
@@ -383,6 +430,10 @@
         "author": "Coleman y De Luccia",
         "year": "1980"
       }
+    ],
+    "tags": [
+      "escala",
+      "vibracion"
     ]
   },
   {
@@ -406,6 +457,11 @@
         "author": "Nick Bostrom",
         "year": "2003"
       }
+    ],
+    "tags": [
+      "simulacion",
+      "ficcion",
+      "hipersticion"
     ]
   },
   {
@@ -442,6 +498,11 @@
         "author": "Greg Egan",
         "year": "1994"
       }
+    ],
+    "tags": [
+      "conciencia",
+      "imitacion",
+      "atribucion"
     ]
   },
   {
@@ -478,6 +539,11 @@
         "author": "James Lovelock",
         "year": "1979"
       }
+    ],
+    "tags": [
+      "planeta",
+      "rio",
+      "ficcion-juridica"
     ]
   },
   {
@@ -506,6 +572,10 @@
         "author": "Wheeler y DeWitt",
         "year": "1967"
       }
+    ],
+    "tags": [
+      "evento",
+      "circularidad"
     ]
   },
   {
@@ -542,6 +612,11 @@
         "author": "Arthur C. Clarke",
         "year": "1953"
       }
+    ],
+    "tags": [
+      "conciencia",
+      "red",
+      "rizoma"
     ]
   },
   {
@@ -574,6 +649,11 @@
         "author": "K. Eric Drexler",
         "year": "1986"
       }
+    ],
+    "tags": [
+      "escala",
+      "mutacion",
+      "codigo"
     ]
   },
   {
@@ -610,6 +690,11 @@
         "author": "Margaret Atwood",
         "year": "2003"
       }
+    ],
+    "tags": [
+      "toxicidad",
+      "mutacion",
+      "cuerpo"
     ]
   },
   {
@@ -645,6 +730,10 @@
         "label": "El año sin verano, tras la erupción del Tambora",
         "year": "1816"
       }
+    ],
+    "tags": [
+      "atmosfera",
+      "viento"
     ]
   },
   {
@@ -679,6 +768,10 @@
       {
         "label": "La excursión de Laschamp, hace unos cuarenta y un mil años"
       }
+    ],
+    "tags": [
+      "satelite",
+      "planeta"
     ]
   },
   {
@@ -714,6 +807,11 @@
         "label": "El evento Carrington",
         "year": "1859"
       }
+    ],
+    "tags": [
+      "satelite",
+      "emision",
+      "atmosfera"
     ]
   },
   {
@@ -750,6 +848,10 @@
         "author": "Rachel Carson",
         "year": "1962"
       }
+    ],
+    "tags": [
+      "tejido",
+      "escala"
     ]
   },
   {
@@ -785,6 +887,10 @@
         "label": "La hipótesis del sulfuro de hidrógeno en la extinción del Pérmico",
         "author": "Lee Kump"
       }
+    ],
+    "tags": [
+      "barco",
+      "planeta"
     ]
   },
   {
@@ -819,6 +925,10 @@
       {
         "label": "Ophiocordyceps unilateralis, el hongo que dirige a las hormigas"
       }
+    ],
+    "tags": [
+      "cuerpo",
+      "mutacion"
     ]
   },
   {
@@ -855,6 +965,11 @@
         "author": "Thomas Ligotti",
         "year": "2010"
       }
+    ],
+    "tags": [
+      "maternidad",
+      "personalidad",
+      "ausencia"
     ]
   },
   {
@@ -891,6 +1006,13 @@
         "author": "Jorge Luis Borges",
         "year": "1942"
       }
+    ],
+    "tags": [
+      "biblioteca",
+      "catalogo",
+      "enciclopedia",
+      "olvido",
+      "dato"
     ]
   },
   {
@@ -927,6 +1049,10 @@
         "author": "George Steiner",
         "year": "1975"
       }
+    ],
+    "tags": [
+      "lenguaje",
+      "signo"
     ]
   },
   {
@@ -950,6 +1076,10 @@
         "author": "Liu Cixin",
         "year": "2008"
       }
+    ],
+    "tags": [
+      "planeta",
+      "cielo"
     ]
   },
   {
@@ -986,6 +1116,12 @@
         "author": "E. M. Forster",
         "year": "1909"
       }
+    ],
+    "tags": [
+      "interfaz",
+      "codigo",
+      "error",
+      "control"
     ]
   },
   {
@@ -1009,6 +1145,11 @@
         "author": "Arthur C. Clarke",
         "year": "1953"
       }
+    ],
+    "tags": [
+      "profecia",
+      "circularidad",
+      "apocrifo"
     ]
   },
   {
@@ -1030,6 +1171,10 @@
       {
         "label": "El debate sobre los agujeros negros microscópicos y la radiación de Hawking"
       }
+    ],
+    "tags": [
+      "escala",
+      "vacio-legal"
     ]
   },
   {
@@ -1053,6 +1198,10 @@
         "author": "Fred Hoyle",
         "year": "1957"
       }
+    ],
+    "tags": [
+      "cielo",
+      "atmosfera"
     ]
   },
   {
@@ -1093,6 +1242,11 @@
         "author": "William Golding",
         "year": "1954"
       }
+    ],
+    "tags": [
+      "institucion",
+      "poder",
+      "vigilancia"
     ]
   },
   {
@@ -1134,6 +1288,12 @@
         "author": "Stanisław Lem",
         "year": "1961"
       }
+    ],
+    "tags": [
+      "lovecraft",
+      "antartida",
+      "expedicion",
+      "delirio"
     ]
   }
 ]
