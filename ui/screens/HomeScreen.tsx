@@ -12,13 +12,13 @@ import { entriesOfTheme, themeStates } from '../../lib/museum/themes';
 import type { DriftMode, WebSkin } from '../../lib/drift/modes';
 import { invoke } from '../../lib/oracle/invoke';
 import { freshSeed } from '../../lib/oracle/rng';
-import { ArchiveView } from '../components/ArchiveView';
-import { AtlasView } from '../components/AtlasView';
+import { ArchiveAside, ArchiveView } from '../components/ArchiveView';
+import { AtlasAside, AtlasView } from '../components/AtlasView';
 import { LivesView, ThemeView } from '../components/LivesView';
 import { CommandPalette, type Command } from '../components/CommandPalette';
 import { DriftView } from '../components/DriftView';
 import { ShapeView } from '../components/ShapeView';
-import { Tejido } from '../components/Tejido';
+import { Tejido, TelaAside } from '../components/Tejido';
 import { EntryView } from '../components/EntryView';
 import { FigureView } from '../components/FigureView';
 import { InvocationView } from '../components/InvocationView';
@@ -272,6 +272,13 @@ export function HomeScreen({ reduceMotion }: Props) {
   const lit = legs.filter((leg) => leg.visible).length;
   const latest = legs.find((leg) => leg.category.id === selected[selected.length - 1]);
 
+  /**
+   * Dónde el instrumento no son las patas. Ahí el estado dice cuántas quedan
+   * apoyadas, porque el botón de invocar del pie sigue usándolas y no se ven.
+   */
+  const patasFuera =
+    (route.name === 'atlas' || route.name === 'web' || route.name === 'archive') && active.length > 0;
+
   const spider = (
     <Spider
       ringSize={legs.length}
@@ -350,9 +357,7 @@ export function HomeScreen({ reduceMotion }: Props) {
         size={webSize}
         reduceMotion={reduceMotion}
         onFocus={weave}
-        onSkin={setSkin}
         onOpen={openEntry}
-        onMap={openMap}
       />
     ) : route.name === 'atlas' ? (
       <AtlasView
@@ -361,6 +366,9 @@ export function HomeScreen({ reduceMotion }: Props) {
         focus={route.country}
         lens={route.lens}
         width={Math.min(centro, 1000)}
+        // El mapa cabe en lo que queda de pantalla: cabecera, pie, el aire de
+        // la columna, la entradilla y la barra de lectura ya están descontados.
+        maxHeight={height - 320}
         reduceMotion={reduceMotion}
         onFocus={setAtlasCountry}
         onLens={setAtlasLens}
@@ -369,13 +377,7 @@ export function HomeScreen({ reduceMotion }: Props) {
     ) : route.name === 'shape' ? (
       <ShapeView corpus={corpus} legs={legs} />
     ) : route.name === 'archive' ? (
-      <ArchiveView
-        corpus={corpus}
-        legs={legs}
-        filters={route.filters}
-        onChange={setFilters}
-        onOpen={openEntry}
-      />
+      <ArchiveView corpus={corpus} filters={route.filters} onOpen={openEntry} />
     ) : panel === 'proposito' ? (
       <PurposeView legs={legs} selected={selected} reduceMotion={reduceMotion} />
     ) : null;
@@ -505,15 +507,44 @@ export function HomeScreen({ reduceMotion }: Props) {
     </View>
   );
 
-  /** La derecha: las once patas como interruptores, y el estado del archivo. */
+  /**
+   * La derecha es el instrumento de lo que hay delante, no siempre el mismo
+   * panel. En el Atlas, la lente y la leyenda; en la tela, las pieles y los
+   * mapas; en el archivo, las facetas. Donde se invoca —la portada, una
+   * invocación, una ficha— el instrumento son las once patas, porque son lo
+   * que decide qué sale al pulsar.
+   */
+  const instrumento =
+    route.name === 'atlas' ? (
+      <AtlasAside atlas={loadAtlas()} lens={route.lens} onLens={setAtlasLens} />
+    ) : route.name === 'web' ? (
+      <TelaAside
+        skin={route.skin}
+        focus={route.focus}
+        onSkin={setSkin}
+        onFocus={weave}
+        onMap={openMap}
+      />
+    ) : route.name === 'archive' ? (
+      <ArchiveAside corpus={corpus} legs={legs} filters={route.filters} onChange={setFilters} />
+    ) : (
+      <LegPanel legs={legs} selected={active} onToggle={toggle} onClear={() => setSelected(NONE)} />
+    );
+
+  /** El estado va al pie de cualquier instrumento: es el de la máquina entera. */
   const aside = (
     <View>
-      <LegPanel legs={legs} selected={active} onToggle={toggle} onClear={() => setSelected(NONE)} />
+      {instrumento}
       <View style={styles.readout}>
         <Text style={styles.readoutLabel}>estado</Text>
         <Text style={styles.readoutLine}>{corpus.entries.length} entradas · {lit} de {legs.length} patas</Text>
         <Text style={styles.readoutLine}>{corpus.figures.length} biografías · {corpus.themes.length} temas</Text>
         {route.name === 'invocation' ? <Text style={styles.readoutLine}>semilla {route.seed}</Text> : null}
+        {patasFuera ? (
+          <Text style={styles.readoutLine}>
+            {active.length} {active.length === 1 ? 'pata apoyada' : 'patas apoyadas'}
+          </Text>
+        ) : null}
         <Text style={styles.readoutHint}>⌘K abre la paleta</Text>
       </View>
     </View>
@@ -552,6 +583,7 @@ export function HomeScreen({ reduceMotion }: Props) {
         title={titulo}
         meta={metaLinea}
         aside={aside}
+        asideFirst={route.name === 'archive'}
         footer={buttons}
         compact={portrait}
       >

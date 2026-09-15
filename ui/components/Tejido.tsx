@@ -18,10 +18,10 @@ import {
 import type { DriftMode, WebSkin } from '../../lib/drift/modes';
 import { catalogId } from '../../lib/labels';
 import { rngFromString } from '../../lib/oracle/rng';
-import { useFocusRing } from '../hooks/useFocusRing';
 import { linkText } from '../lib/copy';
 import { THREAD_STYLE } from '../lib/epistemic';
-import { colors, fonts, HIT_SIZE, space } from '../theme';
+import { colors, fonts, machine, space } from '../theme';
+import { Chip } from './Chip';
 
 type Props = {
   corpus: Corpus;
@@ -31,8 +31,14 @@ type Props = {
   size: number;
   reduceMotion: boolean;
   onFocus: (id: string | null) => void;
-  onSkin: (skin: WebSkin) => void;
   onOpen: (id: string) => void;
+};
+
+type AsideProps = {
+  focus: string | null;
+  skin: WebSkin;
+  onFocus: (id: string | null) => void;
+  onSkin: (skin: WebSkin) => void;
   onMap: (mode: DriftMode) => void;
 };
 
@@ -100,7 +106,7 @@ const TRAIL = [0, 0.018, 0.036];
  * Lo que no cambia en ninguna piel: la posición la manda la pata. No es un
  * layout de fuerzas y no debe serlo.
  */
-export function Tejido({ corpus, focus, skin, size, reduceMotion, onFocus, onSkin, onOpen, onMap }: Props) {
+export function Tejido({ corpus, focus, skin, size, reduceMotion, onFocus, onOpen }: Props) {
   const web = useMemo(
     () => buildWeb(corpus.entries, corpus.categories, SEED, RING, MIN_WEIGHT),
     [corpus.entries, corpus.categories],
@@ -441,17 +447,6 @@ export function Tejido({ corpus, focus, skin, size, reduceMotion, onFocus, onSki
               : `${web.nodes.length} entradas · ${visibles.length} hilos · ${lejanos.length} cruzan el anillo`}
       </Text>
 
-      <View style={styles.controls}>
-        <Chip label="tela" on={skin === 'tela'} onPress={() => onSkin('tela')} hint="hilos curvos, como seda" />
-        <Chip
-          label="flujo"
-          on={skin === 'flujo'}
-          onPress={() => onSkin('flujo')}
-          hint="trazas en ángulo recto, con la corriente en movimiento"
-        />
-        {focus ? <Chip label="el archivo entero" on={false} onPress={() => onFocus(null)} /> : null}
-      </View>
-
       {centre ? (
         <View style={styles.block}>
           <Text style={styles.centreTitle}>{centre.title}</Text>
@@ -464,13 +459,54 @@ export function Tejido({ corpus, focus, skin, size, reduceMotion, onFocus, onSki
         </View>
       ) : null}
 
-      <Text style={styles.key} numberOfLines={2}>
+    </View>
+  );
+}
+
+/**
+ * El instrumento de la tela: con qué mano se dibuja el grafo y hacia dónde se
+ * sale de él.
+ *
+ * La clave del trazo vive aquí y no bajo el dibujo porque es lo mismo que la
+ * leyenda del Atlas: dice cómo leer lo que se está mirando, y cambia con la
+ * piel. Los tres mapas se abren desde aquí, que es donde uno ya está mirando
+ * la red.
+ */
+export function TelaAside({ skin, focus, onSkin, onFocus, onMap }: AsideProps) {
+  return (
+    <View>
+      <View style={styles.head}>
+        <Text style={styles.label}>la tela</Text>
+        <Text style={[styles.state, focus ? styles.stateOn : null]}>{focus ? 'tejida' : 'entera'}</Text>
+      </View>
+
+      <Text style={styles.asideLabel}>la piel</Text>
+      <View style={styles.controls}>
+        <Chip label="tela" on={skin === 'tela'} onPress={() => onSkin('tela')} hint="hilos curvos, como seda" />
+        <Chip
+          label="flujo"
+          on={skin === 'flujo'}
+          onPress={() => onSkin('flujo')}
+          hint="trazas en ángulo recto, con la corriente en movimiento"
+        />
+      </View>
+
+      <Text style={styles.key}>
         continuo, lo que el archivo declara · discontinuo, la misma pata · punteado, el mismo tipo
         {skin === 'flujo' ? ' · la corriente corre más deprisa por el vínculo más fuerte' : ''}
       </Text>
 
+      {focus ? (
+        <View style={styles.block}>
+          <Text style={styles.asideLabel}>el foco</Text>
+          <View style={styles.controls}>
+            <Chip label="el archivo entero" on={false} onPress={() => onFocus(null)} hint="deshace el tejido" />
+          </View>
+        </View>
+      ) : null}
+
       <View style={styles.block}>
-        <Text style={styles.label}>mapas</Text>
+        <Text style={styles.asideLabel}>mapas</Text>
         <View style={styles.controls}>
           <Chip label="deriva" on={false} onPress={() => onMap('deriva')} hint="una cadena y la razón de cada paso" />
           <Chip label="dos mundos" on={false} onPress={() => onMap('dos-mundos')} hint="la antípoda de una pata" />
@@ -478,24 +514,6 @@ export function Tejido({ corpus, focus, skin, size, reduceMotion, onFocus, onSki
         </View>
       </View>
     </View>
-  );
-}
-
-function Chip({ label, on, onPress, hint }: { label: string; on: boolean; onPress: () => void; hint?: string }) {
-  const { focusVisible, onFocus, onBlur } = useFocusRing();
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityHint={hint}
-      accessibilityState={{ selected: on }}
-      onPress={onPress}
-      onFocus={onFocus}
-      onBlur={onBlur}
-      style={[styles.chip, on && styles.chipOn, focusVisible && styles.focus]}
-    >
-      <Text style={[styles.chipText, on && styles.chipTextOn]}>{label}</Text>
-    </Pressable>
   );
 }
 
@@ -512,25 +530,44 @@ const styles = StyleSheet.create({
   },
   key: {
     fontFamily: fonts.mono,
-    fontSize: 12,
+    fontSize: 11,
     letterSpacing: 0.72,
-    lineHeight: 18,
+    lineHeight: 17,
     color: colors.dim,
     marginTop: space.sm,
   },
-  controls: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm, marginTop: space.sm },
+  controls: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs, marginTop: space.xs },
   block: {
     marginTop: space.md,
     paddingTop: space.sm,
     borderTopWidth: StyleSheet.hairlineWidth * 2,
     borderTopColor: colors.line,
   },
+
+  // La columna del instrumento habla en versales y en mono, como las patas.
+  head: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    marginBottom: space.sm,
+  },
   label: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    fontSize: 10,
+    letterSpacing: 2,
     color: colors.dim,
+    textTransform: 'uppercase',
   },
+  asideLabel: {
+    fontFamily: fonts.mono,
+    fontSize: 10,
+    letterSpacing: 2,
+    color: colors.dim,
+    textTransform: 'uppercase',
+    marginBottom: space.xs,
+  },
+  state: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1.2, color: colors.dim },
+  stateOn: { color: machine },
   centreTitle: {
     fontFamily: fonts.serif,
     fontSize: 22,
@@ -544,21 +581,4 @@ const styles = StyleSheet.create({
     color: colors.dim,
     marginTop: 2,
   },
-  chip: {
-    minHeight: HIT_SIZE,
-    justifyContent: 'center',
-    paddingHorizontal: space.sm,
-    borderWidth: 1,
-    borderColor: colors.line,
-    outlineWidth: 0,
-  },
-  chipOn: { borderColor: colors.text },
-  chipText: {
-    fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
-    color: colors.dim,
-  },
-  chipTextOn: { color: colors.text },
-  focus: { outlineColor: colors.accent, outlineStyle: 'solid', outlineWidth: 1, outlineOffset: 2 },
 });

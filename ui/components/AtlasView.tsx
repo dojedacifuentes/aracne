@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { PanResponder, Platform, Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
+import { PanResponder, Platform, Pressable, StyleSheet, Text, View } from 'react-native';
 import Svg, { Circle, Line, Path, Polyline, Rect } from 'react-native-svg';
 
 import {
@@ -28,7 +28,9 @@ import { bridgeText, entriesForCause } from '../../lib/atlas/bridge';
 import type { Corpus } from '../../lib/content/corpus';
 import { catalogId } from '../../lib/labels';
 import { useFocusRing } from '../hooks/useFocusRing';
-import { colors, fonts, heat, HIT_SIZE, machine, space } from '../theme';
+import { canvasSize } from '../lib/layout';
+import { colors, fonts, heat, machine, space } from '../theme';
+import { Chip } from './Chip';
 
 /** Lo que se guarda de la vista: el resto se deriva del lienzo. */
 interface Camera {
@@ -45,10 +47,18 @@ type Props = {
   /** Causa con la que se pinta el mapa. null es el score general. */
   lens: string | null;
   width: number;
+  /** Lo que queda de pantalla. El mapa no pasa de aquí. */
+  maxHeight: number;
   reduceMotion: boolean;
   onFocus: (id: string | null) => void;
   onLens: (id: string | null) => void;
   onOpenEntry: (id: string) => void;
+};
+
+type AsideProps = {
+  atlas: Atlas;
+  lens: string | null;
+  onLens: (id: string | null) => void;
 };
 
 /** Proporción del lienzo. El mundo de Robinson es 2:1; se deja aire para el zoom. */
@@ -86,6 +96,41 @@ const CONTINENT_LABEL: Record<string, string> = {
 
 const miles = (n: number) => n.toLocaleString('es-ES');
 
+/** Lo que el mapa pinta bajo una lente: el score de cada país y sus cortes. */
+interface Heat {
+  lecturas: Map<string, { score: number; cause: Cause | null }>;
+  scale: HeatScale;
+}
+
+/**
+ * El score de cada país bajo la lente actual, con su causa, y la escala que
+ * sale de ese reparto. Lo que no tiene población estable no puntúa: un atlas
+ * de exposición humana no tiene nada que decir de la Antártida, y pintarla de
+ * un color cualquiera sería inventarse un dato.
+ *
+ * Vive fuera del componente porque **la leyenda está en la otra columna**: el
+ * mapa y la leyenda tienen que enseñar los mismos cortes, y la única manera de
+ * garantizarlo es que los dos los saquen de aquí. Cada uno con su escala
+ * duraría hasta la primera lente en la que difirieran.
+ */
+function readWorld(
+  countries: readonly Country[],
+  causes: readonly Cause[],
+  lensCause: Cause | null,
+): Heat {
+  const lecturas: Heat['lecturas'] = new Map();
+  for (const country of countries) {
+    if (!scored(country)) continue;
+    if (lensCause) {
+      lecturas.set(country.id, { score: readCountry(country, lensCause.rule).score, cause: lensCause });
+    } else {
+      const top = dominant(country, causes);
+      lecturas.set(country.id, { score: top?.score ?? 0, cause: top?.cause ?? null });
+    }
+  }
+  return { lecturas, scale: heatScale([...lecturas.values()].map((l) => l.score)) };
+}
+
 /**
  * El Atlas de la extinción.
  *
@@ -111,12 +156,20 @@ export function AtlasView({
   corpus,
   focus,
   lens,
-  width,
+  width: columna,
+  maxHeight,
   reduceMotion,
   onFocus,
   onLens,
   onOpenEntry,
 }: Props) {
+  /**
+   * El lienzo cabe en la columna **y** en lo que queda de pantalla. Antes solo
+   * se medía con la columna, así que en cualquier portátil el mapa salía más
+   * alto que la ventana y había que bajar para verlo entero: un mapa que no se
+   * ve de una vez no es un mapa, es un rollo.
+   */
+  const width = canvasSize(columna, Math.round(maxHeight / RATIO), 1000);
   const height = Math.round(width * RATIO);
   const [camera, setCamera] = useState<Camera>({ zoom: MIN_ZOOM, center: { x: 0.5, y: 0.5 } });
   const [hovered, setHovered] = useState<string | null>(null);
@@ -184,28 +237,7 @@ export function AtlasView({
     return out;
   }, [countries]);
 
-  /**
-   * El score de cada país bajo la lente actual, con su causa. Lo que no tiene
-   * población estable no puntúa: un atlas de exposición humana no tiene nada
-   * que decir de la Antártida, y pintarla de un color cualquiera sería
-   * inventarse un dato.
-   */
-  const lecturas = useMemo(() => {
-    const out = new Map<string, { score: number; cause: Cause | null }>();
-    for (const country of countries) {
-      if (!scored(country)) continue;
-      if (lensCause) {
-        out.set(country.id, { score: readCountry(country, lensCause.rule).score, cause: lensCause });
-      } else {
-        const top = dominant(country, causes);
-        out.set(country.id, { score: top?.score ?? 0, cause: top?.cause ?? null });
-      }
-    }
-    return out;
-  }, [countries, causes, lensCause]);
-
-  /** La escala se recalcula con cada lente, y la leyenda enseña sus cortes. */
-  const scale = useMemo(() => heatScale([...lecturas.values()].map((l) => l.score)), [lecturas]);
+  const { lecturas, scale } = useMemo(() => readWorld(countries, causes, lensCause), [countries, causes, lensCause]);
 
   const paths = useMemo(() => {
     const out: { id: string; d: string; band: number }[] = [];
@@ -260,7 +292,14 @@ export function AtlasView({
   const pan = useMemo(
     () =>
       PanResponder.create({
-        onMoveShouldSetPanResponder: (_e, g) => Math.abs(g.dx) > 3 || Math.abs(g.dy) > 3,
+        onMoveShouldSetPanResponder: (_e, g) => {
+          if (Math.abs(g.dx) <= 3 && Math.abs(g.dy) <= 3) return false;
+          // Con el mapa en reposo, un arrastre vertical es de la página: en un
+          // teléfono el mapa ocupa el ancho entero y quedarse con el dedo
+          // dejaba la sección sin manera de bajar. Ampliado sí es suyo, porque
+          // entonces hay mundo fuera del cuadro por los cuatro lados.
+          return Math.abs(g.dx) > Math.abs(g.dy) || camera.zoom > MIN_ZOOM;
+        },
         onPanResponderMove: (_e, g) => {
           mover((actual) => {
             const escala = actual.width * actual.zoom;
@@ -272,17 +311,27 @@ export function AtlasView({
         },
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [width, height],
+    [width, height, camera.zoom],
   );
 
   const lienzo = useRef<View | null>(null);
 
-  // La rueda amplía donde está el cursor. Solo en web, y sin tocar la página.
+  /**
+   * La rueda amplía donde está el cursor, **pero solo con ctrl o ⌘**, que es
+   * también lo que manda un pellizco en el trackpad.
+   *
+   * Antes se quedaba con toda la rueda. Como el mapa ocupa casi la pantalla
+   * entera, el cursor estaba siempre encima y la sección no se podía bajar:
+   * girar la rueda ampliaba el mundo en vez de mover la página. Para ampliar
+   * sin modificador están los dos botones de la barra, que además dicen que
+   * existen.
+   */
   useEffect(() => {
     if (Platform.OS !== 'web') return;
     const nodo = lienzo.current as unknown as HTMLElement | null;
     if (!nodo) return;
     const onWheel = (event: WheelEvent) => {
+      if (!event.ctrlKey && !event.metaKey) return;
       event.preventDefault();
       const caja = nodo.getBoundingClientRect();
       const punto = { x: event.clientX - caja.left, y: event.clientY - caja.top };
@@ -311,7 +360,8 @@ export function AtlasView({
 
   return (
     <View>
-      <Text style={styles.section}>atlas de la extinción</Text>
+      {/* El título lo pone la cabecera de la consola: repetirlo aquí solo
+          robaba alto a un mapa que tiene que caber de una vez. */}
       <Text style={styles.lead}>
         {causes.length} maneras de que se acabe, repartidas por el mundo. cada país arde según su regla, y la regla se
         enseña entera: el número sale de su población, su superficie, su renta, su latitud y su costa.
@@ -447,42 +497,6 @@ export function AtlasView({
           />
           {country ? <Chip label={`ir a ${country.name}`} on={false} onPress={() => irA(country)} /> : null}
         </View>
-      </View>
-
-      {/* La leyenda: sin ella una rampa es una mancha de colores. */}
-      <View style={styles.legend}>
-        {heat.map((color, i) => {
-          const desde = i === 0 ? 0 : scale.cuts[i - 1];
-          const hasta = i === heat.length - 1 ? 100 : scale.cuts[i] - 1;
-          return (
-            <View key={color} style={styles.band}>
-              <View style={[styles.swatch, { backgroundColor: color }]} />
-              <Text style={styles.bandText}>
-                {desde}–{hasta}
-              </Text>
-            </View>
-          );
-        })}
-        <Text style={styles.bandNote}>
-          quintiles: cada tramo lleva una quinta parte del mundo, y los cortes cambian con la lente
-        </Text>
-      </View>
-
-      {/* La lente: con qué causa se pinta el mundo. */}
-      <View style={styles.block}>
-        <Text style={styles.label}>la lente</Text>
-        <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.lens}>
-          <Chip label="score general" on={lens === null} onPress={() => onLens(null)} />
-          {causes.map((cause) => (
-            <Chip
-              key={cause.id}
-              label={cause.name.toLowerCase()}
-              on={lens === cause.id}
-              onPress={() => onLens(cause.id === lens ? null : cause.id)}
-              hint={cause.uniform ? 'uniforme: le toca igual a todo el mundo' : undefined}
-            />
-          ))}
-        </ScrollView>
       </View>
 
       {lensCause ? (
@@ -648,32 +662,128 @@ function CountryPanel({
   );
 }
 
-function Chip({ label, on, onPress, hint }: { label: string; on: boolean; onPress: () => void; hint?: string }) {
+/**
+ * El instrumento del Atlas: la lente y la leyenda.
+ *
+ * La lente es una lista y no una fila de fichas porque son treinta y cuatro
+ * causas: en fila había que arrastrarlas de lado para ver las últimas, y una
+ * lente que esconde la mitad de sus posiciones no es una lente. Y van
+ * separadas en dos, porque **esa separación es el argumento del Atlas**: las
+ * que reparten distinguen a unos países de otros; las uniformes le tocan igual
+ * a todo el mundo y no distinguen a nadie. Ni la separación ni el orden están
+ * escritos a mano: salen de `uniform` y del score que cada regla produce.
+ */
+export function AtlasAside({ atlas, lens, onLens }: AsideProps) {
+  const causes = atlas.causes;
+  const lensCause = lens ? (causes.find((cause) => cause.id === lens) ?? null) : null;
+  const { scale } = useMemo(
+    () => readWorld(atlas.world.countries, causes, lensCause),
+    [atlas.world.countries, causes, lensCause],
+  );
+
+  const reparten = causes.filter((cause) => !cause.uniform);
+  const fondo = background(causes);
+
+  return (
+    <View>
+      <View style={styles.asideHead}>
+        <Text style={styles.asideLabel}>la lente</Text>
+        <Text style={[styles.asideState, lensCause ? styles.asideStateOn : null]}>
+          {lensCause ? 'una causa' : 'score general'}
+        </Text>
+      </View>
+
+      {/* La leyenda va primero: es lo que hace legible lo que ya se está
+          mirando, y cabe entera sin bajar. */}
+      {heat.map((color, i) => {
+        const desde = i === 0 ? 0 : scale.cuts[i - 1];
+        const hasta = i === heat.length - 1 ? 100 : scale.cuts[i] - 1;
+        return (
+          <View key={color} style={styles.band}>
+            <View style={[styles.swatch, { backgroundColor: color }]} />
+            <Text style={styles.bandText}>
+              {desde}–{hasta}
+            </Text>
+          </View>
+        );
+      })}
+      <Text style={styles.bandNote}>
+        quintiles: cada tramo lleva una quinta parte del mundo, y los cortes cambian con la lente
+      </Text>
+
+      <View style={styles.asideBlock}>
+        <LensRow label="score general" on={lens === null} onPress={() => onLens(null)} />
+      </View>
+
+      <Text style={styles.asideGroup}>las que reparten · {reparten.length}</Text>
+      {reparten.map((cause) => (
+        <LensRow
+          key={cause.id}
+          label={cause.name.toLowerCase()}
+          on={lens === cause.id}
+          onPress={() => onLens(cause.id === lens ? null : cause.id)}
+        />
+      ))}
+
+      <Text style={styles.asideGroup}>el fondo · {fondo.length}</Text>
+      {fondo.map((cause) => (
+        <LensRow
+          key={cause.id}
+          label={cause.name.toLowerCase()}
+          on={lens === cause.id}
+          onPress={() => onLens(cause.id === lens ? null : cause.id)}
+          mark="igual"
+          hint="uniforme: le toca igual a todo el mundo, así que el mapa entero sale del mismo color"
+        />
+      ))}
+
+      <Text style={styles.bandNote}>
+        arrastrar mueve el mapa · ctrl o ⌘ con la rueda amplía · la rueda sola baja la página
+      </Text>
+    </View>
+  );
+}
+
+/** Una posición de la lente. Misma gramática que un conmutador de pata. */
+function LensRow({
+  label,
+  on,
+  onPress,
+  mark,
+  hint,
+}: {
+  label: string;
+  on: boolean;
+  onPress: () => void;
+  mark?: string;
+  hint?: string;
+}) {
   const { focusVisible, onFocus, onBlur } = useFocusRing();
+  const [hovered, setHovered] = useState(false);
+
   return (
     <Pressable
-      accessibilityRole="button"
+      accessibilityRole="radio"
       accessibilityLabel={label}
-      accessibilityHint={hint}
+      accessibilityHint={hint ?? 'pinta el mapa con esta causa'}
       accessibilityState={{ selected: on }}
       onPress={onPress}
+      onHoverIn={() => setHovered(true)}
+      onHoverOut={() => setHovered(false)}
       onFocus={onFocus}
       onBlur={onBlur}
-      style={[styles.chip, on && styles.chipOn, focusVisible && styles.focus]}
+      style={[styles.lensRow, on && styles.lensRowOn, focusVisible && styles.focus]}
     >
-      <Text style={[styles.chipText, on && styles.chipTextOn]}>{label}</Text>
+      <View style={[styles.lensBar, on && styles.lensBarOn]} />
+      <Text style={[styles.lensName, (on || hovered) && styles.lensNameOn]} numberOfLines={1}>
+        {label}
+      </Text>
+      {on ? <Text style={styles.lensMark}>ON</Text> : mark ? <Text style={styles.lensFaint}>{mark}</Text> : null}
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  section: {
-    fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 1.8,
-    color: colors.dim,
-    marginBottom: space.sm,
-  },
   lead: {
     fontFamily: fonts.serif,
     fontSize: 17,
@@ -696,8 +806,7 @@ const styles = StyleSheet.create({
   },
   zoom: { flexDirection: 'row', flexWrap: 'wrap', gap: space.sm },
 
-  legend: { flexDirection: 'row', flexWrap: 'wrap', alignItems: 'center', gap: space.sm, marginTop: space.sm },
-  band: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  band: { flexDirection: 'row', alignItems: 'center', gap: 6, paddingVertical: 1 },
   swatch: { width: 22, height: 10, borderWidth: StyleSheet.hairlineWidth, borderColor: colors.line },
   bandText: { fontFamily: fonts.mono, fontSize: 12, letterSpacing: 0.72, color: colors.dim },
   bandNote: { fontFamily: fonts.mono, fontSize: 12, letterSpacing: 0.72, color: colors.dim },
@@ -807,16 +916,54 @@ const styles = StyleSheet.create({
     maxWidth: 680,
   },
 
-  chip: {
-    minHeight: HIT_SIZE,
-    justifyContent: 'center',
-    paddingHorizontal: space.sm,
-    borderWidth: 1,
-    borderColor: colors.line,
+  // La columna del instrumento: versales en mono, como las patas.
+  asideHead: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    marginBottom: space.sm,
+  },
+  asideLabel: {
+    fontFamily: fonts.mono,
+    fontSize: 10,
+    letterSpacing: 2,
+    color: colors.dim,
+    textTransform: 'uppercase',
+  },
+  asideState: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1.2, color: colors.dim },
+  asideStateOn: { color: machine },
+  asideBlock: {
+    marginTop: space.md,
+    paddingTop: space.sm,
+    borderTopWidth: StyleSheet.hairlineWidth * 2,
+    borderTopColor: colors.line,
+  },
+  asideGroup: {
+    fontFamily: fonts.mono,
+    fontSize: 10,
+    letterSpacing: 2,
+    color: colors.dim,
+    textTransform: 'uppercase',
+    marginTop: space.md,
+    marginBottom: space.xs,
+  },
+
+  lensRow: {
+    minHeight: 32,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: space.xs,
+    paddingRight: space.xs,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.line,
     outlineWidth: 0,
   },
-  chipOn: { borderColor: machine },
-  chipText: { fontFamily: fonts.mono, fontSize: 12, letterSpacing: 0.72, color: colors.dim },
-  chipTextOn: { color: machine },
+  lensRowOn: { backgroundColor: colors.bg },
+  lensBar: { width: 2, alignSelf: 'stretch', backgroundColor: 'transparent' },
+  lensBarOn: { backgroundColor: machine },
+  lensName: { flex: 1, fontFamily: fonts.serif, fontSize: 15, lineHeight: 21, color: colors.dim },
+  lensNameOn: { color: colors.text },
+  lensMark: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1.2, color: machine },
+  lensFaint: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1.2, color: colors.line },
   focus: { outlineColor: colors.accent, outlineStyle: 'solid', outlineWidth: 1, outlineOffset: 2 },
 });

@@ -160,6 +160,7 @@ Cifras reales, no estimaciones. Salen de `npm run validate` y `npm test`.
 | 13 | El flujo vivo: trazas en ángulo recto sobre rejilla, pulsos con estela, el nodo del centro respirando. |
 | 14 | El Atlas de la extinción: mapa Robinson, 177 territorios, 34 causas con regla, ficha por país. |
 | 15 | La consola: tres columnas, las patas como conmutadores, sellos poligonales, y exportación a texto y PDF. |
+| 16 | El panel de la derecha es el instrumento de cada sección; el mapa del Atlas cabe en la pantalla y devuelve la rueda a la página. |
 
 ---
 
@@ -202,9 +203,18 @@ Tres columnas (`ui/components/Shell.tsx`):
 - **Izquierda**: las secciones, agrupadas, con barra de activo y una línea en
   mono que dice qué hace cada una.
 - **Centro**: el contenido, con todo el ancho. En la portada, la araña sola.
-- **Derecha**: las once patas como conmutadores (`LegPanel`) y el estado.
+- **Derecha**: **el instrumento de lo que hay delante**, y el estado al pie.
+  La ruta lo elige (`HomeScreen`, constante `instrumento`): `AtlasAside` la
+  lente y la leyenda, `TelaAside` las pieles y los mapas, `ArchiveAside` la
+  búsqueda y las facetas, y `LegPanel` las once patas en todo lo demás.
 
-En vertical se apila: cabecera, fila de secciones, contenido, panel.
+En vertical se apila: cabecera, fila de secciones, contenido, panel. El archivo
+es la excepción —`asideFirst`— y pone el panel antes: un filtro detrás de
+cuarenta y cuatro resultados no es un filtro.
+
+**Un lienzo se mide con la columna y con lo que queda de pantalla**, las dos
+cosas. El mapa del Atlas solo se medía con la columna y salía más alto que la
+ventana.
 
 **Lo que se quitó y no debe volver sin pensarlo:** el anillo de patas en órbita
 alrededor de la araña. Con varias apoyadas, sus hilos cruzaban por encima del
@@ -221,29 +231,43 @@ fijo por fuera.
 
 ## 6. Qué hacer a continuación
 
-### 6.1 Vercel no desplegó la fase 15 — *lo primero*
+### 6.1 Vercel sí desplegó la fase 15 — y el hash no sirve para comprobarlo
 
-Al cerrar la sesión, `main` estaba en `78b7b59` y **producción seguía sirviendo
-`f908546`** (la fase 14). No es el build: GitHub Actions da el commit en verde,
-y el registro de despliegues del repositorio no llega a crear ninguno para
-`78b7b59`. El gancho de GitHub → Vercel no disparó.
+Resuelto el 15 de septiembre de 2026. Producción sirve la fase 15: están en su
+paquete las marcas que solo existen desde `78b7b59` —`archivo sin firma`,
+`el animal y sus once patas`, y el `WinAnsi` y el `Helvetica` del escritor de
+PDF—, el `index.html` es idéntico salvo el nombre del paquete, y medido en el
+DOM la portada trae el menú de secciones, la cabecera y el panel de las once
+patas. La alarma de la sesión anterior era la receta, no el despliegue.
 
-Se arregla en el panel de Vercel: *Deployments → Redeploy*, o revisando
-*Settings → Git*. Compruébalo antes de seguir: si no, lo que se ve en línea no
-es lo que hay en el repositorio.
+**Comparar el hash del paquete no vale.** El build de Vercel y el de esta
+máquina no salen byte a byte iguales: seis mil bytes de diferencia en el
+polyfill de manejo de errores de React Native, ninguno en código del proyecto.
+Se comprueba por contenido:
 
 ```bash
-# qué paquete sirve producción ahora mismo
-curl -s "https://aracne-mu.vercel.app/?t=$(date +%s)" | grep -o 'index-[a-f0-9]*\.js'
+# ¿sirve producción una marca que solo existe desde cierta fase?
+curl -s "https://aracne-mu.vercel.app/?t=$(date +%s)" \
+  | grep -o 'index-[a-f0-9]*\.js' | head -1 \
+  | xargs -I{} curl -s "https://aracne-mu.vercel.app/_expo/static/js/web/{}" \
+  | grep -c "archivo sin firma"
 ```
 
-### 6.2 El panel de la derecha no cambia de sección
+Si la marca no está, entonces sí: *Deployments → Redeploy* en el panel. Elige
+una cadena que el commit que quieres comprobar haya introducido, y confírmalo
+con `git log -S "la cadena" -- ui/`.
 
-Hoy enseña siempre las once patas, esté uno en la portada o en el Atlas. Lo
-suyo es que enseñe el instrumento de lo que hay delante: en el Atlas, la lente
-y la leyenda; en la tela, las pieles y los mapas; en el archivo, las facetas.
-`Shell` ya recibe `aside` como propiedad, así que es cosa de decidir qué va en
-cada ruta.
+### 6.2 El panel de la derecha ya cambia de sección
+
+Hecho en la fase 16. En el Atlas, la lente y la leyenda; en la tela, las pieles,
+los mapas y la clave del trazo; en el archivo, la búsqueda y las facetas; donde
+se invoca —portada, invocación, ficha—, las once patas, que es lo que decide
+qué sale al pulsar. El estado va al pie de cualquiera de los cuatro.
+
+Lo que queda apuntado de aquí: **las biografías no tienen instrumento propio.**
+El suyo serían los nueve temas como lista, para saltar de uno a otro sin volver
+al índice. Se dejó fuera a propósito: el pendiente nombraba tres secciones y son
+las tres que se hicieron.
 
 ### 6.3 Contenido, que es lo que más falta
 
@@ -346,6 +370,16 @@ Cosas que ya costaron una sesión.
   mismo origen al que se le mata `requestAnimationFrame`.
 - **El panel de vista previa escala la ventana.** Lo que se ve en una captura no
   coincide con lo que dice `getBoundingClientRect`. Ante la duda, manda el DOM.
+  Y hay una vuelta de tuerca: con el panel oculto, el documento mide 0×0 y la
+  app arranca en vertical con el lienzo al mínimo. Además `window.innerWidth`
+  no es el ancho del documento, y `Dimensions` de React Native se queda con el
+  de arranque: **para probar el modo compacto hay que recargar después de
+  cambiar el tamaño**, no basta con cambiarlo.
+- **El que se queda con la rueda deja la sección sin scroll.** El mapa del
+  Atlas llamaba a `preventDefault()` en cada `wheel` para ampliar. Como ocupa
+  casi la pantalla, el cursor estaba siempre encima y no había manera de bajar.
+  Ahora la rueda sola es de la página y ctrl o ⌘ amplían. Lo mismo vale para
+  un `PanResponder` que se quede con los arrastres verticales en un teléfono.
 
 ---
 

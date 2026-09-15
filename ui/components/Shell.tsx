@@ -32,6 +32,12 @@ type Props = {
   children: ReactNode;
   /** La columna de la derecha: estado e instrumentos. */
   aside?: ReactNode;
+  /**
+   * Solo en vertical, donde las tres columnas se apilan: el instrumento va
+   * antes del contenido. Lo pide el archivo, y solo el archivo — un filtro
+   * detrás de cuarenta y cuatro resultados no es un filtro.
+   */
+  asideFirst?: boolean;
   /** Botonera al pie del centro. */
   footer?: ReactNode;
   /** Pantalla estrecha: todo se apila. */
@@ -53,7 +59,7 @@ type Props = {
  * frío es de lo interactivo y el cálido es del contenido**: si algo se puede
  * pulsar, se ve; si es texto del archivo, nunca se pinta.
  */
-export function Shell({ groups, title, meta, children, aside, footer, compact }: Props) {
+export function Shell({ groups, title, meta, children, aside, asideFirst, footer, compact }: Props) {
   if (compact) {
     return (
       <View style={styles.stack}>
@@ -72,8 +78,9 @@ export function Shell({ groups, title, meta, children, aside, footer, compact }:
           ))}
         </ScrollView>
         <ScrollView style={styles.centerCompact} contentContainerStyle={styles.centerContent}>
+          {aside && asideFirst ? <View style={styles.asideBefore}>{aside}</View> : null}
           {children}
-          {aside ? <View style={styles.asideCompact}>{aside}</View> : null}
+          {aside && !asideFirst ? <View style={styles.asideCompact}>{aside}</View> : null}
         </ScrollView>
         {footer ? <View style={styles.footerCompact}>{footer}</View> : null}
       </View>
@@ -289,6 +296,7 @@ const styles = StyleSheet.create({
   headCompact: { paddingHorizontal: space.md, paddingTop: space.sm, paddingBottom: space.xs },
   centerCompact: { flex: 1 },
   asideCompact: { marginTop: space.lg },
+  asideBefore: { marginBottom: space.lg },
   footerCompact: {
     paddingHorizontal: space.md,
     paddingVertical: space.sm,

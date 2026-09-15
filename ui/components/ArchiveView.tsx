@@ -1,35 +1,78 @@
 import { useMemo, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
-import { facets, filterEntries, isEmpty, toggle, type ArchiveFilters } from '../../lib/archive/filter';
+import { facets, filterEntries, isEmpty, NO_FILTERS, toggle, type ArchiveFilters } from '../../lib/archive/filter';
 import type { Corpus, LegState } from '../../lib/content/corpus';
 import { catalogId, STATUS_LABEL, TYPE_LABEL } from '../../lib/labels';
 import type { Entry, EntryType, EpistemicStatus } from '../../lib/schema';
 import { useFocusRing } from '../hooks/useFocusRing';
-import { colors, fonts, HIT_SIZE, space } from '../theme';
+import { colors, fonts, HIT_SIZE, machine, space } from '../theme';
+import { Chip } from './Chip';
 
 type Props = {
+  corpus: Corpus;
+  filters: ArchiveFilters;
+  onOpen: (id: string) => void;
+};
+
+type AsideProps = {
   corpus: Corpus;
   legs: LegState[];
   filters: ArchiveFilters;
   onChange: (next: ArchiveFilters) => void;
-  onOpen: (id: string) => void;
 };
 
 /** Un tag que solo tiene una entrada es esa entrada: no es un filtro. */
 const TAG_FLOOR = 2;
 
 /**
- * El archivo entero. Filtros combinables por pata, tipo, estado, quién y tag,
- * y búsqueda local sobre todo lo que una entrada dice, fuentes incluidas.
+ * El archivo entero: lo que queda tras los filtros, y nada más.
+ *
+ * Los filtros viven en la columna de la derecha (`ArchiveAside`), que es la
+ * que corresponde a esta sección. Estaban aquí arriba, y con cuarenta y cuatro
+ * entradas eso significaba que el primer scroll se los llevaba: para quitar
+ * una faceta había que volver a subir.
  *
  * Aquí no se invoca nada: esta pantalla es lo contrario del oráculo. El
  * oráculo sirve para encontrar lo que no buscabas; esto, para volver a algo
  * que ya sabes que está.
  */
-export function ArchiveView({ corpus, legs, filters, onChange, onOpen }: Props) {
-  const available = useMemo(() => facets(corpus.entries, legs), [corpus.entries, legs]);
+export function ArchiveView({ corpus, filters, onOpen }: Props) {
   const results = useMemo(() => filterEntries(corpus.entries, filters), [corpus.entries, filters]);
+
+  const categoryName = (id: string) => corpus.categories.find((c) => c.id === id)?.name ?? id;
+
+  return (
+    <View>
+      <Text style={styles.count}>
+        {isEmpty(filters)
+          ? `${results.length} entradas`
+          : `${results.length} de ${corpus.entries.length} entradas`}
+      </Text>
+
+      {results.length === 0 ? (
+        <Text style={styles.empty}>ninguna entrada cumple estos filtros. quita alguno.</Text>
+      ) : (
+        <View style={styles.results}>
+          {results.map((entry) => (
+            <Row key={entry.id} entry={entry} categoryName={categoryName} onPress={() => onOpen(entry.id)} />
+          ))}
+        </View>
+      )}
+    </View>
+  );
+}
+
+/**
+ * El instrumento del archivo: la búsqueda y las facetas.
+ *
+ * Las cifras de cada faceta se calculan sobre el archivo entero, no sobre lo
+ * que queda filtrado: un filtro tiene que decir cuánto hay detrás antes de
+ * pulsarlo. Los tags de una sola entrada no aparecen, porque un tag que solo
+ * tiene una entrada *es* esa entrada.
+ */
+export function ArchiveAside({ corpus, legs, filters, onChange }: AsideProps) {
+  const available = useMemo(() => facets(corpus.entries, legs), [corpus.entries, legs]);
 
   const categoryName = (id: string) => corpus.categories.find((c) => c.id === id)?.name ?? id;
 
@@ -37,9 +80,17 @@ export function ArchiveView({ corpus, legs, filters, onChange, onOpen }: Props) 
     (tag) => tag.count >= TAG_FLOOR || filters.tags.includes(tag.id),
   );
 
+  const puestos =
+    filters.categories.length + filters.types.length + filters.statuses.length + filters.tags.length;
+
   return (
     <View>
-      <Text style={styles.section}>el archivo</Text>
+      <View style={styles.head}>
+        <Text style={styles.label}>las facetas</Text>
+        <Text style={[styles.state, puestos > 0 && styles.stateOn]}>
+          {puestos > 0 ? `${puestos} puestas` : 'ninguna'}
+        </Text>
+      </View>
 
       <TextInput
         value={filters.query}
@@ -104,21 +155,16 @@ export function ArchiveView({ corpus, legs, filters, onChange, onOpen }: Props) 
         </Group>
       ) : null}
 
-      <Text style={styles.count}>
-        {isEmpty(filters)
-          ? `${results.length} entradas`
-          : `${results.length} de ${corpus.entries.length} entradas`}
-      </Text>
-
-      {results.length === 0 ? (
-        <Text style={styles.empty}>ninguna entrada cumple estos filtros. quita alguno.</Text>
-      ) : (
-        <View style={styles.results}>
-          {results.map((entry) => (
-            <Row key={entry.id} entry={entry} categoryName={categoryName} onPress={() => onOpen(entry.id)} />
-          ))}
-        </View>
-      )}
+      <Pressable
+        accessibilityRole="button"
+        accessibilityLabel="quitar los filtros"
+        accessibilityHint="deja el archivo entero a la vista"
+        disabled={isEmpty(filters)}
+        onPress={() => onChange({ ...NO_FILTERS })}
+        style={[styles.clear, isEmpty(filters) && styles.clearOff]}
+      >
+        <Text style={styles.clearText}>quitar los filtros</Text>
+      </Pressable>
     </View>
   );
 }
@@ -129,37 +175,6 @@ function Group({ label, children }: { label: string; children: React.ReactNode }
       <Text style={styles.groupLabel}>{label}</Text>
       <View style={styles.chips}>{children}</View>
     </View>
-  );
-}
-
-function Chip({
-  label,
-  count,
-  on,
-  onPress,
-}: {
-  label: string;
-  count: number;
-  on: boolean;
-  onPress: () => void;
-}) {
-  const { focusVisible, onFocus, onBlur } = useFocusRing();
-
-  return (
-    <Pressable
-      accessibilityRole="button"
-      accessibilityLabel={label}
-      accessibilityHint={`${count} entradas`}
-      accessibilityState={{ selected: on }}
-      onPress={onPress}
-      onFocus={onFocus}
-      onBlur={onBlur}
-      style={[styles.chip, on && styles.chipOn, focusVisible && styles.focus]}
-    >
-      <Text style={[styles.chipText, on && styles.chipTextOn]} maxFontSizeMultiplier={1.4}>
-        {label} {count}
-      </Text>
-    </Pressable>
   );
 }
 
@@ -201,19 +216,31 @@ function Row({
 }
 
 const styles = StyleSheet.create({
-  section: {
-    fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
-    color: colors.dim,
-    marginBottom: space.sm,
+  // La cabecera del panel, con la misma gramática que las patas.
+  head: {
+    flexDirection: 'row',
+    alignItems: 'baseline',
+    justifyContent: 'space-between',
+    marginBottom: space.xs,
   },
+  label: {
+    fontFamily: fonts.mono,
+    fontSize: 10,
+    letterSpacing: 2,
+    color: colors.dim,
+    textTransform: 'uppercase',
+  },
+  state: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1.2, color: colors.dim },
+  stateOn: { color: machine },
+
+  // El fondo es el del lienzo, no el de la columna: la columna ya es
+  // `surface`, y una caja del mismo color que su panel no se ve.
   search: {
     minHeight: HIT_SIZE,
     paddingHorizontal: space.sm,
     borderWidth: 1,
     borderColor: colors.line,
-    backgroundColor: colors.surface,
+    backgroundColor: colors.bg,
     fontFamily: fonts.serif,
     fontSize: 17,
     color: colors.text,
@@ -223,35 +250,31 @@ const styles = StyleSheet.create({
   group: { marginTop: space.md },
   groupLabel: {
     fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
+    fontSize: 10,
+    letterSpacing: 2,
     color: colors.dim,
+    textTransform: 'uppercase',
     marginBottom: space.xs,
   },
   chips: { flexDirection: 'row', flexWrap: 'wrap', gap: space.xs },
-  chip: {
-    paddingVertical: 6,
-    paddingHorizontal: space.sm,
+
+  clear: {
+    minHeight: 34,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: space.md,
     borderWidth: 1,
     borderColor: colors.line,
     outlineWidth: 0,
   },
-  // Seleccionado no cambia de color: cambia el borde, como el botón.
-  chipOn: { borderColor: colors.text },
-  chipText: {
-    fontFamily: fonts.mono,
-    fontSize: 12,
-    letterSpacing: 0.72,
-    color: colors.dim,
-  },
-  chipTextOn: { color: colors.text },
+  clearOff: { opacity: 0.35 },
+  clearText: { fontFamily: fonts.mono, fontSize: 10, letterSpacing: 1.6, color: colors.dim, textTransform: 'uppercase' },
 
   count: {
     fontFamily: fonts.mono,
     fontSize: 12,
     letterSpacing: 0.72,
     color: colors.dim,
-    marginTop: space.lg,
     paddingBottom: space.sm,
   },
   empty: {

@@ -29,6 +29,7 @@ el proyecto y qué conviene hacer. Este archivo es la historia de cada fase.
 | 13 | El flujo vivo: trazas en ángulo recto sobre rejilla, pulsos con estela y el nodo del centro respirando; y el lienzo que no puede medir menos que nada | `32270c5` … `80a4d9d` |
 | 14 | El Atlas de la extinción: 177 territorios de Natural Earth en proyección Robinson, 34 causas con regla declarada, ficha por país y cruce con el archivo | `f908546` |
 | 15 | La consola: tres columnas, las once patas como conmutadores al lado, sellos poligonales, y todo texto exportable a .txt y a .pdf sin dependencias | `78b7b59` |
+| 16 | El panel de la derecha es el instrumento de cada sección: lente y leyenda en el Atlas, pieles y mapas en la tela, facetas en el archivo, patas donde se invoca. El mapa cabe en la pantalla y la rueda vuelve a ser de la página | — |
 
 En curso: una revisión adversarial de las fases 0–2.
 
@@ -55,6 +56,26 @@ tramo.
 La exportación a PDF se escribió a mano, doscientas líneas con las fuentes base
 del formato, en vez de añadir medio megabyte de librería a un paquete que ya
 pesa dos.
+
+### Lo que se decidió en la fase 16
+
+La columna de la derecha dejó de ser un panel fijo y pasó a ser **el
+instrumento de lo que hay delante**. La consola de la fase 15 la había dejado
+enseñando siempre las once patas, también en el Atlas, donde no sirven para
+nada. Ahora la ruta elige: la lente y la leyenda, las pieles y los mapas, las
+facetas, o las patas donde de verdad deciden algo.
+
+Dos cosas cayeron solas al hacerlo. La primera: había tres copias del mismo
+conmutador pequeño, con tres colores de selección distintos; ahora es uno
+(`ui/components/Chip.tsx`) y sigue la regla de la fase 15 —el frío es de lo que
+se puede tocar—. La segunda: los filtros del archivo dejaron de irse con el
+scroll, que era lo que pedía el pendiente de «el archivo son seis pantallas».
+
+Y dos hallazgos sobre el Atlas, los dos mirando la pantalla y no el código:
+el mapa se medía solo con la columna, así que salía más alto que la ventana; y
+se quedaba con la rueda del ratón para ampliar, de modo que la sección no se
+podía bajar. La regla que queda escrita: **quien se queda con un gesto de la
+página tiene que devolver otro**.
 
 ### Lo que se decidió en la fase 11
 

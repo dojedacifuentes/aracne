@@ -68,6 +68,34 @@ hay color nuevo, hay uno estirado**, no sale de `/atlas`, y el frío de la
 máquina —retículas, escuadras, barrido, cifras vivas— es del instrumento, nunca
 del contenido.
 
+## El instrumento
+
+La lente y la leyenda viven en la columna de la derecha, que es donde la
+consola pone el instrumento de lo que hay delante. Tres cosas que se decidieron
+ahí y no son de adorno:
+
+- **La lente es una lista, no una fila de fichas.** Son treinta y cuatro
+  causas: en fila había que arrastrarlas de lado para llegar a las últimas, y
+  una lente que esconde la mitad de sus posiciones no es una lente.
+- **Va partida en dos, y la partición es el argumento del Atlas**: las que
+  reparten distinguen a unos países de otros, las uniformes le tocan igual a
+  todo el mundo. Ni el corte ni el orden se escriben a mano: salen de `uniform`.
+- **El mapa y la leyenda sacan los cortes del mismo sitio** (`readWorld` en
+  `ui/components/AtlasView.tsx`). Si cada uno calculara su escala, la leyenda
+  mentiría en cuanto difirieran.
+
+Y los gestos, que en un mapa a pantalla completa no son un detalle: **la rueda
+es de la página**. Con ctrl o ⌘ —que es lo que manda también un pellizco en el
+trackpad— amplía donde está el cursor, y para ampliar sin modificador están los
+dos botones de la barra. Se quedaba con toda la rueda, y como el mapa ocupa
+casi la pantalla el cursor estaba siempre encima: la sección no se podía bajar.
+Por lo mismo, un arrastre vertical con el mapa en reposo es de la página; en
+cuanto está ampliado, es suyo, porque entonces hay mundo fuera del cuadro.
+
+El lienzo se mide con la columna **y** con lo que queda de pantalla. Antes solo
+con la columna, así que en cualquier portátil el mapa salía más alto que la
+ventana: un mapa que no se ve de una vez no es un mapa.
+
 ## Qué lleva cada causa
 
 | campo | qué es |
