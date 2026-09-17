@@ -10,6 +10,12 @@ type Props = {
   onPress: () => void;
   /** Abre o cierra algo: se anuncia como `aria-expanded`. */
   expanded?: boolean;
+  /**
+   * Enciende o apaga algo que no se abre: se anuncia como `aria-pressed`.
+   * Un conmutador de sonido no «expande» nada, y decir que sí lo hace le
+   * miente a quien navega con lector de pantalla.
+   */
+  pressed?: boolean;
   hint?: string;
   /** Una cifra colgada a la derecha: cuántos filtros hay puestos, por ejemplo. */
   count?: number;
@@ -23,22 +29,29 @@ type Props = {
  * versales, y se invierte al pasar por encima como una terminal. Cuando lo que
  * abre está abierto, se enfría: el frío es de lo que se puede tocar.
  */
-export function ToolButton({ label, onPress, expanded, hint, count }: Props) {
+export function ToolButton({ label, onPress, expanded, pressed, hint, count }: Props) {
   const { focusVisible, onFocus, onBlur } = useFocusRing();
   const [hovered, setHovered] = useState(false);
   const alto = useTouchHeight();
-  const abierto = expanded === true;
+  const abierto = expanded === true || pressed === true;
 
   return (
     <Pressable
       accessibilityRole="button"
       accessibilityLabel={label}
       accessibilityHint={hint}
-      accessibilityState={expanded === undefined ? undefined : { expanded: abierto }}
+      accessibilityState={
+        expanded !== undefined
+          ? { expanded: expanded === true }
+          : pressed !== undefined
+            ? { selected: pressed }
+            : undefined
+      }
       // React Native Web no traduce `accessibilityState.expanded`: el atributo
       // hay que ponerlo a mano, y sin él un lector de pantalla no sabe que
       // esto abre algo. Comprobado en el DOM, no supuesto.
-      aria-expanded={expanded === undefined ? undefined : abierto}
+      aria-expanded={expanded === undefined ? undefined : expanded === true}
+      aria-pressed={pressed === undefined ? undefined : pressed}
       onPress={onPress}
       onHoverIn={() => setHovered(true)}
       onHoverOut={() => setHovered(false)}

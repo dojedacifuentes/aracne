@@ -28,6 +28,7 @@ docs/
   ESTADO.md            historia de cada fase y decisiones tomadas
   ARANA.md             la metáfora del animal. Vinculante.
   ARANA-3D.md          por qué la araña es 3D y cómo se comporta
+  SONIDO.md            qué suena, de dónde sale cada nota y por qué nace apagado
   DESIGN.md            paleta, tipografía, qué no se hace nunca
   BIOGRAFIAS.md        reglas de las biografías: temas, ideas, enlaces, emblemas
   ATLAS.md             reglas del Atlas de la extinción

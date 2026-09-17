@@ -32,6 +32,7 @@ el proyecto y qué conviene hacer. Este archivo es la historia de cada fase.
 | 16 | El panel de la derecha es el instrumento de cada sección: lente y leyenda en el Atlas, pieles y mapas en la tela, facetas en el archivo, patas donde se invoca. El mapa cabe en la pantalla y la rueda vuelve a ser de la página | `96a6a32` … `9375015` |
 | — | La cola editorial: catorce de las quince entradas `unverified` comprobadas contra fuentes pedidas, con la prosa corregida donde decía más que la fuente; queda una | `644b3c6` … `c20e297` |
 | 18 | La araña se puede coger: se posa la mano, se tira con resistencia progresiva y se suelta con retroceso. El hilo de arriba no se mueve y los de las patas están prendidos en la red | `9b9f138` |
+| 19 | El archivo suena: cinco voces sintetizadas sin un solo sample, apagadas por defecto. La nota de cada pata es su propia frecuencia de hilo y el dictamen sale de la semilla | pendiente |
 
 En curso: una revisión adversarial de las fases 0–2.
 

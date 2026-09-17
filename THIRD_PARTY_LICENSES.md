@@ -75,7 +75,10 @@ SOFTWARE.
 https://github.com/estherliu-lab/momo-soft-play
 
 Referencia de **ingeniería de interacción** para el gesto de coger, arrastrar y
-soltar la araña (`docs/ARANA-3D.md`, 9). Lo que se estudió fueron tres patrones
+soltar la araña (`docs/ARANA-3D.md`, 9) y, en la fase 19, para el sonido
+(`docs/SONIDO.md`): su `audio.js` demuestra que Web Audio basta para dar
+respuesta física sin un solo archivo de audio. Esa es la idea, y es lo único
+que se tomó: ni un nodo, ni una constante, ni un sonido. Lo que se estudió fueron tres patrones
 generales, no su implementación: separar estado, destino y velocidad dejando un
 muelle en medio; medir la velocidad del puntero acotando el intervalo entre
 muestras; y amortiguar más con `prefers-reduced-motion` en vez de apagar la

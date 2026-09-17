@@ -47,6 +47,12 @@ type Props = {
   meta: string;
   /** La barra de estado de la derecha de la cabecera: cifras de la máquina. */
   status?: string;
+  /**
+   * Lo que vive al lado del estado y no depende de la ruta: hoy, el
+   * conmutador del sonido. Va en la cabecera y no al pie porque al pie está
+   * lo que se hace con esta pantalla, y esto es de toda la consola.
+   */
+  tools?: ReactNode;
   /** Lo que ocupa el centro. */
   children: ReactNode;
   measure?: Measure;
@@ -157,6 +163,7 @@ export function Shell({
   title,
   meta,
   status,
+  tools,
   children,
   measure = 'lista',
   aside,
@@ -174,8 +181,13 @@ export function Shell({
     return (
       <View ref={raiz} style={styles.stack}>
         <View style={styles.headCompact}>
-          <Text style={styles.title}>{title}</Text>
-          <Text style={styles.meta}>{meta}</Text>
+          <View style={styles.headRow}>
+            <View style={styles.headText}>
+              <Text style={styles.title}>{title}</Text>
+              <Text style={styles.meta}>{meta}</Text>
+            </View>
+            {tools}
+          </View>
         </View>
         <ScrollView
           horizontal
@@ -233,6 +245,7 @@ export function Shell({
               {status}
             </Text>
           ) : null}
+          {tools}
         </View>
         {/* La barra se ve: es la única manera de saber que hay más abajo. */}
         <ScrollView ref={centro} style={styles.centerScroll} contentContainerStyle={styles.centerContent}>
@@ -381,6 +394,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.line,
   },
   headText: { flex: 1, minWidth: 0 },
+  headRow: { flexDirection: 'row', alignItems: 'flex-start', gap: space.sm },
   title: { fontFamily: fonts.serif, fontSize: 26, lineHeight: 34, color: colors.text },
   meta: {
     fontFamily: fonts.mono,

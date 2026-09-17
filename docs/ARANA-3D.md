@@ -326,12 +326,11 @@ CPU cada fotograma— queda fuera por decisión, no por dificultad.
   dependa solo de la posición respeta las costuras de la fotogrametría, así que
   es viable; como la prioridad era el comportamiento mecánico, no se ha escrito.
   Si se escribe: 1–3 % como mucho, y nada gelatinoso.
-- **Sonido procedural.** El `audio.js` de MOMO demuestra que se puede generar
-  sonido sin un solo sample: osciladores y ruido filtrado por Web Audio. La
-  tensión de la seda, un crujido al soltar o una resonancia por pata tienen ahí
-  un camino barato y sin dependencias. **No se implementa en esta fase**, y no
-  está decidido que se implemente: una araña que suena es otra decisión, no un
-  detalle de esta.
+- ~~**Sonido procedural.**~~ **Hecho en la fase 19.** Era otra decisión, y se
+  tomó: el roce, la seda, el chasquido, el hilo de cada pata y el dictamen
+  suenan, apagados por defecto y sin un solo sample. La nota de una pata es su
+  `threadFrequency()` subida cinco octavas, y las parciales del dictamen salen
+  de la semilla. Reglas y medidas en `docs/SONIDO.md`.
 - **Multitáctil.** Ver arriba.
 
 ### Verificación (15 de septiembre de 2026)

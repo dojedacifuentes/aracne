@@ -1,3 +1,4 @@
+import type { GrabVoice } from '../../audio/audioConfig';
 import type { SpiderGrab, SpiderHandleRef } from './spiderConfig';
 
 /**
@@ -8,6 +9,6 @@ import type { SpiderGrab, SpiderHandleRef } from './spiderConfig';
  */
 const STILL: SpiderGrab = { wasDrag: () => false };
 
-export function useSpiderGrab(_handle: SpiderHandleRef, _enabled: boolean): SpiderGrab {
+export function useSpiderGrab(_handle: SpiderHandleRef, _enabled: boolean, _voice?: GrabVoice): SpiderGrab {
   return STILL;
 }

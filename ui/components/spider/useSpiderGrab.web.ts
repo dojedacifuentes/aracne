@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef } from 'react';
 
 import type { Vec2 } from '../../../lib/aleph/tension';
+import type { GrabVoice } from '../../audio/audioConfig';
 import { GRIP, type SpiderGrab, type SpiderHandleRef } from './spiderConfig';
 import { trackMove, trackSpeed, trackStart, type PointerTrack } from './spiderMotion';
 
@@ -20,12 +21,14 @@ import { trackMove, trackSpeed, trackStart, type PointerTrack } from './spiderMo
  * uno lateral es del animal. Capturado el puntero, lo que queda del gesto es
  * suyo en cualquier dirección.
  */
-export function useSpiderGrab(handle: SpiderHandleRef, enabled: boolean): SpiderGrab {
-  const live = useRef({ handle, enabled });
+export function useSpiderGrab(handle: SpiderHandleRef, enabled: boolean, voice?: GrabVoice): SpiderGrab {
+  // La voz cambia de identidad en cada render: se lee por referencia, como el canal.
+  const live = useRef<{ handle: SpiderHandleRef; enabled: boolean; voice?: GrabVoice }>({ handle, enabled, voice });
   useEffect(() => {
     live.current.handle = handle;
     live.current.enabled = enabled;
-  }, [handle, enabled]);
+    live.current.voice = voice;
+  }, [handle, enabled, voice]);
 
   const gesture = useRef({
     node: null as HTMLElement | null,
@@ -59,7 +62,17 @@ export function useSpiderGrab(handle: SpiderHandleRef, enabled: boolean): Spider
         // Sin captura el gesto sigue funcionando mientras no salga del botón.
       }
       target.beginGrab(event.clientX, event.clientY);
+      live.current.voice?.touch();
     };
+
+    /**
+     * Cuánto se ha llevado la mano el cuerpo, de 0 a 1. Se mide en anchuras
+     * del propio objetivo, que es proporcional a la envergadura del animal:
+     * así el oído concuerda con lo que se ve sin que el gesto tenga que
+     * saber nada del mundo 3D. La curva de resistencia del rig es monótona,
+     * de modo que más gesto es siempre más tensión, aquí y allí.
+     */
+    const reach = () => Math.max(1, (gesture.current.node?.clientWidth ?? 0) * 0.8);
 
     const move = (event: PointerEvent) => {
       const state = gesture.current;
@@ -70,6 +83,8 @@ export function useSpiderGrab(handle: SpiderHandleRef, enabled: boolean): Spider
         state.moved = true;
       }
       live.current.handle.current?.dragTo(event.clientX, event.clientY);
+      const far = Math.hypot(event.clientX - state.downX, event.clientY - state.downY);
+      live.current.voice?.pull(Math.min(1, far / reach()));
     };
 
     const end = (event: PointerEvent, lifted: boolean) => {
@@ -82,10 +97,12 @@ export function useSpiderGrab(handle: SpiderHandleRef, enabled: boolean): Spider
       if (!target) return;
       if (!lifted || !state.moved) {
         target.cancel();
+        live.current.voice?.drop(0);
         return;
       }
       trackSpeed(speed.current, track.current, event.timeStamp);
       target.release(speed.current.x, speed.current.y);
+      live.current.voice?.drop(Math.min(1, Math.hypot(speed.current.x, speed.current.y) / (reach() * 5)));
     };
 
     const up = (event: PointerEvent) => end(event, true);

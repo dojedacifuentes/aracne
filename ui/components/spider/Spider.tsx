@@ -8,7 +8,9 @@ import {
   type ViewStyle,
 } from 'react-native';
 
+import type { GrabVoice } from '../../audio/audioConfig';
 import { useFocusRing } from '../../hooks/useFocusRing';
+import { useSound } from '../../hooks/useSound';
 import { colors } from '../../theme';
 import { SCENE, SPIDER_DEFAULTS, type SpiderHandle, type SpiderOptions } from './spiderConfig';
 import { SpiderBoundary } from './SpiderBoundary';
@@ -85,7 +87,26 @@ export function Spider({
   const { focusVisible, onFocus, onBlur } = useFocusRing();
   // El canal con la escena: por aquí entra la mano y no vuelve a renderizar nada.
   const handle = useRef<SpiderHandle | null>(null);
-  const { attach, wasDrag } = useSpiderGrab(handle, SPIDER_3D_AVAILABLE && !failed && visible);
+  const sound = useSound();
+
+  /**
+   * Qué suena al manipularla. El temblor de la seda es el del hilo de la
+   * última pata apoyada; sin ninguna, el de la pata 0. La nota no se elige a
+   * oído: sale de `threadFrequency()` del anillo, como todo lo demás.
+   */
+  const ultima = legs.length > 0 ? legs[legs.length - 1] : 0;
+  const voice = useMemo<GrabVoice>(
+    () => ({
+      touch: () => sound.play({ kind: 'roce' }),
+      pull: (strain) => sound.pull(strain, ultima, ringSize),
+      drop: (speed) => {
+        sound.drop();
+        if (speed > 0) sound.play({ kind: 'chasquido', speed });
+      },
+    }),
+    [sound, ultima, ringSize],
+  );
+  const { attach, wasDrag } = useSpiderGrab(handle, SPIDER_3D_AVAILABLE && !failed && visible, voice);
 
   const onLayout = useCallback((event: LayoutChangeEvent) => {
     const { width, height } = event.nativeEvent.layout;

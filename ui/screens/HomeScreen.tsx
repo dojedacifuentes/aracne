@@ -25,10 +25,12 @@ import { InvocationComposer } from '../components/InvocationComposer';
 import { InvocationView } from '../components/InvocationView';
 import { ShapeView } from '../components/ShapeView';
 import { Shell, NAV_WIDTH, type Measure, type ShellGroup } from '../components/Shell';
+import { ToolButton } from '../components/ToolButton';
 import { Spider } from '../components/spider/Spider';
 import { Tejido, TelaAside } from '../components/Tejido';
 import { TextButton } from '../components/TextButton';
 import { useRoute } from '../hooks/useRoute';
+import { useSound } from '../hooks/useSound';
 import { canvasSize, getLayoutMode } from '../lib/layout';
 import { ARCHIVE, ATLAS, HOME, LIVES, SHAPE, WEB } from '../lib/route';
 import { readHistory, rememberEntries } from '../lib/storedHistory';
@@ -72,6 +74,7 @@ export function HomeScreen({ reduceMotion }: Props) {
   const [history, setHistory] = useState<readonly string[]>(NONE);
   const presses = useRef(0);
   const [palette, setPalette] = useState(false);
+  const sound = useSound();
 
   /**
    * El ancho de la columna central. Todo lo que se dibuja va medido con esto y
@@ -148,9 +151,19 @@ export function HomeScreen({ reduceMotion }: Props) {
     [legs, active],
   );
 
-  const toggle = useCallback((id: string) => {
-    setSelected((current) => (current.includes(id) ? current.filter((x) => x !== id) : [...current, id]));
-  }, []);
+  const toggle = useCallback(
+    (id: string) => {
+      let apoyada = false;
+      setSelected((current) => {
+        apoyada = !current.includes(id);
+        return apoyada ? [...current, id] : current.filter((x) => x !== id);
+      });
+      // El hilo de esa pata suena a su propia frecuencia, la misma con la que vibra.
+      const leg = legs.find((state) => state.category.id === id)?.category.leg;
+      if (leg !== undefined) sound.play({ kind: 'hilo', leg, ringSize: legs.length, supported: apoyada });
+    },
+    [legs, sound],
+  );
 
   const pressWith = useCallback(
     (room?: string) => {
@@ -161,13 +174,15 @@ export function HomeScreen({ reduceMotion }: Props) {
       const { seed, invocation: next } = pressSeed(from, patas, Date.now(), presses.current, history);
       setSelected(patas);
       setCajon(null);
+      // Las parciales salen de la semilla: la misma URL suena igual en cualquier parte.
+      sound.play({ kind: 'dictamen', seed, legs: patas.length });
       navigate(state ? { name: 'invocation', seed, legs: patas, room } : { name: 'invocation', seed, legs: patas });
       if (!next) return;
       const ids = next.entries.map((item) => item.id);
       setHistory((current) => pushHistory(current, ids));
       void rememberEntries(ids);
     },
-    [active, legs, themes, corpus.entries, history, navigate],
+    [active, legs, themes, corpus.entries, history, navigate, sound],
   );
 
   const press = useCallback(() => pressWith(), [pressWith]);
@@ -585,6 +600,16 @@ export function HomeScreen({ reduceMotion }: Props) {
         title={titulo}
         meta={metaLinea}
         status={estado}
+        tools={
+          sound.available ? (
+            <ToolButton
+              label="sonido"
+              pressed={sound.on}
+              onPress={sound.toggle}
+              hint="la araña y sus hilos suenan al tocarlos"
+            />
+          ) : undefined
+        }
         measure={measure}
         footer={buttons}
         compact={portrait}
