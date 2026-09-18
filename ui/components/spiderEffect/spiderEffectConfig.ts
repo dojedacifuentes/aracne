@@ -217,4 +217,11 @@ export interface AracneSpiderEffectProps {
   onZoneEnter?: (event: ZoneEvent) => void;
   /** Se aleja. */
   onZoneLeave?: (event: ZoneEvent) => void;
+  /**
+   * Si el archivo declara un vínculo entre dos nodos, por sus ids. Sin esto,
+   * todos los hilos salen de la entidad; con esto, el que va al segundo nodo
+   * sale del primero y lo que se dibuja es el vínculo, no el alcance. La
+   * entidad no sabe qué es una entrada: pregunta. Ver `docs/ENTIDAD.md`.
+   */
+  linked?: (a: string, b: string) => boolean;
 }

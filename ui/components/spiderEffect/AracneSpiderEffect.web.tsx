@@ -15,6 +15,7 @@ import {
 } from './spiderEffectConfig';
 import {
   bendOf,
+  bridgeIndex,
   clamp,
   closestOnRect,
   createEntity,
@@ -37,7 +38,7 @@ import {
   type Vec,
 } from './spiderEffectMotion';
 
-type Handlers = Pick<AracneSpiderEffectProps, 'onZoneEnter' | 'onZoneLeave'>;
+type Handlers = Pick<AracneSpiderEffectProps, 'onZoneEnter' | 'onZoneLeave' | 'linked'>;
 
 /**
  * Una sola entidad por documento. Un segundo montaje —otra pantalla que la
@@ -61,6 +62,7 @@ export function AracneSpiderEffect({
   reduceMotion = false,
   onZoneEnter,
   onZoneLeave,
+  linked,
 }: AracneSpiderEffectProps) {
   // Una configuración escrita en línea cambia de identidad en cada render; su texto, no.
   const key = JSON.stringify(overrides ?? {});
@@ -68,11 +70,11 @@ export function AracneSpiderEffect({
   const env = useEnvironment();
   const run = shouldRun(config, { ...env, reduceMotion: reduceMotion || env.reduceMotion });
   const hostRef = useRef<View | null>(null);
-  const handlers = useRef<Handlers>({ onZoneEnter, onZoneLeave });
+  const handlers = useRef<Handlers>({ onZoneEnter, onZoneLeave, linked });
 
   useEffect(() => {
-    handlers.current = { onZoneEnter, onZoneLeave };
-  }, [onZoneEnter, onZoneLeave]);
+    handlers.current = { onZoneEnter, onZoneLeave, linked };
+  }, [onZoneEnter, onZoneLeave, linked]);
 
   useEffect(() => {
     if (!run) return;
@@ -140,6 +142,12 @@ interface Zone extends Rect {
 
 interface Thread {
   zone: Zone | null;
+  /**
+   * De dónde nace. `null`: de la hilera de la entidad. Un nodo: de él, porque
+   * el archivo declara el vínculo entre los dos y lo que se dibuja entonces no
+   * es el alcance de la entidad, sino la red.
+   */
+  from: Zone | null;
   /** 0: recogido. 1: tendido del todo. */
   progress: number;
   attached: boolean;
@@ -202,11 +210,14 @@ function startEntity(host: HTMLElement, cfg: EntityConfig, handlers: { current: 
   const scannedFrom = { x: 0, y: 0 };
   const threads: Thread[] = Array.from({ length: Math.max(0, cfg.threads.max) }, (_, i) => ({
     zone: null,
+    from: null,
     progress: 0,
     attached: false,
     phase: i * 1.7,
   }));
   const candidates: Zone[] = [];
+  // Los ids de los candidatos, en el mismo orden: se rellena cada fotograma y no se reserva otro.
+  const candidateIds: string[] = [];
   // La caja de lo pintado: al fotograma siguiente solo se borra eso, no la ventana entera.
   const box = { x0: 0, y0: 0, x1: 0, y1: 0, used: false };
   const painted = { x0: 0, y0: 0, x1: 0, y1: 0, used: false };
@@ -215,6 +226,7 @@ function startEntity(host: HTMLElement, cfg: EntityConfig, handlers: { current: 
   const p3: Vec = { x: 0, y: 0 };
   const p4: Vec = { x: 0, y: 0 };
   const p5: Vec = { x: 0, y: 0 };
+  const p6: Vec = { x: 0, y: 0 };
 
   const selector = [
     cfg.zones.avoid,
@@ -338,8 +350,11 @@ function startEntity(host: HTMLElement, cfg: EntityConfig, handlers: { current: 
     for (const gone of previous.values()) {
       if (gone.near) emit('leave', gone);
       for (const thread of threads) {
+        // Si se fue aquello de lo que nacía, el hilo vuelve a nacer de la entidad.
+        if (thread.from === gone) thread.from = null;
         if (thread.zone === gone) {
           thread.zone = null;
+          thread.from = null;
           thread.progress = 0;
           thread.attached = false;
         }
@@ -418,11 +433,22 @@ function startEntity(host: HTMLElement, cfg: EntityConfig, handlers: { current: 
     weave();
   }
 
-  /** Los hilos van a los nodos más cercanos. Un hilo no salta de un nodo a otro: se recoge y otro se tiende. */
+  /**
+   * Los hilos van a los nodos más cercanos. Un hilo no salta de un nodo a
+   * otro: se recoge y otro se tiende.
+   *
+   * Y si el archivo declara el vínculo entre dos de los nodos que tiene
+   * cogidos, el segundo hilo no sale de la entidad: sale del primero. Lo que
+   * se dibuja entonces no es hasta dónde llega ella, sino lo que une a esas
+   * dos entradas, que ya estaba ahí.
+   */
   function weave() {
     candidates.sort((a, b) => a.dist - b.dist);
     for (const thread of threads) thread.attached = false;
     const wanted = Math.min(candidates.length, threads.length);
+    const linked = handlers.current.linked;
+    candidateIds.length = 0;
+    for (let i = 0; i < wanted; i += 1) candidateIds.push(candidates[i].id);
     for (let i = 0; i < wanted; i += 1) {
       const zone = candidates[i];
       let slot: Thread | null = null;
@@ -438,8 +464,24 @@ function startEntity(host: HTMLElement, cfg: EntityConfig, handlers: { current: 
           slot.progress = 0;
         }
       }
-      if (slot) slot.attached = true;
+      if (!slot) continue;
+      slot.attached = true;
+      slot.from = linked ? hangFrom(i, linked) : null;
     }
+  }
+
+  /**
+   * De qué nodo cuelga el hilo del candidato `i`, o `null` si de la entidad.
+   * Solo cuelga de uno que a su vez tenga hilo: si no, nacería suelto en medio
+   * de la página. Como se mira hacia atrás en el orden de distancia, el más
+   * cercano siempre queda cogido a la entidad y no hay manera de hacer un ciclo.
+   */
+  function hangFrom(index: number, linked: (a: string, b: string) => boolean): Zone | null {
+    const bridge = bridgeIndex(candidateIds, index, linked);
+    if (bridge < 0) return null;
+    const anchor = candidates[bridge];
+    for (const thread of threads) if (thread.zone === anchor && thread.attached) return anchor;
+    return null;
   }
 
   function stepThreads(dt: number): boolean {
@@ -452,6 +494,7 @@ function startEntity(host: HTMLElement, cfg: EntityConfig, handlers: { current: 
         : Math.max(0, thread.progress - rate * 1.6);
       if (!thread.attached && thread.progress === 0) {
         thread.zone = null;
+        thread.from = null;
         continue;
       }
       if (thread.progress > 0 && thread.progress < 1) busy = true;
@@ -536,11 +579,15 @@ function startEntity(host: HTMLElement, cfg: EntityConfig, handlers: { current: 
 
   function drawThreads(e: Entity, alpha: number, now: number) {
     const c = ctx;
-    const from = spinneretOf(e, cfg, p1);
+    const spinneret = spinneretOf(e, cfg, p1);
     const speed = Math.hypot(e.vel.x, e.vel.y);
     c.lineWidth = cfg.look.threadWidth;
     for (const thread of threads) {
       if (!thread.zone || thread.progress <= 0) continue;
+      // Un hilo nace en la hilera de la entidad, o en el nodo con el que el archivo declara el vínculo.
+      const from = thread.from
+        ? closestOnRect(thread.zone.x + thread.zone.w / 2, thread.zone.y + thread.zone.h / 2, thread.from, p6)
+        : spinneret;
       const to = closestOnRect(from.x, from.y, thread.zone, p2);
       // Solo se mece mientras ella se mueve: quieta, el hilo está quieto.
       const sway = Math.sin((now / 1000) * 1.3 + thread.phase) * Math.min(3, speed / 300);
@@ -555,9 +602,10 @@ function startEntity(host: HTMLElement, cfg: EntityConfig, handlers: { current: 
       include(p4.x, p4.y, 2);
       include(p5.x, p5.y, 2);
       if (thread.progress >= 1) {
-        // Donde se prende: un punto, nada más.
+        // Donde se prende: un punto, nada más. Si nace en un nodo, está prendido de los dos lados.
         c.globalAlpha = alpha * LOOK.anchor;
         c.fillRect(to.x - 1, to.y - 1, 2, 2);
+        if (thread.from) c.fillRect(from.x - 1, from.y - 1, 2, 2);
       }
     }
   }
@@ -745,7 +793,11 @@ function startEntity(host: HTMLElement, cfg: EntityConfig, handlers: { current: 
           cerca: zones.filter((zone) => zone.near).map((zone) => zone.id),
           hilos: threads
             .filter((thread) => thread.zone)
-            .map((thread) => ({ id: thread.zone?.id, progreso: Number(thread.progress.toFixed(2)) })),
+            .map((thread) => ({
+              id: thread.zone?.id,
+              de: thread.from?.id ?? 'entidad',
+              progreso: Number(thread.progress.toFixed(2)),
+            })),
           bucle: frame !== 0 ? 'fotograma' : timer !== 0 ? 'temporizador' : 'parado',
           rumbo: Number(entity.heading.toFixed(3)),
           patas: entity.legs.map((leg) => {

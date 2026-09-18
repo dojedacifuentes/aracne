@@ -8,7 +8,11 @@ import {
   shouldRun,
   type EntityConfig,
 } from '../ui/components/spiderEffect/spiderEffectConfig';
+import { loadArchive } from '../lib/content/loader';
+import { DECLARED_REASONS, declaredPairs, pairKey, scoreLink, type LinkReason } from '../lib/drift/graph';
+import { THREAD_STYLE } from '../ui/lib/epistemic';
 import {
+  bridgeIndex,
   closestOnRect,
   createEntity,
   entrancePoint,
@@ -276,6 +280,86 @@ describe('las zonas y los hilos', () => {
     expect(end).toEqual(a);
     splitQuad(a, control, b, 1, c, end);
     expect(end).toEqual(b);
+  });
+});
+
+/**
+ * El hilo que no sale de la entidad sino de una entrada, cuando el archivo
+ * declara el vínculo con la otra. Razones en `docs/ENTIDAD.md`.
+ */
+describe('el hilo que va de una entrada a otra', () => {
+  /** Un par declarado de mentira, para probar la aritmética sin el corpus. */
+  const linked = (a: string, b: string) => (a === 'a' && b === 'c') || (a === 'c' && b === 'a');
+
+  it('el nodo más cercano siempre cuelga de la entidad', () => {
+    expect(bridgeIndex(['a', 'c'], 0, linked)).toBe(-1);
+    expect(bridgeIndex([], 0, linked)).toBe(-1);
+  });
+
+  it('cuelga del último tendido con el que haya vínculo declarado', () => {
+    expect(bridgeIndex(['a', 'c'], 1, linked)).toBe(0);
+    // Sin vínculo con ninguno de los de delante, sale de la entidad.
+    expect(bridgeIndex(['a', 'b'], 1, linked)).toBe(-1);
+    // Se salta al de en medio, que no vale, y encuentra el que sí.
+    expect(bridgeIndex(['a', 'b', 'c'], 2, linked)).toBe(0);
+  });
+
+  it('con varios enlazados sale un camino, no un abanico: el hilo queda corto', () => {
+    const todos = () => true;
+    const ids = ['a', 'b', 'c'];
+    const puentes = ids.map((_, i) => bridgeIndex(ids, i, todos));
+    expect(puentes).toEqual([-1, 0, 1]);
+    // Y como solo mira hacia atrás, no puede cerrar un ciclo.
+    for (const [i, from] of puentes.entries()) expect(from).toBeLessThan(i);
+  });
+
+  it('un nodo no cuelga de sí mismo aunque el id se repita', () => {
+    expect(bridgeIndex(['a', 'a'], 1, () => true)).toBe(-1);
+  });
+
+  it('sin quien conteste, todos los hilos salen de la entidad', () => {
+    // Es lo que pasa en nativo y en cualquier pantalla que no pase `linked`.
+    expect(bridgeIndex(['a', 'c'], 1, () => false)).toBe(-1);
+  });
+});
+
+/**
+ * Qué cuenta como vínculo declarado. La entidad no lo decide: lo pregunta al
+ * grafo, y el grafo usa la misma línea que el dibujo de la tela.
+ */
+describe('los pares que el archivo declara', () => {
+  const { corpus } = loadArchive();
+  const pares = declaredPairs(corpus.entries);
+
+  it('son los que la tela dibuja continuos, ni uno más', () => {
+    // `THREAD_STYLE` ya decidió que lo declarado va continuo y lo que solo se
+    // comparte, discontinuo. Si alguien mueve una de las dos listas, esto cae.
+    const continuos = (Object.keys(THREAD_STYLE) as LinkReason[]).filter(
+      (reason) => THREAD_STYLE[reason].dash === null,
+    );
+    expect([...DECLARED_REASONS].sort()).toEqual(continuos.sort());
+  });
+
+  it('deja fuera lo que solo comparte pata o tipo', () => {
+    for (let i = 0; i < corpus.entries.length; i += 1) {
+      for (let j = i + 1; j < corpus.entries.length; j += 1) {
+        const link = scoreLink(corpus.entries[i], corpus.entries[j]);
+        const dentro = pares.has(pairKey(corpus.entries[i].id, corpus.entries[j].id));
+        expect(dentro).toBe(link !== null && (DECLARED_REASONS as string[]).includes(link.reason));
+      }
+    }
+  });
+
+  it('la clave no depende del orden', () => {
+    expect(pairKey('delyra-0002', 'delyra-0001')).toBe(pairKey('delyra-0001', 'delyra-0002'));
+  });
+
+  it('reparte poco: un hilo entre entradas tiene que ser raro', () => {
+    // Con cualquier vínculo serían el 42 % de los pares y el dibujo no diría
+    // nada. Declarados son menos de uno de cada seis.
+    const posibles = (corpus.entries.length * (corpus.entries.length - 1)) / 2;
+    expect(pares.size).toBeGreaterThan(0);
+    expect(pares.size / posibles).toBeLessThan(0.17);
   });
 });
 

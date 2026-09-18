@@ -486,6 +486,33 @@ export function leanToward(from: Vec, point: Vec, fraction: number, max: number,
 }
 
 /**
+ * De dónde cuelga el hilo que va al nodo `index`: del último nodo tendido
+ * antes que él con el que el archivo declare un vínculo, o −1 si de la entidad.
+ *
+ * Los ids llegan ordenados por distancia y solo se mira hacia atrás. De ahí
+ * salen tres cosas a la vez: el más cercano siempre cuelga de la entidad
+ * —ella no se suelta de la red—, no puede haber ciclos, y con la misma lista
+ * sale siempre el mismo dibujo.
+ *
+ * Se busca desde el final porque así el hilo queda corto: con tres enlazados
+ * sale un camino que baja por la lista, no un abanico desde el primero que
+ * cruzaría por encima de la entidad.
+ */
+export function bridgeIndex(
+  ids: readonly string[],
+  index: number,
+  linked: (a: string, b: string) => boolean,
+): number {
+  const id = ids[index];
+  if (!id) return -1;
+  for (let i = index - 1; i >= 0; i -= 1) {
+    const other = ids[i];
+    if (other && other !== id && linked(other, id)) return i;
+  }
+  return -1;
+}
+
+/**
  * El punto de control de un hilo entre `a` y `b`: cuelga hacia abajo una
  * fracción `sag` de su largo, y se mece de lado `sway` píxeles.
  */
