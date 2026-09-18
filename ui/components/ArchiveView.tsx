@@ -9,6 +9,7 @@ import { useFocusRing } from '../hooks/useFocusRing';
 import { useTouchHeight } from '../hooks/useTouch';
 import { colors, fonts, HIT_SIZE, machine, space } from '../theme';
 import { Chip } from './Chip';
+import { aracneNode } from './spiderEffect/marks';
 import { ToolButton } from './ToolButton';
 
 type Props = {
@@ -299,6 +300,7 @@ function Row({
 
   return (
     <Pressable
+      {...aracneNode(entry.id)}
       accessibilityRole="link"
       accessibilityLabel={entry.title}
       accessibilityHint={`${catalogId(entry.id)}. ${datos}. abre la entrada.`}

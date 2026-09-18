@@ -27,6 +27,7 @@ import { ShapeView } from '../components/ShapeView';
 import { Shell, NAV_WIDTH, type Measure, type ShellGroup } from '../components/Shell';
 import { ToolButton } from '../components/ToolButton';
 import { Spider } from '../components/spider/Spider';
+import { AracneSpiderEffect } from '../components/spiderEffect/AracneSpiderEffect';
 import { Tejido, TelaAside } from '../components/Tejido';
 import { TextButton } from '../components/TextButton';
 import { useRoute } from '../hooks/useRoute';
@@ -616,6 +617,9 @@ export function HomeScreen({ reduceMotion }: Props) {
       >
         {contenido}
       </Shell>
+
+      {/* La entidad: por encima del contenido y por debajo de cajones y paleta. docs/ENTIDAD.md */}
+      <AracneSpiderEffect reduceMotion={reduceMotion} />
 
       <Drawer
         title="invocar"
