@@ -1,6 +1,6 @@
 # Estado
 
-Última actualización: 15 de septiembre de 2026.
+Última actualización: 18 de septiembre de 2026.
 
 Para retomar en otra sesión, lee antes **`docs/HANDOFF.md`**: dice dónde está
 el proyecto y qué conviene hacer. Este archivo es la historia de cada fase.
@@ -30,7 +30,8 @@ el proyecto y qué conviene hacer. Este archivo es la historia de cada fase.
 | 14 | El Atlas de la extinción: 177 territorios de Natural Earth en proyección Robinson, 34 causas con regla declarada, ficha por país y cruce con el archivo | `f908546` |
 | 15 | La consola: tres columnas, las once patas como conmutadores al lado, sellos poligonales, y todo texto exportable a .txt y a .pdf sin dependencias | `78b7b59` |
 | 16 | El panel de la derecha es el instrumento de cada sección: lente y leyenda en el Atlas, pieles y mapas en la tela, facetas en el archivo, patas donde se invoca. El mapa cabe en la pantalla y la rueda vuelve a ser de la página | `96a6a32` … `9375015` |
-| — | La cola editorial: catorce de las quince entradas `unverified` comprobadas contra fuentes pedidas, con la prosa corregida donde decía más que la fuente; queda una | `644b3c6` … `c20e297` |
+| — | La cola editorial: las quince entradas `unverified` comprobadas contra fuentes pedidas, con la prosa corregida donde decía más que la fuente | `644b3c6` … `c20e297`, `374a5ec` |
+| 17 | El instrumento deja de cobrar ancho: sin columna derecha fija, el instrumento se abre en cajones; navegación en tres grupos, `/invocaciones` y `/autores`, la ficha con su expediente aparte, y el Atlas a todo lo ancho con Natural Earth 1:50m, 242 territorios | `3f82c0f` |
 | 18 | La araña se puede coger: se posa la mano, se tira con resistencia progresiva y se suelta con retroceso. El hilo de arriba no se mueve y los de las patas están prendidos en la red | `9b9f138` |
 | 19 | El archivo suena: cinco voces sintetizadas sin un solo sample, apagadas por defecto. La nota de cada pata es su propia frecuencia de hilo y el dictamen sale de la semilla | `7930373` |
 
@@ -46,10 +47,10 @@ patas son once conmutadores.
 
 Con ella entraron tres excepciones a `docs/DESIGN.md`, todas pedidas
 expresamente: el movimiento de la piel `flujo`, la rampa de calor del Atlas y
-las superficies y el frío de máquina de la consola. Las dos primeras están
-escritas en `CLAUDE.md`; la tercera no —la fase 15 no tocó `CLAUDE.md`—, y
-así se comprobó en el historial el 15 de septiembre. La regla que queda en pie: **el frío es de lo que se puede tocar y
-el cálido es del contenido**.
+las superficies y el frío de máquina de la consola. Las dos primeras quedaron
+escritas en `CLAUDE.md`; la tercera no —la fase 15 no tocó `CLAUDE.md`— hasta
+el 18 de septiembre. La regla que queda en pie: **el frío es de lo que se puede
+tocar y el cálido es del contenido**.
 
 El Atlas trajo tres decisiones que la investigación aportada no había visto: el
 score general es el máximo y nunca la suma, las causas uniformes quedan fuera
@@ -105,8 +106,12 @@ página tiene que devolver otro**.
 Las quince entradas `unverified` del segundo lote se comprobaron una a una el
 15 de septiembre de 2026, pidiendo cada fuente y buscando en la respuesta la
 frase literal, no un resumen. Catorce pasaron: nueve a `interpretation`, tres a
-`fact` —los portales— y dos a `fiction`. Queda *Ocho cosas que puede decir una
-línea*, cuya taxonomía no aparece en ninguna fuente que se haya podido pedir.
+`fact` —los portales— y dos a `fiction`. Quedó *Ocho cosas que puede decir una
+línea*, cuya taxonomía no aparece en ninguna fuente que se haya podido pedir; se
+resolvió el 18 por otro camino: su tesis sí tiene fuente —Borgatti, Mehra, Brass
+y Labianca distinguen en *Science* (2009) tipos de vínculo donde las ciencias
+físicas ven solo una red— y la lista de ocho queda como del archivo, en
+`interpretation`. La cola está vacía.
 
 Las referencias del material eran casi todas buenas. **Los errores estaban en
 la prosa**, y todos iban en la misma dirección: la entrada decía un poco más de
@@ -126,7 +131,7 @@ JODI han contado que el desorden de su primera página fue un error real que
 decidieron publicar.
 
 Una consecuencia en el motor: el modo `material` da peso 0 a las `unverified`,
-así que esas catorce entradas pueden salir ahora donde antes no salían.
+así que esas quince entradas pueden salir ahora donde antes no salían.
 
 ### Lo que se decidió en la fase 11
 
@@ -172,7 +177,7 @@ va sin fuentes y marcado como pendiente. Por eso las veinte entradas del segundo
 lote entran como `unverified` con `sources: []` y con la referencia concreta
 anotada en `captureNote`. Son quince entradas a la espera de comprobación: esa
 es la cola editorial que la fase 4 quería en `/pendientes`. Catorce se
-comprobaron el 15 de septiembre de 2026; queda una.
+comprobaron el 15 de septiembre de 2026 y la última el 18: la cola está vacía.
 
 `ARAÑA.FUENTE1.md` es la excepción y conviene tratarlo aparte: avisa por su
 cuenta de que el fragmento de la araña atribuido a Heráclito (DK 22 B67a) solo
@@ -279,8 +284,8 @@ diagramas de Wigmore— y también en el `.docx` de paneles de datos.
   huérfana, la más repetida sale **7 veces de 60**, y el tag más concentrado es
   `tiempo-real` con un **14 %**. Reparto epistémico: 17 `fact`, 15 `unverified`,
   6 `interpretation`, 5 `fiction`, 1 `controversial`; tras comprobar la cola
-  editorial, 20 `fact`, 15 `interpretation`, 7 `fiction`, 1 `controversial` y
-  1 `unverified`.
+  editorial, 20 `fact`, 16 `interpretation`, 7 `fiction`, 1 `controversial` y
+  ninguna `unverified`.
 
   Con 24 el archivo entero se sigue viendo en pocas decenas de pulsaciones. El
   objetivo razonable sigue siendo ~70.

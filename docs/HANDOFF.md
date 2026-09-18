@@ -40,7 +40,7 @@ content/               EL ARCHIVO. Sin base de datos: JSON versionado.
   categories.json      las once patas, con su posición en el anillo y glifo
   figures.json         44 biografías: tema, idea, hecho, obras, emblema
   themes.json          los nueve temas y su criterio
-  atlas/world.json     177 territorios de Natural Earth, simplificados
+  atlas/world.json     242 territorios de Natural Earth 1:50m, simplificados
   atlas/causes.json    34 causas de extinción, con su regla y sus tags
   index.generated.ts   lo escribe `npm run validate`. No editar.
 
@@ -76,12 +76,15 @@ ui/
   lib/epistemic.ts     STATUS_BORDER y THREAD_STYLE: el trazo codifica certeza
   lib/sigil.ts         los sellos: marco poligonal, estrella y remates
   lib/download.ts      portapapeles, .txt y .pdf. Solo web.
-  components/Shell.tsx     el armazón de tres columnas
-  components/LegPanel.tsx  las once patas, como conmutadores
-  components/          Tela, Tejido, AtlasView, LivesView, FigureView,
-                       EntryView, InvocationView, ArchiveView, ShapeView,
-                       CommandPalette, ExportRow, Sigil, Emblem, Reveal…
-  components/spider/   la araña 3D: rig, escena, seda, config, fallback SVG
+  components/Shell.tsx     el armazón: secciones a la izquierda, lectura al centro
+  components/Drawer.tsx    el cajón donde vive el instrumento cuando se pide
+  components/InvocationComposer.tsx  las once patas, en el cajón de invocar
+  components/EntryDossier.tsx        el expediente de una entrada: fuentes, atlas…
+  components/          Tela, Tejido, AtlasView, AuthorsView, LivesView,
+                       FigureView, EntryView, InvocationView, ArchiveView,
+                       ShapeView, CommandPalette, ExportRow, Sigil, Emblem…
+  components/spider/   la araña 3D: rig, escena, seda, config, gesto, fallback SVG
+  audio/               el sonido: cifras, partitura pura y motor Web Audio
 
 scripts/
   validate.ts          valida TODO el contenido y genera el índice
@@ -90,7 +93,7 @@ scripts/
   sprites.mjs          dibuja los 44 emblemas
   capture.mjs          alta de entrada por consola
 
-tests/                 14 archivos, 160 pruebas
+tests/                 16 archivos, 197 pruebas
 public/figures/        44 emblemas SVG de 44
 public/models/spider/  el GLB de la araña (87 000 triángulos)
 ```
@@ -105,8 +108,8 @@ public/models/spider/  el GLB de la araña (87 000 triángulos)
 | `/tela` · `/tela/<id>?vista=flujo` | la red, entera o tejida en torno a una entrada |
 | `/atlas` · `/atlas/<ISO>?causa=…` | el mapa del mundo y sus finales |
 | `/deriva/<semilla>?modo=…` | los tres mapas de la red |
-| `/biografias` · `/biografias/<tema>` · `/figura/<id>` | las vidas (antes `/gabinete`, que sigue valiendo) |
-| `/archivo?categorias=…&tipos=…&q=…` | filtros y búsqueda, todo en la URL |
+| `/autores` · `/autores/<tema>` · `/autor/<id>` | las vidas; `/biografias`, `/gabinete` y `/figura/<id>` siguen abriendo |
+| `/invocaciones?categorias=…&tipos=…&q=…` | el archivo, con filtros y búsqueda en la URL; `/archivo` sigue abriendo |
 | `/adn` | la forma del archivo |
 
 Todo se enruta en cliente sobre **una sola escena**. `vercel.json` reescribe
@@ -139,15 +142,15 @@ Cifras reales, no estimaciones. Salen de `npm run validate` y `npm test`.
 | diámetro de la red | 3 pasos |
 | biografías | 44, en 9 temas · 31 con obra enlazada |
 | emblemas dibujados | 44 de 44 |
-| Atlas | 177 territorios · 34 causas (10 uniformes) · 11 dominantes |
-| scores del Atlas | de 45 a 98 |
-| estados epistémicos | 20 `fact` · 15 `interpretation` · 7 `fiction` · 1 `controversial` · 1 `unverified` |
-| pruebas | 160, en 14 archivos |
-| bundle web | ~2,0 MB |
+| Atlas | 242 territorios · 34 causas (10 uniformes) · 13 dominantes |
+| scores del Atlas | de 25 a 98 |
+| estados epistémicos | 20 `fact` · 16 `interpretation` · 7 `fiction` · 1 `controversial` · 0 `unverified` |
+| pruebas | 197, en 16 archivos |
+| bundle web | ~2,2 MB |
 
-**La cola editorial está casi vacía.** De las quince `unverified`, catorce se
-comprobaron el 15 de septiembre de 2026 contra fuentes pedidas, y cada una dice
-en `captureNote` qué se comprobó y qué se corrigió. Queda una. Ver §6.3.
+**La cola editorial está vacía.** Las quince `unverified` se comprobaron contra
+fuentes pedidas —catorce el 15 de septiembre de 2026 y la última el 18— y cada
+una dice en `captureNote` qué se comprobó y qué se corrigió. Ver §6.3.
 
 ---
 
@@ -163,7 +166,10 @@ en `captureNote` qué se comprobó y qué se corrigió. Queda una. Ver §6.3.
 | 14 | El Atlas de la extinción: mapa Robinson, 177 territorios, 34 causas con regla, ficha por país. |
 | 15 | La consola: tres columnas, las patas como conmutadores, sellos poligonales, y exportación a texto y PDF. |
 | 16 | El panel de la derecha es el instrumento de cada sección; el mapa del Atlas cabe en la pantalla y devuelve la rueda a la página. |
-| — | La cola editorial: 14 de las 15 entradas `unverified` comprobadas, con la prosa corregida allí donde decía más que la fuente. Un commit por entrada. |
+| — | La cola editorial: las 15 entradas `unverified` comprobadas, con la prosa corregida allí donde decía más que la fuente. Un commit por entrada. |
+| 17 | El instrumento deja de cobrar ancho: sin columna derecha fija, el instrumento se abre en cajones; navegación en tres grupos, `/invocaciones` y `/autores`, la ficha a unos setenta caracteres con su expediente aparte, y el Atlas a todo lo ancho con Natural Earth 1:50m. |
+| 18 | La araña se puede coger: se posa la mano, se tira con resistencia progresiva y se suelta con retroceso. |
+| 19 | El archivo suena: cinco voces sintetizadas, apagadas por defecto. La nota de cada pata es su frecuencia de hilo y el dictamen sale de la semilla (`docs/SONIDO.md`). |
 
 ---
 
@@ -184,25 +190,35 @@ en `captureNote` qué se comprobó y qué se corrigió. Queda una. Ver §6.3.
 ### Las tres excepciones a la doctrina visual
 
 `docs/DESIGN.md` prohíbe movimiento, degradados y segundos colores. Hay tres
-excepciones, **todas pedidas expresamente**. Las dos primeras están escritas en
-`CLAUDE.md`. **La tercera no está escrita ni en `CLAUDE.md` ni en
-`docs/DESIGN.md`**: la fase 15 no tocó ninguno de los dos (comprobado en el
-historial), así que hoy solo la protege este archivo.
+excepciones, **todas pedidas expresamente y todas escritas en `CLAUDE.md`**. La
+tercera entró allí el 18 de septiembre: la fase 15 no la había escrito, y
+durante tres días `CLAUDE.md` dijo «dos excepciones, y solo dos» mientras
+`docs/DESIGN.md` razonaba la tercera.
 
 1. **La piel `flujo` de `/tela` está viva.** Pulsos con estela por las trazas y
    el nodo del centro respirando. No sale de esa piel; la de seda está quieta y
    hay una comprobación de que lo está.
 2. **El Atlas tiene rampa de calor.** De la ceniza a la llama pasando por el
    acento de siempre: no hay color nuevo, hay uno estirado.
-3. **La consola de la fase 15**: superficies, retículas y un frío de máquina
-   (`machine`) para lo interactivo. La regla que queda en pie: **el frío es de
-   lo que se puede tocar y el cálido es del contenido**.
+3. **El instrumento es frío.** Desde la consola de la fase 15, `machine` —el
+   frío que el Atlas usaba para sus retículas— marca todo lo que se puede
+   tocar. La regla que queda en pie: **el frío es de lo que se puede tocar y el
+   cálido es del contenido**.
 
 No las borres por doctrina: la doctrina ya las contempla.
 
 ---
 
 ## 5. Cómo está montada la pantalla
+
+> **Desde la fase 17 ya no hay columna derecha por defecto.** El instrumento
+> —las patas para invocar, los filtros, la lente del Atlas, el expediente de
+> una entrada— se abre en un cajón (`Drawer`) que se superpone sin cambiar la
+> medida del texto; la columna solo aparece donde sobra ancho. Las razones
+> están en el mensaje de `3f82c0f` y en `docs/DESIGN.md`. Lo que sigue describe
+> la consola de las fases 15 y 16. Sigue valiendo lo de medir un lienzo con la
+> columna y con la pantalla, y todo el apartado «Bajar»: el recorrido central,
+> las teclas de página y la barra visible están en `Shell.tsx`.
 
 Tres columnas (`ui/components/Shell.tsx`):
 
@@ -307,6 +323,10 @@ diff local.txt prod.txt | grep -v '^[<>-]'   # un solo tramo: el polyfill
 
 ### 6.2 El panel de la derecha ya cambia de sección
 
+Superado por la fase 17, que quitó la columna fija y pasó el instrumento a
+cajones (ver §5); en `/autores` los nueve temas son ahora un filtro sobre una
+cronología. Lo que sigue es la historia de la fase 16.
+
 Hecho en la fase 16. En el Atlas, la lente y la leyenda; en la tela, las pieles,
 los mapas y la clave del trazo; en el archivo, la búsqueda y las facetas; donde
 se invoca —portada, invocación, ficha—, las once patas, que es lo que decide
@@ -319,17 +339,16 @@ las tres que se hicieron.
 
 ### 6.3 Contenido, que es lo que más falta
 
-- **La cola editorial, hecha salvo una.** Catorce de las quince `unverified` se
-  comprobaron (los commits `entrada: …` del 15 de septiembre). Queda
-  `delyra-0034`, *Ocho cosas que puede decir una línea*: su taxonomía viene del
-  material y no aparece en *Analysis of Evidence* ni en ninguna fuente que se
-  haya podido pedir. La entrada no atribuye la lista a nadie ni afirma nada
-  sobre el mundo, así que podría pasar a `interpretation` sin fuentes. **Es una
-  decisión editorial, no técnica, y no se ha tomado.** Si se toma, ojo:
-  `tests/export.test.ts` busca una `unverified` en el corpus y fallaría; la
-  prueba tendría que construir su propia entrada.
+- **La cola editorial está vacía.** Las quince `unverified` se comprobaron (los
+  commits `entrada: …` del 15 y el 18 de septiembre). La última, `delyra-0034`,
+  *Ocho cosas que puede decir una línea*, no tenía fuente para su lista de ocho,
+  pero sí para su tesis: Borgatti, Mehra, Brass y Labianca (*Science*, 2009)
+  distinguen tipos de vínculo donde las ciencias físicas ven solo una red. La
+  lista queda como del archivo, en `interpretation`. Las entradas nuevas que
+  entren sin fuente volverán a la cola: `tests/export.test.ts` ya no depende de
+  que haya alguna.
 - **Lo que eso cambió en el motor.** El modo `material` de
-  `lib/oracle/weighted.ts` da peso 0 a las `unverified`: catorce entradas que en
+  `lib/oracle/weighted.ts` da peso 0 a las `unverified`: quince entradas que en
   ese modo no salían ahora pueden salir, y una semilla compartida en modo
   `material` puede devolver otra cosa. Es lo mismo que pasa al añadir entradas.
 - **Trece biografías sin obra enlazada**, todas de autores vivos o recientes.
@@ -384,7 +403,7 @@ npm run web        # servidor de desarrollo en :8081
 ```
 
 ```bash
-npm test           # 160 pruebas
+npm test           # 197 pruebas
 npm run typecheck
 npm run lint
 npm run build      # validate + expo export + permalinks con Open Graph

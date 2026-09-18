@@ -27,15 +27,20 @@ dice docs/HANDOFF.md §6.1: partidos por «;», el único tramo distinto tiene q
 ser el polyfill de consola. Si no coincide, dímelo y lo arreglo yo en el panel
 de Vercel (Deployments → Redeploy); no empujes commits vacíos para forzarlo.
 
+Ojo con el HANDOFF: desde la fase 17 la pantalla ya no es la consola de tres
+columnas. El instrumento vive en cajones que se abren al pedirlo (§5), las
+secciones son /invocaciones y /autores, y la araña se agarra (fase 18) y suena
+(fase 19, docs/SONIDO.md).
+
 Qué hay pendiente, por orden (desarrollado en docs/HANDOFF.md §6):
 
-1. Contenido: las 13 biografías sin obra enlazada, y las entradas ligadas mal
-   repartidas entre temas (La hora del búho tiene una sola).
-2. Una decisión que es mía: delyra-0034, la única unverified que queda. Su
-   taxonomía no está en ninguna fuente abierta y la entrada no atribuye nada a
-   nadie. Pregúntame antes de cambiarle el estado.
-3. Las biografías no tienen instrumento propio en el panel de la derecha.
-4. HTML prerenderizado para buscadores, y SITE_URL sin definir en Vercel.
+1. Contenido: las 13 biografías sin obra enlazada, las entradas ligadas mal
+   repartidas entre temas (La hora del búho tiene una sola) y vincular causas
+   del Atlas con entradas concretas. La cola editorial está vacía: toda entrada
+   nueva sin fuente comprobada entra como unverified.
+2. Del gesto de la fase 18: probarlo en un teléfono real, y que Enter y Espacio
+   activen el botón de la araña.
+3. HTML prerenderizado para buscadores, y SITE_URL sin definir en Vercel.
 
 Cómo trabajas, que está en CLAUDE.md y lo resumo: una cosa por sesión; antes de
 escribir código dime en cinco líneas qué archivos vas a tocar y por qué; al
@@ -57,10 +62,10 @@ Tres cosas que este proyecto hace distinto y conviene que entiendas antes:
   fototipia. Y se comprueba cada frase, no solo la referencia: al revisar la
   cola editorial, las referencias eran buenas y los errores estaban en lo que
   la prosa añadía.
-- La doctrina visual de docs/DESIGN.md tiene tres excepciones pedidas
-  expresamente: el flujo vivo de /tela y la rampa de calor del Atlas, escritas
-  en CLAUDE.md, y la consola de tres columnas, que de momento solo está escrita
-  en docs/HANDOFF.md §4. No las borres por doctrina.
+- La doctrina visual de docs/DESIGN.md tiene tres excepciones, pedidas
+  expresamente y escritas en CLAUDE.md: el flujo vivo de /tela, la rampa de
+  calor del Atlas y el frío del instrumento (machine en todo lo que se toca,
+  nunca en lo que se lee). No las borres por doctrina.
 
 Y dos trampas que ya costaron una sesión cada una:
 
@@ -81,6 +86,10 @@ estaba hecho, y a comparar hashes de paquete, que ya se sabía que no sirven. Se
 detectó leyendo el historial antes de tocar nada, pero conviene no depender de
 eso: **este archivo se reescribe al cerrar cada sesión**, en el mismo commit que
 el handoff.
+
+Volvió a pasar: las fases 17, 18 y 19 no lo tocaron, y el 18 de septiembre
+seguía mandando a construir un panel de la derecha que la fase 17 había
+quitado. Se corrigió junto con el HANDOFF.
 
 Lo que sí conviene repetir siempre son las tres reglas duras y las dos trampas,
 porque son lo que un modelo nuevo rompe primero.
