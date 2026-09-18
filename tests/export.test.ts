@@ -33,15 +33,16 @@ describe('la hoja', () => {
     expect(texto).toContain('archivo sin firma');
   });
 
+  // Las dos siguientes fabrican su propia entrada en vez de buscarla en el
+  // archivo: la cola editorial puede quedarse vacía, y la hoja tiene que seguir
+  // diciendo lo que dice el día que vuelva a haber una pendiente.
   it('dice el estado epistémico cuando no es un hecho', () => {
-    const dudosa = corpus.entries.find((e) => e.epistemicStatus === 'unverified');
-    expect(dudosa).toBeDefined();
-    expect(sheetText(entrySheet(dudosa!, corpus))).toContain('pendiente de verificar');
+    const dudosa = { ...entry, epistemicStatus: 'unverified' as const, sources: [] };
+    expect(sheetText(entrySheet(dudosa, corpus))).toContain('pendiente de verificar');
   });
 
   it('una entrada sin fuentes lo dice en vez de callarlo', () => {
-    const sinFuentes = corpus.entries.find((e) => e.sources.length === 0);
-    if (!sinFuentes) return;
+    const sinFuentes = { ...entry, sources: [] };
     expect(sheetText(entrySheet(sinFuentes, corpus))).toContain('sin fuentes verificadas');
   });
 
