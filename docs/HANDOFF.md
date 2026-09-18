@@ -93,7 +93,7 @@ scripts/
   sprites.mjs          dibuja los 44 emblemas
   capture.mjs          alta de entrada por consola
 
-tests/                 16 archivos, 197 pruebas
+tests/                 16 archivos, 202 pruebas
 public/figures/        44 emblemas SVG de 44
 public/models/spider/  el GLB de la araña (87 000 triángulos)
 ```
@@ -145,7 +145,7 @@ Cifras reales, no estimaciones. Salen de `npm run validate` y `npm test`.
 | Atlas | 242 territorios · 34 causas (10 uniformes) · 13 dominantes |
 | scores del Atlas | de 25 a 98 |
 | estados epistémicos | 20 `fact` · 16 `interpretation` · 7 `fiction` · 1 `controversial` · 0 `unverified` |
-| pruebas | 197, en 16 archivos |
+| pruebas | 202, en 16 archivos |
 | bundle web | ~2,2 MB |
 
 **La cola editorial está vacía.** Las quince `unverified` se comprobaron contra
@@ -369,6 +369,17 @@ las tres que se hicieron.
 - **El archivo sigue en unas seis pantallas de scroll.** Los filtros podrían
   quedarse fijos mientras solo scrollean los resultados.
 - **Exportar la tela** como SVG: casi gratis, ya se dibuja con `react-native-svg`.
+- **El gesto de la fase 18, en un teléfono de verdad.** Sigue sin probarse. Lo
+  del teclado ya está: el botón de la araña existe sin esperar a que nadie lo
+  mida (ver §9) y se activa con Enter y con Espacio, comprobado el 18 de
+  septiembre con el camino que el navegador usa para las dos teclas —un
+  `click` sin puntero, `detail` 0—, que lleva de `/` a `/i/<semilla>`.
+- **El anillo de foco no aparece, y no es de la araña.** Con el botón de la
+  araña enfocado —`document.activeElement` es él— su `focusVisible` sigue en
+  `false`: `onFocus` no llega al `Pressable`. En la misma prueba, ningún botón
+  del menú enseña su anillo tampoco, así que parece de cómo `Pressable`
+  reparte el foco y no de una sección. Se llega con el tabulador y se activa,
+  pero no se ve dónde está uno: es una sesión aparte, y toca toda la interfaz.
 
 ---
 
@@ -403,7 +414,7 @@ npm run web        # servidor de desarrollo en :8081
 ```
 
 ```bash
-npm test           # 197 pruebas
+npm test           # 202 pruebas
 npm run typecheck
 npm run lint
 npm run build      # validate + expo export + permalinks con Open Graph
@@ -427,6 +438,16 @@ Cosas que ya costaron una sesión.
   energía, captura). Ha mordido cuatro veces. Todo lo que se mira tiene que
   estar dibujado aunque el bucle no corra: **la animación puede faltar, lo que
   se mira no**.
+- **`ResizeObserver` tampoco, y de eso depende `onLayout`.** Es la misma
+  avería un piso más abajo: el observador entrega sus medidas en los pasos de
+  repintado, así que donde no se repinta no entrega nada. Medido el 18 de
+  septiembre en un panel oculto: el escenario de la araña medía 460×460 en el
+  DOM y el observador no disparó ni una vez, de modo que `box` se quedaba en
+  0×0. El botón de la araña esperaba esa medida para existir, así que **no
+  había botón**: ni para el ratón, ni para el teclado, ni para un lector de
+  pantalla. La regla, ampliada: **lo que se mira puede esperar a una medida;
+  lo que se toca, no**. Si algo interactivo depende de `onLayout`, dale una
+  medida de partida.
 - **La caché de Metro se queda con archivos borrados.** Si al mover o borrar un
   componente la app deja de montar con un `X is not defined` o un
   `Unable to resolve module`, no es el código: para el servidor y arráncalo de

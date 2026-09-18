@@ -101,6 +101,33 @@ se quedaba con la rueda del ratón para ampliar, de modo que la sección no se
 podía bajar. La regla que queda escrita: **quien se queda con un gesto de la
 página tiene que devolver otro**.
 
+### Lo que se aprendió con el botón de la araña
+
+Quedaba apuntado que Enter y Espacio no activaban el botón de la araña. Al ir a
+comprobarlo apareció algo peor y más simple: **muchas veces no había botón**.
+Se montaba solo con el escenario ya medido (`box.width > 0`), y esa medida
+llega por `onLayout`, que en web es un `ResizeObserver`. Un `ResizeObserver`
+entrega sus medidas en los pasos de repintado, así que donde no se repinta no
+entrega nada. Medido el 18 de septiembre en un panel oculto: el escenario medía
+460×460 en el DOM, el observador no disparó ni una vez y `box` se quedó en 0×0.
+Sin botón no hay ratón, ni teclado, ni lector de pantalla: la araña no se podía
+pulsar de ninguna manera.
+
+Ahora el objetivo se coloca en fracción del escenario y no espera a nadie: sin
+medida se queda en el mínimo —88 px, el doble del área táctil de la interfaz—
+y con ella crece hasta la envergadura del animal. Con el botón puesto, Enter y
+Espacio funcionaban ya: se comprobó con el camino que el navegador usa para las
+dos teclas sobre un `<button>` —un `click` sin puntero, `detail` 0—, y lleva de
+`/` a `/i/<semilla>`.
+
+La regla de `requestAnimationFrame` se queda corta y se amplía: **lo que se
+mira puede esperar a una medida; lo que se toca, no.**
+
+De paso quedó a la vista otra cosa que no se tocó: con el botón enfocado, su
+`focusVisible` no cambia —`onFocus` no llega al `Pressable`—, y los botones del
+menú se comportan igual. Se llega con el tabulador y se activa, pero no se ve
+dónde está uno. Es de toda la interfaz y pide su propia sesión.
+
 ### Lo que se aprendió comprobando la cola editorial
 
 Las quince entradas `unverified` del segundo lote se comprobaron una a una el

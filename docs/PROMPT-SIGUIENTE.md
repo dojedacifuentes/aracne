@@ -38,8 +38,11 @@ Qué hay pendiente, por orden (desarrollado en docs/HANDOFF.md §6):
    repartidas entre temas (La hora del búho tiene una sola) y vincular causas
    del Atlas con entradas concretas. La cola editorial está vacía: toda entrada
    nueva sin fuente comprobada entra como unverified.
-2. Del gesto de la fase 18: probarlo en un teléfono real, y que Enter y Espacio
-   activen el botón de la araña.
+2. Del gesto de la fase 18: probarlo en un teléfono real. Lo del teclado ya
+   está: no era que Enter y Espacio no activaran el botón, era que muchas veces
+   no había botón —esperaba una medida que un ResizeObserver no siempre
+   entrega—. Queda apuntado, y sin tocar, que el anillo de foco no aparece en
+   ningún botón de la interfaz (HANDOFF §6.4 y §9).
 3. HTML prerenderizado para buscadores, y SITE_URL sin definir en Vercel.
 
 Cómo trabajas, que está en CLAUDE.md y lo resumo: una cosa por sesión; antes de
@@ -73,7 +76,10 @@ Y dos trampas que ya costaron una sesión cada una:
   defined» o «Unable to resolve module», no es el código: es la caché de Metro.
   Para el servidor de desarrollo y arráncalo de nuevo.
 - El panel de vista previa escala la ventana y no repinta el canvas a demanda:
-  una captura de pantalla no prueba nada. Cuando haya duda, mide el DOM.
+  una captura de pantalla no prueba nada. Cuando haya duda, mide el DOM. Y
+  donde no se repinta tampoco disparan requestAnimationFrame ni ResizeObserver,
+  así que lo que dependa de onLayout puede no existir: lo que se mira puede
+  esperar a una medida, lo que se toca no.
 ```
 
 ---
