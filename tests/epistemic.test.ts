@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 
-import { EPISTEMIC_STATUS } from '../lib/schema';
+import { SOURCE_KIND_LABEL } from '../lib/labels';
+import { EPISTEMIC_STATUS, SourceSchema } from '../lib/schema';
 import { STATUS_BORDER } from '../ui/lib/epistemic';
 
 describe('el estado epistémico en el borde', () => {
@@ -23,5 +24,11 @@ describe('el estado epistémico en el borde', () => {
       expect(border.accentLabel).toBe(status === 'unverified');
       expect(['text', 'dim']).toContain(border.tone);
     }
+  });
+});
+
+describe('la clase de una fuente', () => {
+  it('cada clase del esquema se lee en español en el expediente', () => {
+    expect(Object.keys(SOURCE_KIND_LABEL).sort()).toEqual([...SourceSchema.shape.kind.options].sort());
   });
 });

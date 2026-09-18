@@ -4,7 +4,7 @@ import { causesForEntry } from '../../lib/atlas/bridge';
 import { loadAtlas } from '../../lib/atlas/loader';
 import type { Corpus } from '../../lib/content/corpus';
 import { entrySheet } from '../../lib/export/sheet';
-import { catalogId, STATUS_LABEL, TYPE_LABEL } from '../../lib/labels';
+import { catalogId, SOURCE_KIND_LABEL, STATUS_LABEL, TYPE_LABEL } from '../../lib/labels';
 import { figuresOfEntry } from '../../lib/museum/themes';
 import type { Entry } from '../../lib/schema';
 import { useTouchHeight } from '../hooks/useTouch';
@@ -98,7 +98,9 @@ export function EntryDossier({
                 <Text style={styles.valor}>{source.label}</Text>
               )}
               <Text style={styles.fuenteMeta}>
-                {[source.author, source.work, source.year, source.kind].filter(Boolean).join(' · ')}
+                {[source.author, source.work, source.year, SOURCE_KIND_LABEL[source.kind]]
+                  .filter(Boolean)
+                  .join(' · ')}
               </Text>
             </View>
           ))
