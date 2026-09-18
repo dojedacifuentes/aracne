@@ -2,7 +2,8 @@
 
 Lo que camina por la red detrás de quien lee. Sigue al cursor con retraso, se
 mueve sola cuando la mano se para, nota lo que se puede tocar y tiende hilos
-hacia las entradas que tiene cerca.
+hacia las entradas que tiene cerca. Y cuando el archivo declara el vínculo
+entre dos de ellas, el hilo va de una entrada a la otra.
 
 Componente: `AracneSpiderEffect`, en `ui/components/spiderEffect/`. Vive en la
 rama `desarrollo/entidad-aracnida` hasta que se decida llevarla a `main`.
@@ -19,6 +20,11 @@ sola; `docs/ARANA-3D.md` ya descartó en su día «veinte arañas con
 no se ve: se deja ver alrededor de la entidad, como el polvo que delata una
 telaraña a contraluz. Y los hilos que tiende van hacia las entradas del
 archivo, que son los nodos del grafo: **la red, dibujada donde está la mano**.
+
+Y donde más se ve que es la red y no ella: si el archivo declara el vínculo
+entre dos de las entradas que tiene cogidas, el hilo va de una a la otra. Ahí
+la entidad no dibuja su alcance, sino algo que estaba escrito antes de que
+pasara por encima.
 
 De ahí salen dos conductas. Se retira al acercarse a la araña grande, porque
 no hay dos animales en el mismo sitio. Y casi desaparece sobre el texto que se
@@ -58,7 +64,7 @@ dibujo, cada uno en su sitio.
 | archivo | qué |
 |---|---|
 | `spiderEffectConfig.ts` | todas las cifras, los interruptores y los selectores. Sin React y sin DOM; del tema solo toma el tipo |
-| `spiderEffectMotion.ts` | aritmética pura: el muelle, las sacudidas, la malla de apoyos, la tela, la cinemática inversa de las patas, las zonas y los hilos. Se prueba sin navegador y no reserva nada por fotograma |
+| `spiderEffectMotion.ts` | aritmética pura: el muelle, las sacudidas, la malla de apoyos, la tela, la cinemática inversa de las patas, las zonas, los hilos y de cuál cuelga cada uno. Se prueba sin navegador y no reserva nada por fotograma |
 | `AracneSpiderEffect.web.tsx` | el lienzo, el bucle, los oyentes, el dibujo y los eventos |
 | `AracneSpiderEffect.tsx` | nativo: no hay cursor, no existe |
 | `marks.ts` | las marcas `data-aracne-*` para señalarle cosas |
@@ -93,6 +99,9 @@ Todo está en `ENTITY_DEFAULTS`. Lo más usado:
 El componente acepta `config` con lo que se quiera cambiar, un nivel de
 profundidad: `<AracneSpiderEffect config={{ interactions: { threads: false } }} />`.
 
+Lo único que no es una cifra es `linked`, una prop: qué pares de entradas
+declara el archivo. Sin ella todos los hilos salen de la entidad. Más abajo.
+
 ## 5. Cómo se le señala algo
 
 Se esparce una marca en las props de un `View` o un `Pressable`. En web sale
@@ -106,6 +115,40 @@ como atributo `data-aracne-*`; en nativo no sale nada.
 
 Además nota por su cuenta todo lo interactivo (`role="button"`, `role="link"`,
 controles de formulario…) y se inclina un poco hacia ello, con tope de 14 px.
+
+### El hilo que va de una entrada a otra
+
+Las marcas dicen **dónde** hay nodos. Lo que los une no lo sabe la entidad: lo
+pregunta. La prop `linked(a, b)` contesta si el archivo declara el vínculo
+entre dos ids, y `HomeScreen` la arma con el grafo de verdad
+(`declaredPairs`, en `lib/drift/graph.ts`). Sin ella —en nativo, o en
+cualquier pantalla que no la pase— todos los hilos salen de la entidad y nada
+se rompe.
+
+Cuando la entidad tiene cogidos dos nodos y el archivo declara el vínculo, el
+segundo hilo **no sale de ella: sale del primero**. Lo que se dibuja entonces
+no es hasta dónde llega la entidad, sino lo que ya unía a esas dos entradas.
+Prendido de los dos lados, con su punto en cada extremo.
+
+**Qué cuenta como declarado.** Las mismas razones que la tela dibuja
+continuas: una relación anotada a mano, un tag compartido o una fuente
+compartida. Compartir pata o tipo no declara nada —eso ya lo dice el anillo— y
+queda fuera. No es una cifra nueva: es la línea que `THREAD_STYLE` ya trazaba
+en `ui/lib/epistemic.ts`, y hay una prueba de que las dos listas no se separan.
+
+**Por qué ese corte y no cualquier vínculo.** Medido sobre las 44 entradas: de
+los 946 pares, 401 tienen algún vínculo —el 42,4 %— y con ese criterio casi
+cualquier par de filas de `/invocaciones` saldría unido, que es tanto como no
+decir nada. Declarados son 88, el 9,3 %: pasa de vez en cuando, que es lo que
+tiene que pasar.
+
+**Cómo se elige de cuál cuelga.** Los candidatos vienen ordenados por
+distancia y solo se mira hacia atrás (`bridgeIndex`). De ahí salen tres cosas:
+el nodo más cercano siempre queda cogido a la entidad —ella no se suelta de la
+red—, no hay manera de cerrar un ciclo, y con la misma lista sale siempre el
+mismo dibujo. Se busca desde el final, así que con tres enlazados sale un
+camino que baja por la lista y no un abanico que cruzaría por encima de ella. Y
+solo cuelga de un nodo que a su vez tenga hilo: si no, nacería suelto.
 
 ## 6. Eventos
 
@@ -155,10 +198,11 @@ es original; de la referencia solo se tomaron ideas generales.
 
 ## 9. Verificación (18 de septiembre de 2026)
 
-- `npm run validate`, `npm run typecheck`, `npm run lint` y `npm test`: 218
-  pruebas en 17 archivos. Las 21 de `tests/spiderEffect.test.ts` cubren la
+- `npm run validate`, `npm run typecheck`, `npm run lint` y `npm test`: 227
+  pruebas en 17 archivos. Las 30 de `tests/spiderEffect.test.ts` cubren la
   configuración, el entorno, la tela, el muelle, las sacudidas, el sueño, las
-  patas, las zonas, los hilos y la guarda de `Math.random`.
+  patas, las zonas, los hilos, el hilo entre entradas y la guarda de
+  `Math.random`.
 - **En el DOM**, servidor de desarrollo a 1280×720 con DPR 1,25: un solo lienzo
   de 1600×900 píxeles, `pointer-events: none`, `aria-hidden`, `tabIndex` −1; el
   `overflow` y el cursor del `body`, sin tocar. `elementFromPoint` bajo la
@@ -184,10 +228,36 @@ Sin verificar todavía: el ratón de verdad en una ventana visible, un cambio de
 `prefers-reduced-motion` en caliente (cubierto por la prueba de `shouldRun`) y
 un dispositivo táctil real (no se monta).
 
+### El hilo entre entradas (18 de septiembre de 2026)
+
+Medido en `/invocaciones` a 1440×900, con `__aracneEntidad` porque el panel de
+vista previa no corre `requestAnimationFrame`.
+
+- **Barrido de 156 posiciones** por toda la rejilla de 44 filas: 56 con puente,
+  el 35,9 %. Once pares distintos dibujados y **los once declarados**: ocho por
+  relación explícita —de 14 a 26 puntos— y tres por un tag compartido
+  (*borges*, *foucault*, *red*). Ningún par de los que solo comparten pata o
+  tipo salió dibujado: `delyra-0011` y `delyra-0019` comparten la pata de
+  epistemología forense y no se unieron.
+- **Ningún hilo huérfano y ningún ciclo** en el barrido: siempre que un hilo
+  nacía en un nodo, ese nodo tenía el suyo.
+- **Coste**, mismo recorrido que la medida anterior —bajar por la lista a paso
+  corto, 600 fotogramas—: 0,142 ms de media y 0,2 en el percentil 95, contra
+  los 0,14 medidos antes del puente. No cuesta nada medible. Los máximos
+  (5 ms) caen en los fotogramas que vuelven a mirar la página, que ya eran los
+  caros. Teletransportándola a saltos de cien píxeles, que fuerza un repaso casi
+  cada fotograma, sube a 0,26 de media.
+- **Sigue sin tocar nada**: un solo lienzo, `pointer-events: none`,
+  `aria-hidden`, el `overflow` y el cursor del `body` intactos, y
+  `elementFromPoint` debajo de ella devuelve la fila. Con el cajón de filtros
+  abierto, de 42 zonas se pasa a 37.
+
 ## 10. Pendiente
 
-- **Mecánicas.** Las que dependen de sistemas que no existen no se hicieron. La
-  más natural sería que, entre dos nodos cercanos relacionados en el grafo, el
-  hilo fuera de una entrada a la otra, y no de la entidad a cada una.
+- **Dónde se ve.** Hoy los nodos son las filas de `/invocaciones` y solo ahí
+  puede aparecer un hilo entre entradas. La ficha y su expediente no llevan
+  marca: si se les pone, habrá que mirar que no compita con lo que se lee.
+- **Mecánicas.** Las que dependen de sistemas que no existen siguen sin
+  hacerse. La del hilo entre dos entradas relacionadas está hecha.
 - **Llevarla a `main`.** Pide aprobar la cuarta excepción de `CLAUDE.md`, que en
   esta rama ya está escrita.

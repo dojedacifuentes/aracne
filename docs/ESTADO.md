@@ -131,6 +131,20 @@ hecha no existía. Ahora existe, y vigila todo `lib/` y `ui/`.
 Va en una rama porque se pidió así, y porque llevarla a `main` pide aprobar la
 cuarta excepción de `CLAUDE.md`.
 
+**El hilo entre dos entradas**, que la fase dejó apuntado como lo siguiente
+natural, se hizo después en la misma rama. Si la entidad tiene cogidos dos
+nodos y el archivo declara el vínculo, el segundo hilo no sale de ella: sale
+del primero. No hace falta una cifra nueva para decidir cuándo: lo declarado
+son las mismas razones que la tela ya dibujaba continuas —relación explícita,
+un tag compartido, una fuente compartida—, y compartir pata o tipo no declara
+nada. La medida sostiene el corte: de los 946 pares del archivo, 401 tienen
+algún vínculo (42,4 %) y 88 lo tienen declarado (9,3 %). Con el primer criterio
+casi cualquier par de filas saldría unido, que es tanto como no decir nada.
+
+Y la entidad sigue sin saber qué es una entrada: pregunta. `HomeScreen` le pasa
+una función que contesta si dos ids están declarados; sin ella todos los hilos
+salen de la entidad y nada se rompe.
+
 ### Lo que se aprendió comprobando la cola editorial
 
 Las quince entradas `unverified` del segundo lote se comprobaron una a una el

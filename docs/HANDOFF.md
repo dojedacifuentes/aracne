@@ -55,7 +55,7 @@ lib/                   el motor. Puro, sin React, probable sin pantalla.
   oracle/weighted.ts   los cuatro modos. PESOS PROVISIONALES desde la fase 0.
   oracle/index.ts      draw() y pressSeed(), con anti-repetición
   aleph/tension.ts     física del anillo: legAngle, alephState, muelles
-  drift/graph.ts       scoreLink, neighbours, buildDrift, shortestPath, withinSteps
+  drift/graph.ts       scoreLink, neighbours, declaredPairs, buildDrift, shortestPath
   drift/layout.ts      dónde cae cada entrada, y el trazado en ángulo recto
   drift/modes.ts       dos mundos, distancia, y las dos pieles de la tela
   archive/filter.ts    filtros, facetas y búsqueda local con acentos plegados
@@ -95,7 +95,7 @@ scripts/
   sprites.mjs          dibuja los 44 emblemas
   capture.mjs          alta de entrada por consola
 
-tests/                 17 archivos, 218 pruebas
+tests/                 17 archivos, 227 pruebas
 public/figures/        44 emblemas SVG de 44
 public/models/spider/  el GLB de la araña (87 000 triángulos)
 ```
@@ -142,12 +142,13 @@ Cifras reales, no estimaciones. Salen de `npm run validate` y `npm test`.
 | patas encendidas | 11 de 11 |
 | grado medio del grafo | 18,2 vecinos |
 | diámetro de la red | 3 pasos |
+| pares de entradas | 946 · 401 con algún vínculo (42,4 %) · 88 declarados (9,3 %) |
 | biografías | 44, en 9 temas · 31 con obra enlazada |
 | emblemas dibujados | 44 de 44 |
 | Atlas | 242 territorios · 34 causas (10 uniformes) · 13 dominantes |
 | scores del Atlas | de 25 a 98 |
 | estados epistémicos | 20 `fact` · 16 `interpretation` · 7 `fiction` · 1 `controversial` · 0 `unverified` |
-| pruebas | 218, en 17 archivos |
+| pruebas | 227, en 17 archivos |
 | bundle web | ~2,2 MB |
 
 **La cola editorial está vacía.** Las quince `unverified` se comprobaron contra
@@ -172,7 +173,7 @@ una dice en `captureNote` qué se comprobó y qué se corrigió. Ver §6.4.
 | 17 | El instrumento deja de cobrar ancho: sin columna derecha fija, el instrumento se abre en cajones; navegación en tres grupos, `/invocaciones` y `/autores`, la ficha a unos setenta caracteres con su expediente aparte, y el Atlas a todo lo ancho con Natural Earth 1:50m. |
 | 18 | La araña se puede coger: se posa la mano, se tira con resistencia progresiva y se suelta con retroceso. |
 | 19 | El archivo suena: cinco voces sintetizadas, apagadas por defecto. La nota de cada pata es su frecuencia de hilo y el dictamen sale de la semilla (`docs/SONIDO.md`). |
-| 20 | En la rama `desarrollo/entidad-aracnida`: la entidad que camina detrás del cursor. Tiende hilos hacia las entradas cercanas, se mueve sola cuando la mano se para y se retira sobre la araña del centro (`docs/ENTIDAD.md`). |
+| 20 | En la rama `desarrollo/entidad-aracnida`: la entidad que camina detrás del cursor. Tiende hilos hacia las entradas cercanas, se mueve sola cuando la mano se para y se retira sobre la araña del centro. Y si el archivo declara el vínculo entre dos de las entradas que tiene cogidas, el hilo va de una a la otra (`docs/ENTIDAD.md`). |
 
 ---
 
@@ -346,12 +347,23 @@ las tres que se hicieron.
 
 ### 6.3 La entidad: decidir si va a `main`
 
-Está en `desarrollo/entidad-aracnida`, probada y documentada en
-`docs/ENTIDAD.md`. Para llevarla a `main` hay que aprobar la cuarta excepción
-de `CLAUDE.md`, que en la rama ya está escrita, y mirarla con un ratón de
-verdad: el panel de pruebas estaba oculto y el comportamiento se verificó
-moviéndola a mano. Lo siguiente natural, si se aprueba: que entre dos nodos
-cercanos relacionados en el grafo el hilo vaya de una entrada a la otra.
+Está en `desarrollo/entidad-aracnida`, con dos commits de código —la entidad y
+el hilo entre entradas—, probada y documentada en `docs/ENTIDAD.md`. Para
+llevarla a `main` hay que **aprobar la cuarta excepción de `CLAUDE.md`**, que
+en la rama ya está escrita, y mirarla con un ratón de verdad: el panel de
+pruebas estaba oculto y el comportamiento se verificó moviéndola a mano con
+`__aracneEntidad`.
+
+Lo que quedó apuntado como siguiente ya está hecho: si la entidad tiene
+cogidos dos nodos y el archivo declara el vínculo entre ellos —relación
+explícita, un tag o una fuente compartida, las mismas razones que la tela
+dibuja continuas—, el hilo va de una entrada a la otra en vez de salir de
+ella. Medido: 88 de los 946 pares (9,3 %), y en un barrido de 156 posiciones
+apareció en el 36 % con once pares distintos, todos declarados.
+
+Lo siguiente de aquí, si se aprueba: hoy los únicos nodos marcados son las
+filas de `/invocaciones`, así que solo ahí puede verse. La ficha y su
+expediente no llevan marca.
 
 ### 6.4 Contenido, que es lo que más falta
 
@@ -419,7 +431,7 @@ npm run web        # servidor de desarrollo en :8081
 ```
 
 ```bash
-npm test           # 218 pruebas
+npm test           # 227 pruebas
 npm run typecheck
 npm run lint
 npm run build      # validate + expo export + permalinks con Open Graph
