@@ -14,7 +14,7 @@ estás parado y qué conviene hacer a continuación**.
 |---|---|
 | repositorio | `https://github.com/dojedacifuentes/aracne.git` |
 | rama de trabajo | `main` |
-| otra rama viva | `diseno-denso` (rediseño viejo, superado por la fase 15) |
+| otras ramas | `desarrollo/entidad-aracnida` (fase 20, ya fusionada en `main`) · `diseno-denso` (rediseño viejo, superado por la fase 15) |
 | ruta local | `C:\Users\Asus\Desktop\aracne` |
 | desplegado en | `https://aracne-mu.vercel.app` |
 | plataforma | Vercel, `buildCommand: npm run build`, salida `dist` |
@@ -29,6 +29,7 @@ docs/
   ARANA.md             la metáfora del animal. Vinculante.
   ARANA-3D.md          por qué la araña es 3D y cómo se comporta
   SONIDO.md            qué suena, de dónde sale cada nota y por qué nace apagado
+  ENTIDAD.md           la entidad que camina detrás del cursor, y sus hilos
   DESIGN.md            paleta, tipografía, qué no se hace nunca
   BIOGRAFIAS.md        reglas de las biografías: temas, ideas, enlaces, emblemas
   ATLAS.md             reglas del Atlas de la extinción
@@ -54,7 +55,7 @@ lib/                   el motor. Puro, sin React, probable sin pantalla.
   oracle/weighted.ts   los cuatro modos. PESOS PROVISIONALES desde la fase 0.
   oracle/index.ts      draw() y pressSeed(), con anti-repetición
   aleph/tension.ts     física del anillo: legAngle, alephState, muelles
-  drift/graph.ts       scoreLink, neighbours, buildDrift, shortestPath, withinSteps
+  drift/graph.ts       scoreLink, neighbours, declaredPairs, buildDrift, shortestPath
   drift/layout.ts      dónde cae cada entrada, y el trazado en ángulo recto
   drift/modes.ts       dos mundos, distancia, y las dos pieles de la tela
   archive/filter.ts    filtros, facetas y búsqueda local con acentos plegados
@@ -84,6 +85,7 @@ ui/
                        FigureView, EntryView, InvocationView, ArchiveView,
                        ShapeView, CommandPalette, ExportRow, Sigil, Emblem…
   components/spider/   la araña 3D: rig, escena, seda, config, gesto, fallback SVG
+  components/spiderEffect/  la entidad: config, aritmética pura, lienzo web, marcas
   audio/               el sonido: cifras, partitura pura y motor Web Audio
 
 scripts/
@@ -93,7 +95,7 @@ scripts/
   sprites.mjs          dibuja los 44 emblemas
   capture.mjs          alta de entrada por consola
 
-tests/                 16 archivos, 202 pruebas
+tests/                 17 archivos, 232 pruebas
 public/figures/        44 emblemas SVG de 44
 public/models/spider/  el GLB de la araña (87 000 triángulos)
 ```
@@ -140,17 +142,18 @@ Cifras reales, no estimaciones. Salen de `npm run validate` y `npm test`.
 | patas encendidas | 11 de 11 |
 | grado medio del grafo | 18,2 vecinos |
 | diámetro de la red | 3 pasos |
+| pares de entradas | 946 · 401 con algún vínculo (42,4 %) · 88 declarados (9,3 %) |
 | biografías | 44, en 9 temas · 31 con obra enlazada |
 | emblemas dibujados | 44 de 44 |
 | Atlas | 242 territorios · 34 causas (10 uniformes) · 13 dominantes |
 | scores del Atlas | de 25 a 98 |
 | estados epistémicos | 20 `fact` · 16 `interpretation` · 7 `fiction` · 1 `controversial` · 0 `unverified` |
-| pruebas | 202, en 16 archivos |
+| pruebas | 232, en 17 archivos |
 | bundle web | ~2,2 MB |
 
 **La cola editorial está vacía.** Las quince `unverified` se comprobaron contra
 fuentes pedidas —catorce el 15 de septiembre de 2026 y la última el 18— y cada
-una dice en `captureNote` qué se comprobó y qué se corrigió. Ver §6.3.
+una dice en `captureNote` qué se comprobó y qué se corrigió. Ver §6.4.
 
 ---
 
@@ -170,6 +173,8 @@ una dice en `captureNote` qué se comprobó y qué se corrigió. Ver §6.3.
 | 17 | El instrumento deja de cobrar ancho: sin columna derecha fija, el instrumento se abre en cajones; navegación en tres grupos, `/invocaciones` y `/autores`, la ficha a unos setenta caracteres con su expediente aparte, y el Atlas a todo lo ancho con Natural Earth 1:50m. |
 | 18 | La araña se puede coger: se posa la mano, se tira con resistencia progresiva y se suelta con retroceso. |
 | 19 | El archivo suena: cinco voces sintetizadas, apagadas por defecto. La nota de cada pata es su frecuencia de hilo y el dictamen sale de la semilla (`docs/SONIDO.md`). |
+| 20 | La entidad que camina detrás del cursor. Tiende hilos hacia las entradas cercanas, se mueve sola cuando la mano se para y se retira sobre la araña del centro. Y si el archivo declara el vínculo entre dos de las entradas que tiene cogidas, el hilo va de una a la otra (`docs/ENTIDAD.md`). |
+| — | El botón de la araña existe antes de que nadie lo mida. Esperaba una medida que un `ResizeObserver` no siempre entrega, y sin ella no había botón que pulsar ni tabular. Ver §9. |
 
 ---
 
@@ -187,9 +192,9 @@ una dice en `captureNote` qué se comprobó y qué se corrigió. Ver §6.3.
   reglas del Atlas: una causa que reparte tiene que separar 25 puntos entre el
   percentil 5 y el 95, y lo que no tiene población no se puntúa.
 
-### Las tres excepciones a la doctrina visual
+### Las cuatro excepciones a la doctrina visual
 
-`docs/DESIGN.md` prohíbe movimiento, degradados y segundos colores. Hay tres
+`docs/DESIGN.md` prohíbe movimiento, degradados y segundos colores. Hay cuatro
 excepciones, **todas pedidas expresamente y todas escritas en `CLAUDE.md`**. La
 tercera entró allí el 18 de septiembre: la fase 15 no la había escrito, y
 durante tres días `CLAUDE.md` dijo «dos excepciones, y solo dos» mientras
@@ -204,6 +209,11 @@ durante tres días `CLAUDE.md` dijo «dos excepciones, y solo dos» mientras
    frío que el Atlas usaba para sus retículas— marca todo lo que se puede
    tocar. La regla que queda en pie: **el frío es de lo que se puede tocar y el
    cálido es del contenido**.
+4. **La entidad que camina detrás del cursor.** Aprobada el 18 de septiembre
+   de 2026, al fusionar la fase 20. En `dim` y sin brillo, sin recibir eventos,
+   sin `Math.random`; se retira sobre la araña del centro y no existe con
+   `prefers-reduced-motion`, sin ratón o por debajo de 900 px. Ver
+   `docs/ENTIDAD.md`.
 
 No las borres por doctrina: la doctrina ya las contempla.
 
@@ -337,7 +347,29 @@ El suyo serían los nueve temas como lista, para saltar de uno a otro sin volver
 al índice. Se dejó fuera a propósito: el pendiente nombraba tres secciones y son
 las tres que se hicieron.
 
-### 6.3 Contenido, que es lo que más falta
+### 6.3 La entidad, ya en `main`
+
+Se fusionó el 18 de septiembre de 2026, con la cuarta excepción de `CLAUDE.md`
+aprobada expresamente. Está documentada en `docs/ENTIDAD.md`.
+
+El hilo entre entradas también está hecho: si la entidad tiene cogidos dos
+nodos y el archivo declara el vínculo entre ellos —relación explícita, un tag o
+una fuente compartida, las mismas razones que la tela dibuja continuas—, el
+hilo va de una entrada a la otra en vez de salir de ella. Medido: 88 de los 946
+pares (9,3 %), y en un barrido de 156 posiciones apareció en el 36 % con once
+pares distintos, todos declarados.
+
+Lo que queda de aquí:
+
+- **Verla con un ratón de verdad.** El comportamiento se comprobó en el DOM,
+  moviéndola a mano con `__aracneEntidad`, porque el panel de pruebas no corre
+  `requestAnimationFrame`. Nunca se ha mirado con una mano encima.
+- **Dónde se ve.** Los únicos nodos marcados son las filas de `/invocaciones`,
+  así que el hilo entre entradas solo puede aparecer ahí. La ficha y su
+  expediente no llevan marca: si se les pone, habrá que mirar que no compita
+  con lo que se lee.
+
+### 6.4 Contenido, que es lo que más falta
 
 - **La cola editorial está vacía.** Las quince `unverified` se comprobaron (los
   commits `entrada: …` del 15 y el 18 de septiembre). La última, `delyra-0034`,
@@ -359,7 +391,7 @@ las tres que se hicieron.
   direcciones —en la lente del Atlas y en la ficha de entrada—, pero un vínculo
   anotado a mano diría más.
 
-### 6.4 Lo que quedó apuntado de antes
+### 6.5 Lo que quedó apuntado de antes
 
 - **HTML previo para buscadores.** `og.mjs` ya escribe cáscaras por entrada con
   su Open Graph; falta meter el *cuerpo* en un `<noscript>` y generar cáscaras
@@ -414,7 +446,7 @@ npm run web        # servidor de desarrollo en :8081
 ```
 
 ```bash
-npm test           # 202 pruebas
+npm test           # 232 pruebas
 npm run typecheck
 npm run lint
 npm run build      # validate + expo export + permalinks con Open Graph

@@ -59,6 +59,42 @@ export function neighbours(entry: Entry, corpus: readonly Entry[]): Link[] {
     .sort((a, b) => b.score - a.score);
 }
 
+/**
+ * Las razones que el archivo **declara**: alguien anotó el vínculo a mano, o
+ * las dos entradas nombran el mismo tag o la misma fuente. Compartir pata o
+ * tipo no declara nada —eso ya lo dice el anillo—, y por eso quedan fuera.
+ *
+ * Es la misma línea que `ui/lib/epistemic.ts` traza al dibujar: continuo lo
+ * declarado, discontinuo lo que solo comparten. Hay una prueba de que las dos
+ * listas no se separan.
+ *
+ * Medido sobre las 44 entradas: de los 946 pares, 401 tienen algún vínculo
+ * (42,4 %) y 88 lo tienen declarado (9,3 %).
+ */
+export const DECLARED_REASONS: readonly LinkReason[] = ["explicit", "tag", "author"];
+
+/** La clave de un par, sin orden: `pairKey(a, b)` y `pairKey(b, a)` son la misma. */
+export function pairKey(a: string, b: string): string {
+  return a < b ? `${a}|${b}` : `${b}|${a}`;
+}
+
+/**
+ * Los pares de entradas cuyo vínculo el archivo declara. Se calcula una vez
+ * sobre todo el corpus y se consulta por clave: cuarenta y cuatro entradas son
+ * novecientos cuarenta y seis pares, y quien pregunta lo hace en cada fotograma.
+ */
+export function declaredPairs(corpus: readonly Entry[]): Set<string> {
+  const declared = new Set<LinkReason>(DECLARED_REASONS);
+  const out = new Set<string>();
+  for (let i = 0; i < corpus.length; i += 1) {
+    for (let j = i + 1; j < corpus.length; j += 1) {
+      const link = scoreLink(corpus[i], corpus[j]);
+      if (link && declared.has(link.reason)) out.add(pairKey(corpus[i].id, corpus[j].id));
+    }
+  }
+  return out;
+}
+
 export interface DriftStep {
   entry: Entry;
   /** null en el primer paso. */

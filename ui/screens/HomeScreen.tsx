@@ -9,6 +9,7 @@ import { loadArchive } from '../../lib/content/loader';
 import { pressSeed } from '../../lib/oracle';
 import { pushHistory } from '../../lib/oracle/history';
 import { entriesOfTheme, themeStates } from '../../lib/museum/themes';
+import { declaredPairs, pairKey } from '../../lib/drift/graph';
 import type { DriftMode, WebSkin } from '../../lib/drift/modes';
 import { invoke } from '../../lib/oracle/invoke';
 import { freshSeed } from '../../lib/oracle/rng';
@@ -27,6 +28,7 @@ import { ShapeView } from '../components/ShapeView';
 import { Shell, NAV_WIDTH, type Measure, type ShellGroup } from '../components/Shell';
 import { ToolButton } from '../components/ToolButton';
 import { Spider } from '../components/spider/Spider';
+import { AracneSpiderEffect } from '../components/spiderEffect/AracneSpiderEffect';
 import { Tejido, TelaAside } from '../components/Tejido';
 import { TextButton } from '../components/TextButton';
 import { useRoute } from '../hooks/useRoute';
@@ -97,6 +99,14 @@ export function HomeScreen({ reduceMotion }: Props) {
 
   // Los temas salen de las figuras: themes.json no lista a nadie.
   const themes = useMemo(() => themeStates(corpus.figures, corpus.themes), [corpus.figures, corpus.themes]);
+
+  /**
+   * Lo único que la entidad necesita saber del archivo: si el vínculo entre
+   * dos entradas está declarado. Los pares se cuentan una vez; ella pregunta
+   * en cada fotograma. Ver `docs/ENTIDAD.md`.
+   */
+  const declared = useMemo(() => declaredPairs(corpus.entries), [corpus.entries]);
+  const linked = useCallback((a: string, b: string) => declared.has(pairKey(a, b)), [declared]);
   const themeState = useMemo(
     () => (route.name === 'theme' ? (themes.find((t) => t.theme.id === route.id) ?? null) : null),
     [route, themes],
@@ -616,6 +626,9 @@ export function HomeScreen({ reduceMotion }: Props) {
       >
         {contenido}
       </Shell>
+
+      {/* La entidad: por encima del contenido y por debajo de cajones y paleta. docs/ENTIDAD.md */}
+      <AracneSpiderEffect reduceMotion={reduceMotion} linked={linked} />
 
       <Drawer
         title="invocar"

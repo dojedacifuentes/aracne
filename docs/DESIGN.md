@@ -129,6 +129,10 @@ El identificador cuenta rápido hasta su número, 200 ms. Es el único gesto de
 Con `prefers-reduced-motion`, todo queda en un fundido de 120 ms sin
 desplazamiento ni contador.
 
+Las excepciones a este apartado se pidieron expresamente y están en
+`CLAUDE.md`, cada una con sus condiciones: el flujo vivo de la tela y la
+entidad que sigue al cursor (`docs/ENTIDAD.md`).
+
 ## Cuándo hay tercera columna: nunca por defecto
 
 El armazón tiene **dos columnas**: las secciones a la izquierda y el contenido

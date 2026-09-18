@@ -7,6 +7,7 @@ import type { Entry } from '../../lib/schema';
 import { STATUS_BORDER, type StatusBorder } from '../lib/epistemic';
 import { colors, fonts, space } from '../theme';
 import { Reveal } from './Reveal';
+import { aracneQuiet } from './spiderEffect/marks';
 import { ToolButton } from './ToolButton';
 
 type Props = {
@@ -122,7 +123,7 @@ function CatalogId({ id, reduceMotion }: { id: string; reduceMotion: boolean }) 
 function ContentBlock({ border, text, statusLabel }: { border: StatusBorder; text: string; statusLabel: string }) {
   const tone = border.tone === 'dim' ? colors.dim : colors.text;
   return (
-    <View style={styles.cuerpo}>
+    <View style={styles.cuerpo} {...aracneQuiet()}>
       <View
         style={[
           styles.block,

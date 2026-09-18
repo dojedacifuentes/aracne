@@ -34,6 +34,8 @@ el proyecto y qué conviene hacer. Este archivo es la historia de cada fase.
 | 17 | El instrumento deja de cobrar ancho: sin columna derecha fija, el instrumento se abre en cajones; navegación en tres grupos, `/invocaciones` y `/autores`, la ficha con su expediente aparte, y el Atlas a todo lo ancho con Natural Earth 1:50m, 242 territorios | `3f82c0f` |
 | 18 | La araña se puede coger: se posa la mano, se tira con resistencia progresiva y se suelta con retroceso. El hilo de arriba no se mueve y los de las patas están prendidos en la red | `9b9f138` |
 | 19 | El archivo suena: cinco voces sintetizadas sin un solo sample, apagadas por defecto. La nota de cada pata es su propia frecuencia de hilo y el dictamen sale de la semilla | `7930373` |
+| 20 | La entidad que camina detrás del cursor, con sus hilos hacia las entradas y el hilo que va de una entrada a otra cuando el archivo lo declara; y la cuarta excepción de `CLAUDE.md`, aprobada al fusionarla | `fe5dc2c`, `e6107bd` |
+| — | El botón de la araña existe antes de que nadie lo mida: esperaba una medida que un `ResizeObserver` no siempre entrega, y sin ella no había botón que pulsar ni tabular | `e4d0a65` |
 
 En curso: una revisión adversarial de las fases 0–2.
 
@@ -127,6 +129,51 @@ De paso quedó a la vista otra cosa que no se tocó: con el botón enfocado, su
 `focusVisible` no cambia —`onFocus` no llega al `Pressable`—, y los botones del
 menú se comportan igual. Se llega con el tabulador y se activa, pero no se ve
 dónde está uno. Es de toda la interfaz y pide su propia sesión.
+
+### Lo que se decidió en la fase 20
+
+Se pidió una entidad arácnida que siguiera al cursor, a partir de un
+repositorio de referencia, `4Min4m/spider-cursor`. **La referencia no tiene
+licencia**, así que no se reutilizó ni una línea: la implementación es
+original. Tampoco habría servido: usa `Math.random`, pinta el lienzo opaco de
+negro en cada fotograma, toca el `overflow` y el cursor del `body` y, al
+desmontarse, deja vivo su bucle.
+
+Para que cupiera en el animal, la entidad no es una segunda araña: es la red
+habitada. La tela está en toda la ventana y solo se deja ver a su alrededor,
+y los hilos van hacia las entradas, que son los nodos del grafo. De ahí sus
+dos conductas: se retira sobre el Aleph y casi desaparece sobre el texto que
+se lee.
+
+Tres decisiones de oficio. El lienzo se monta después del armazón, así que
+queda por debajo de cajones y paleta sin tocar nada global. Un nodo solo cuenta
+si está antes que el lienzo en el DOM y nada lo tapa en su centro: así los
+cajones apagan los hilos sin que la entidad sepa qué es un cajón. Y los
+colores se guardan por su nombre en `theme.ts`, no como valores: Vitest no
+puede importar `react-native`, y de paso fuera de la paleta no se puede
+escribir ninguno.
+
+De paso apareció que la prueba contra `Math.random` que el handoff daba por
+hecha no existía. Ahora existe, y vigila todo `lib/` y `ui/`.
+
+Nació en una rama porque se pidió así, y porque llevarla a `main` pedía aprobar
+la cuarta excepción de `CLAUDE.md`. Se aprobó el 18 de septiembre de 2026 y la
+rama se fusionó: la entidad está encendida en producción.
+
+**El hilo entre dos entradas**, que la fase dejó apuntado como lo siguiente
+natural, se hizo después en la misma rama. Si la entidad tiene cogidos dos
+nodos y el archivo declara el vínculo, el segundo hilo no sale de ella: sale
+del primero. No hace falta una cifra nueva para decidir cuándo: lo declarado
+son las mismas razones que la tela ya dibujaba continuas —relación explícita,
+un tag compartido, una fuente compartida—, y compartir pata o tipo no declara
+nada. La medida sostiene el corte: de los 946 pares del archivo, 401 tienen
+algún vínculo (42,4 %) y 88 lo tienen declarado (9,3 %). Con el primer criterio
+casi cualquier par de filas saldría unido, que es tanto como no decir nada.
+
+Y la entidad sigue sin saber qué es una entrada: pregunta. `HomeScreen` le pasa
+una función que contesta si dos ids están declarados; sin ella todos los hilos
+salen de la entidad y nada se rompe.
+
 
 ### Lo que se aprendió comprobando la cola editorial
 

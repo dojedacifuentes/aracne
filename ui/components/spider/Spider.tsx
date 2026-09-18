@@ -12,6 +12,7 @@ import type { GrabVoice } from '../../audio/audioConfig';
 import { useFocusRing } from '../../hooks/useFocusRing';
 import { useSound } from '../../hooks/useSound';
 import { colors } from '../../theme';
+import { aracneAvoid } from '../spiderEffect/marks';
 import { SPIDER_DEFAULTS, type SpiderHandle, type SpiderOptions } from './spiderConfig';
 import { hitSize } from './spiderMotion';
 import { SpiderBoundary } from './SpiderBoundary';
@@ -138,7 +139,7 @@ export function Spider({
     ) : null;
 
   return (
-    <View style={[styles.stage, style]} onLayout={onLayout}>
+    <View style={[styles.stage, style]} onLayout={onLayout} {...aracneAvoid('aleph')}>
       {SPIDER_3D_AVAILABLE && !failed ? (
         <SpiderBoundary fallback={fallback} onError={handleFailure}>
           <SpiderScene

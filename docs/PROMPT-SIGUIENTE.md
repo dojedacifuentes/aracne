@@ -34,6 +34,12 @@ secciones son /invocaciones y /autores, y la araña se agarra (fase 18) y suena
 
 Qué hay pendiente, por orden (desarrollado en docs/HANDOFF.md §6):
 
+0. La entidad de la fase 20 —la que camina detrás del cursor y tiende hilos
+   hacia las entradas, incluido el que va de una entrada a otra— está en main
+   y en producción desde el 18 de septiembre, con la cuarta excepción de
+   CLAUDE.md aprobada. Lo que le falta es mirarla con un ratón de verdad: su
+   comportamiento se comprobó midiendo el DOM, nunca con una mano encima
+   (HANDOFF §6.3, docs/ENTIDAD.md).
 1. Contenido: las 13 biografías sin obra enlazada, las entradas ligadas mal
    repartidas entre temas (La hora del búho tiene una sola) y vincular causas
    del Atlas con entradas concretas. La cola editorial está vacía: toda entrada
@@ -65,10 +71,11 @@ Tres cosas que este proyecto hace distinto y conviene que entiendas antes:
   fototipia. Y se comprueba cada frase, no solo la referencia: al revisar la
   cola editorial, las referencias eran buenas y los errores estaban en lo que
   la prosa añadía.
-- La doctrina visual de docs/DESIGN.md tiene tres excepciones, pedidas
+- La doctrina visual de docs/DESIGN.md tiene cuatro excepciones, todas pedidas
   expresamente y escritas en CLAUDE.md: el flujo vivo de /tela, la rampa de
-  calor del Atlas y el frío del instrumento (machine en todo lo que se toca,
-  nunca en lo que se lee). No las borres por doctrina.
+  calor del Atlas, el frío del instrumento (machine en todo lo que se toca,
+  nunca en lo que se lee) y la entidad que sigue al cursor. No las borres por
+  doctrina.
 
 Y dos trampas que ya costaron una sesión cada una:
 
@@ -96,6 +103,12 @@ el handoff.
 Volvió a pasar: las fases 17, 18 y 19 no lo tocaron, y el 18 de septiembre
 seguía mandando a construir un panel de la derecha que la fase 17 había
 quitado. Se corrigió junto con el HANDOFF.
+
+La sesión que cerró la fase 20 sí lo tocó, en el mismo commit que el handoff.
+De paso se vio otra manera de quedarse atrás: el pendiente 0 decía que la rama
+estaba a medias cuando ya estaba entera, y las excepciones seguían siendo tres
+cuando en esa rama eran cuatro. **Lo que cambia de estado hay que contarlo
+aquí, no solo en el HANDOFF.**
 
 Lo que sí conviene repetir siempre son las tres reglas duras y las dos trampas,
 porque son lo que un modelo nuevo rompe primero.
