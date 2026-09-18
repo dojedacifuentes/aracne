@@ -139,7 +139,7 @@ metadatos, no para párrafos ni para titulares.
 Un solo momento de movimiento: la aparición de la entrada, 320 ms.
 `prefers-reduced-motion` lo reduce a un fundido.
 
-**Dos excepciones, y solo dos.**
+**Tres excepciones, y solo tres.**
 
 La primera: la piel `flujo` de `/tela` está viva. Por sus
 trazas corren pulsos y el nodo del centro respira, porque ahí el dibujo no
@@ -156,6 +156,16 @@ condiciones: no hay color nuevo, hay uno estirado —la rampa va de la ceniza a
 la llama pasando por el acento de siempre—, no sale de `/atlas`, y el frío de
 la máquina (retículas, escuadras, barrido) es del instrumento y nunca del
 contenido. Razones en `docs/ATLAS.md`.
+
+La tercera: **el instrumento es frío**. Desde la fase 15 la pantalla es un
+archivo editorial y, además, una máquina de consultar, y una sola regla separa
+las dos cosas: el contenido es editorial y cálido; el instrumento, frío y
+pequeño. El frío es `machine`, el color que el Atlas ya usaba para sus
+retículas, y sale del Atlas para marcar lo que se puede tocar: el foco, los
+conmutadores, los cajones, las cuentas vivas. También es decisión expresa, y
+también con condiciones: no es un color nuevo ni un segundo acento, nunca va en
+lo que se lee —título, cuerpo, pregunta—, y lo prohibido sigue prohibido: ni
+neón, ni *glow*, ni degradados. Razones en `docs/DESIGN.md`.
 
 ## Cómo trabajas
 

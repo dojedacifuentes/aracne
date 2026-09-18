@@ -42,9 +42,10 @@ export const fonts = {
 export const heat = ['#1C1A17', '#4A2C20', '#8C3A22', '#B5432E', '#E2703A'] as const;
 
 /**
- * El frío de la máquina: retículas, escuadras, barrido y cifras vivas. Es el
- * contraste que hace que la brasa se lea como brasa. Solo en el Atlas, solo
- * en la capa del instrumento, nunca en el contenido.
+ * El frío de la máquina: retículas, escuadras, barrido y cifras vivas. Nació
+ * en el Atlas, como el contraste que hace que la brasa se lea como brasa, y
+ * desde la consola marca todo lo que se puede tocar. Nunca en el contenido:
+ * es la tercera excepción de `CLAUDE.md`.
  */
 export const machine = '#5FCBC3';
 
