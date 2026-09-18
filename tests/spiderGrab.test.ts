@@ -5,6 +5,7 @@ import type { Vec2 } from '../lib/aleph/tension';
 import { GRIP, SCENE, SPIDER_DEFAULTS, type SpiderOptions } from '../ui/components/spider/spiderConfig';
 import {
   clampSpeed,
+  hitSize,
   resist,
   resistInPlace,
   trackMove,
@@ -16,6 +17,45 @@ import { SpiderRig } from '../ui/components/spider/SpiderRig';
 
 const out = (): Vec2 => ({ x: 0, y: 0 });
 const track = (): PointerTrack => ({ x: 0, y: 0, t: 0, vx: 0, vy: 0 });
+
+/**
+ * El botón que se pulsa y se enfoca no puede depender de que alguien mida el
+ * escenario: `onLayout` llega por un `ResizeObserver`, y un `ResizeObserver` no
+ * entrega nada donde no se repinta. Medido el 18 de septiembre de 2026 en un
+ * panel oculto: el escenario medía 460×460 en el DOM y el observador no
+ * disparó ni una vez, así que el botón no llegaba a existir.
+ */
+describe('el objetivo que se pulsa', () => {
+  const sin = { width: 0, height: 0 };
+
+  it('sin medida del escenario no mide cero, mide el mínimo', () => {
+    expect(hitSize(sin, 1)).toBe(GRIP.minHit);
+    expect(hitSize(sin, 0.4)).toBe(GRIP.minHit);
+    expect(hitSize({ width: 0, height: 900 }, 1)).toBe(GRIP.minHit);
+  });
+
+  it('el mínimo se puede coger: el doble del área táctil de la interfaz', () => {
+    // `HIT_SIZE` de ui/theme.ts es 44; aquí no se importa porque arrastraría
+    // react-native a las pruebas. La araña se coge, no solo se toca.
+    expect(GRIP.minHit).toBe(88);
+  });
+
+  it('con medida crece con la envergadura del animal', () => {
+    const grande = hitSize({ width: 460, height: 460 }, 1);
+    expect(grande).toBeCloseTo(460 * SCENE.span * 1.3, 6);
+    expect(grande).toBeGreaterThan(GRIP.minHit);
+    // Y cubre al animal con margen, porque las patas tiran de él.
+    expect(grande).toBeGreaterThan(460 * SCENE.span);
+  });
+
+  it('manda el lado corto, que es el que limita a la araña', () => {
+    expect(hitSize({ width: 1200, height: 460 }, 1)).toBe(hitSize({ width: 460, height: 1200 }, 1));
+  });
+
+  it('un escenario pequeño no baja del mínimo', () => {
+    expect(hitSize({ width: 120, height: 120 }, 1)).toBe(GRIP.minHit);
+  });
+});
 
 describe('la resistencia al tirar', () => {
   it('no se mueve si no se tira, y al principio cede lo que se le pide', () => {

@@ -1,5 +1,5 @@
 import type { Vec2 } from '../../../lib/aleph/tension';
-import { GRIP, MOTION } from './spiderConfig';
+import { GRIP, MOTION, SCENE } from './spiderConfig';
 
 /**
  * El movimiento de la araña, sin three.js y sin reservar memoria por
@@ -10,6 +10,24 @@ import { GRIP, MOTION } from './spiderConfig';
 export interface Damped {
   value: number;
   velocity: number;
+}
+
+/**
+ * Cuánto mide el objetivo que se pulsa: la envergadura del animal con algo de
+ * margen, porque las patas tiran del cuerpo y hay que poder cogerlo donde
+ * quede.
+ *
+ * **Sin medida del escenario devuelve el mínimo, nunca cero.** La medida llega
+ * por `onLayout`, que en web es un `ResizeObserver`, y un `ResizeObserver` no
+ * entrega nada donde no se repinta: una pestaña de fondo, un panel oculto, una
+ * captura. Si el objetivo esperase a esa medida, en esos sitios no habría
+ * botón —ni para el ratón, ni para el teclado, ni para un lector de pantalla—.
+ * Es la misma regla que el plazo de la araña: la animación puede faltar, lo
+ * que se toca no.
+ */
+export function hitSize(box: { width: number; height: number }, scale: number): number {
+  const span = Math.min(box.width, box.height) * SCENE.span * scale;
+  return Math.max(GRIP.minHit, span * 1.3);
 }
 
 /**

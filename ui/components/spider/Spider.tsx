@@ -12,7 +12,8 @@ import type { GrabVoice } from '../../audio/audioConfig';
 import { useFocusRing } from '../../hooks/useFocusRing';
 import { useSound } from '../../hooks/useSound';
 import { colors } from '../../theme';
-import { SCENE, SPIDER_DEFAULTS, type SpiderHandle, type SpiderOptions } from './spiderConfig';
+import { SPIDER_DEFAULTS, type SpiderHandle, type SpiderOptions } from './spiderConfig';
+import { hitSize } from './spiderMotion';
 import { SpiderBoundary } from './SpiderBoundary';
 import { SpiderFallback } from './SpiderFallback';
 import { SPIDER_3D_AVAILABLE, SpiderScene } from './SpiderScene';
@@ -121,8 +122,7 @@ export function Spider({
   }, [wasDrag, onPress]);
 
   // El área pulsable cubre la araña y su recorrido cuando las patas tiran de ella.
-  const span = Math.min(box.width, box.height) * SCENE.span * scale;
-  const hit = Math.max(88, span * 1.3);
+  const hit = hitSize(box, scale);
 
   const fallback =
     box.width > 0 ? (
@@ -155,7 +155,7 @@ export function Spider({
       ) : (
         fallback
       )}
-      {visible && box.width > 0 ? (
+      {visible ? (
         <Pressable
           ref={attach}
           accessibilityRole="button"
@@ -168,8 +168,12 @@ export function Spider({
           style={[
             styles.target,
             {
-              left: px * box.width - hit / 2,
-              top: py * box.height - hit / 2,
+              // En fracción del escenario, no en píxeles medidos: así el botón
+              // está antes de que nadie lo mida. Ver `hitSize`.
+              left: `${px * 100}%`,
+              top: `${py * 100}%`,
+              marginLeft: -hit / 2,
+              marginTop: -hit / 2,
               width: hit,
               height: hit,
               borderRadius: hit / 2,

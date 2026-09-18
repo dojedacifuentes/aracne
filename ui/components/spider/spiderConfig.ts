@@ -148,6 +148,15 @@ export const THREAD = {
 export const GRIP = {
   /** Píxeles de recorrido antes de que pulsar se convierta en tirar. */
   dragThreshold: 6,
+  /**
+   * Lo mínimo que mide el objetivo que se pulsa, en píxeles. Es el doble del
+   * área táctil de la interfaz, porque la araña se coge y no solo se toca.
+   *
+   * Es también lo que mide **cuando nadie ha medido el escenario**: `onLayout`
+   * llega por un `ResizeObserver` y un `ResizeObserver` no dispara donde no se
+   * repinta. Con esta cifra el botón existe igual. Ver `hitSize`.
+   */
+  minHit: 88,
   /** Cuánto dura, en ms, el recuerdo de un tirón: el clic que llega detrás no invoca. */
   clickGraceMs: 350,
   /** Reparto del gesto táctil: la página se recorre a lo alto, el animal se lleva a lo ancho. */
