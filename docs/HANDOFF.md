@@ -14,7 +14,7 @@ estás parado y qué conviene hacer a continuación**.
 |---|---|
 | repositorio | `https://github.com/dojedacifuentes/aracne.git` |
 | rama de trabajo | `main` |
-| otra rama viva | `diseno-denso` (rediseño viejo, superado por la fase 15) |
+| otras ramas vivas | `desarrollo/entidad-aracnida` (fase 20, la entidad que sigue al cursor, pendiente de llevar a `main`) · `diseno-denso` (rediseño viejo, superado por la fase 15) |
 | ruta local | `C:\Users\Asus\Desktop\aracne` |
 | desplegado en | `https://aracne-mu.vercel.app` |
 | plataforma | Vercel, `buildCommand: npm run build`, salida `dist` |
@@ -29,6 +29,7 @@ docs/
   ARANA.md             la metáfora del animal. Vinculante.
   ARANA-3D.md          por qué la araña es 3D y cómo se comporta
   SONIDO.md            qué suena, de dónde sale cada nota y por qué nace apagado
+  ENTIDAD.md           la entidad que camina detrás del cursor (rama de la fase 20)
   DESIGN.md            paleta, tipografía, qué no se hace nunca
   BIOGRAFIAS.md        reglas de las biografías: temas, ideas, enlaces, emblemas
   ATLAS.md             reglas del Atlas de la extinción
@@ -84,6 +85,7 @@ ui/
                        FigureView, EntryView, InvocationView, ArchiveView,
                        ShapeView, CommandPalette, ExportRow, Sigil, Emblem…
   components/spider/   la araña 3D: rig, escena, seda, config, gesto, fallback SVG
+  components/spiderEffect/  la entidad: config, aritmética pura, lienzo web, marcas
   audio/               el sonido: cifras, partitura pura y motor Web Audio
 
 scripts/
@@ -93,7 +95,7 @@ scripts/
   sprites.mjs          dibuja los 44 emblemas
   capture.mjs          alta de entrada por consola
 
-tests/                 16 archivos, 197 pruebas
+tests/                 17 archivos, 218 pruebas
 public/figures/        44 emblemas SVG de 44
 public/models/spider/  el GLB de la araña (87 000 triángulos)
 ```
@@ -145,12 +147,12 @@ Cifras reales, no estimaciones. Salen de `npm run validate` y `npm test`.
 | Atlas | 242 territorios · 34 causas (10 uniformes) · 13 dominantes |
 | scores del Atlas | de 25 a 98 |
 | estados epistémicos | 20 `fact` · 16 `interpretation` · 7 `fiction` · 1 `controversial` · 0 `unverified` |
-| pruebas | 197, en 16 archivos |
+| pruebas | 218, en 17 archivos |
 | bundle web | ~2,2 MB |
 
 **La cola editorial está vacía.** Las quince `unverified` se comprobaron contra
 fuentes pedidas —catorce el 15 de septiembre de 2026 y la última el 18— y cada
-una dice en `captureNote` qué se comprobó y qué se corrigió. Ver §6.3.
+una dice en `captureNote` qué se comprobó y qué se corrigió. Ver §6.4.
 
 ---
 
@@ -170,6 +172,7 @@ una dice en `captureNote` qué se comprobó y qué se corrigió. Ver §6.3.
 | 17 | El instrumento deja de cobrar ancho: sin columna derecha fija, el instrumento se abre en cajones; navegación en tres grupos, `/invocaciones` y `/autores`, la ficha a unos setenta caracteres con su expediente aparte, y el Atlas a todo lo ancho con Natural Earth 1:50m. |
 | 18 | La araña se puede coger: se posa la mano, se tira con resistencia progresiva y se suelta con retroceso. |
 | 19 | El archivo suena: cinco voces sintetizadas, apagadas por defecto. La nota de cada pata es su frecuencia de hilo y el dictamen sale de la semilla (`docs/SONIDO.md`). |
+| 20 | En la rama `desarrollo/entidad-aracnida`: la entidad que camina detrás del cursor. Tiende hilos hacia las entradas cercanas, se mueve sola cuando la mano se para y se retira sobre la araña del centro (`docs/ENTIDAD.md`). |
 
 ---
 
@@ -187,9 +190,9 @@ una dice en `captureNote` qué se comprobó y qué se corrigió. Ver §6.3.
   reglas del Atlas: una causa que reparte tiene que separar 25 puntos entre el
   percentil 5 y el 95, y lo que no tiene población no se puntúa.
 
-### Las tres excepciones a la doctrina visual
+### Las cuatro excepciones a la doctrina visual
 
-`docs/DESIGN.md` prohíbe movimiento, degradados y segundos colores. Hay tres
+`docs/DESIGN.md` prohíbe movimiento, degradados y segundos colores. Hay cuatro
 excepciones, **todas pedidas expresamente y todas escritas en `CLAUDE.md`**. La
 tercera entró allí el 18 de septiembre: la fase 15 no la había escrito, y
 durante tres días `CLAUDE.md` dijo «dos excepciones, y solo dos» mientras
@@ -204,6 +207,10 @@ durante tres días `CLAUDE.md` dijo «dos excepciones, y solo dos» mientras
    frío que el Atlas usaba para sus retículas— marca todo lo que se puede
    tocar. La regla que queda en pie: **el frío es de lo que se puede tocar y el
    cálido es del contenido**.
+4. **La entidad que camina detrás del cursor** (solo en la rama de la fase
+   20). En `dim` y sin brillo, sin recibir eventos, sin `Math.random`; se retira
+   sobre la araña del centro y no existe con `prefers-reduced-motion`, sin
+   ratón o por debajo de 900 px. Ver `docs/ENTIDAD.md`.
 
 No las borres por doctrina: la doctrina ya las contempla.
 
@@ -337,7 +344,16 @@ El suyo serían los nueve temas como lista, para saltar de uno a otro sin volver
 al índice. Se dejó fuera a propósito: el pendiente nombraba tres secciones y son
 las tres que se hicieron.
 
-### 6.3 Contenido, que es lo que más falta
+### 6.3 La entidad: decidir si va a `main`
+
+Está en `desarrollo/entidad-aracnida`, probada y documentada en
+`docs/ENTIDAD.md`. Para llevarla a `main` hay que aprobar la cuarta excepción
+de `CLAUDE.md`, que en la rama ya está escrita, y mirarla con un ratón de
+verdad: el panel de pruebas estaba oculto y el comportamiento se verificó
+moviéndola a mano. Lo siguiente natural, si se aprueba: que entre dos nodos
+cercanos relacionados en el grafo el hilo vaya de una entrada a la otra.
+
+### 6.4 Contenido, que es lo que más falta
 
 - **La cola editorial está vacía.** Las quince `unverified` se comprobaron (los
   commits `entrada: …` del 15 y el 18 de septiembre). La última, `delyra-0034`,
@@ -359,7 +375,7 @@ las tres que se hicieron.
   direcciones —en la lente del Atlas y en la ficha de entrada—, pero un vínculo
   anotado a mano diría más.
 
-### 6.4 Lo que quedó apuntado de antes
+### 6.5 Lo que quedó apuntado de antes
 
 - **HTML previo para buscadores.** `og.mjs` ya escribe cáscaras por entrada con
   su Open Graph; falta meter el *cuerpo* en un `<noscript>` y generar cáscaras
@@ -403,7 +419,7 @@ npm run web        # servidor de desarrollo en :8081
 ```
 
 ```bash
-npm test           # 197 pruebas
+npm test           # 218 pruebas
 npm run typecheck
 npm run lint
 npm run build      # validate + expo export + permalinks con Open Graph

@@ -23,6 +23,7 @@ y si algo no cabe en el animal, probablemente no hace falta.
 | la vibración | el hilo suena al apoyar la pata | `lib/aleph/tension.ts` |
 | el peso | la esfera se descuelga hacia lo elegido | `alephState()` |
 | la muda | cada versión del archivo en git | historial del repo |
+| la red habitada | la entidad: camina detrás del cursor y tiende hilos hacia las entradas cercanas | `ui/components/spiderEffect/` |
 
 ## Por qué once
 
@@ -138,6 +139,14 @@ pulsación. Lo que sí garantiza es que la misma URL devuelva siempre lo mismo.
 
 En móvil el anillo se convierte en una fila de once glifos bajo la esfera, con
 scroll horizontal contenido y el nombre solo de la pata activa.
+
+## La red habitada
+
+La araña del centro es una sola. Lo que sigue al cursor no es otra araña: es
+la red habitada. La tela está en toda la ventana y solo se deja ver alrededor
+de lo que camina por ella, y los hilos que tiende van hacia las entradas, que
+son los nodos del grafo. Se retira cuando la mano se acerca al Aleph y casi
+desaparece sobre el texto que se lee. Ver `docs/ENTIDAD.md`.
 
 ## El gabinete
 

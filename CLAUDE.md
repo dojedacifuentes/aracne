@@ -139,7 +139,7 @@ metadatos, no para párrafos ni para titulares.
 Un solo momento de movimiento: la aparición de la entrada, 320 ms.
 `prefers-reduced-motion` lo reduce a un fundido.
 
-**Tres excepciones, y solo tres.**
+**Cuatro excepciones, y solo cuatro.**
 
 La primera: la piel `flujo` de `/tela` está viva. Por sus
 trazas corren pulsos y el nodo del centro respira, porque ahí el dibujo no
@@ -166,6 +166,16 @@ conmutadores, los cajones, las cuentas vivas. También es decisión expresa, y
 también con condiciones: no es un color nuevo ni un segundo acento, nunca va en
 lo que se lee —título, cuerpo, pregunta—, y lo prohibido sigue prohibido: ni
 neón, ni *glow*, ni degradados. Razones en `docs/DESIGN.md`.
+
+La cuarta: **la entidad que camina detrás del cursor**. Sigue la mano con
+retraso, se mueve sola cuando se para y tiende hilos hacia las entradas que
+tiene cerca: la red, dibujada donde está la mano. Decisión expresa, y con
+condiciones: ningún color nuevo —patas, hilos y tela en `dim`, el cuerpo en
+`bg`— ni brillo; no recibe eventos, ni toca el cursor, el `overflow` o el foco;
+sin `Math.random`; se retira sobre la araña del centro y casi desaparece sobre
+el texto que se lee; no existe con `prefers-reduced-motion`, sin ratón o por
+debajo de 900 px; y se apaga entera con `ENTITY_DEFAULTS.enabled`. Razones y
+medidas en `docs/ENTIDAD.md`.
 
 ## Cómo trabajas
 

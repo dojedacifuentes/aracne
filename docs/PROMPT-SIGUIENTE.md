@@ -34,6 +34,9 @@ secciones son /invocaciones y /autores, y la araña se agarra (fase 18) y suena
 
 Qué hay pendiente, por orden (desarrollado en docs/HANDOFF.md §6):
 
+0. Hay una rama, desarrollo/entidad-aracnida (fase 20), con la entidad que
+   camina detrás del cursor. Está pendiente de que yo decida si va a main
+   (HANDOFF §6.3, docs/ENTIDAD.md). No la fusiones sin preguntarme.
 1. Contenido: las 13 biografías sin obra enlazada, las entradas ligadas mal
    repartidas entre temas (La hora del búho tiene una sola) y vincular causas
    del Atlas con entradas concretas. La cola editorial está vacía: toda entrada

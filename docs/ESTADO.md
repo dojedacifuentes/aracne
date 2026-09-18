@@ -34,6 +34,7 @@ el proyecto y qué conviene hacer. Este archivo es la historia de cada fase.
 | 17 | El instrumento deja de cobrar ancho: sin columna derecha fija, el instrumento se abre en cajones; navegación en tres grupos, `/invocaciones` y `/autores`, la ficha con su expediente aparte, y el Atlas a todo lo ancho con Natural Earth 1:50m, 242 territorios | `3f82c0f` |
 | 18 | La araña se puede coger: se posa la mano, se tira con resistencia progresiva y se suelta con retroceso. El hilo de arriba no se mueve y los de las patas están prendidos en la red | `9b9f138` |
 | 19 | El archivo suena: cinco voces sintetizadas sin un solo sample, apagadas por defecto. La nota de cada pata es su propia frecuencia de hilo y el dictamen sale de la semilla | `7930373` |
+| 20 | En la rama `desarrollo/entidad-aracnida`: la entidad que camina detrás del cursor, con sus hilos hacia las entradas, y la cuarta excepción de `CLAUDE.md` | `fe5dc2c`, en rama |
 
 En curso: una revisión adversarial de las fases 0–2.
 
@@ -100,6 +101,35 @@ el mapa se medía solo con la columna, así que salía más alto que la ventana;
 se quedaba con la rueda del ratón para ampliar, de modo que la sección no se
 podía bajar. La regla que queda escrita: **quien se queda con un gesto de la
 página tiene que devolver otro**.
+
+### Lo que se decidió en la fase 20
+
+Se pidió una entidad arácnida que siguiera al cursor, a partir de un
+repositorio de referencia, `4Min4m/spider-cursor`. **La referencia no tiene
+licencia**, así que no se reutilizó ni una línea: la implementación es
+original. Tampoco habría servido: usa `Math.random`, pinta el lienzo opaco de
+negro en cada fotograma, toca el `overflow` y el cursor del `body` y, al
+desmontarse, deja vivo su bucle.
+
+Para que cupiera en el animal, la entidad no es una segunda araña: es la red
+habitada. La tela está en toda la ventana y solo se deja ver a su alrededor,
+y los hilos van hacia las entradas, que son los nodos del grafo. De ahí sus
+dos conductas: se retira sobre el Aleph y casi desaparece sobre el texto que
+se lee.
+
+Tres decisiones de oficio. El lienzo se monta después del armazón, así que
+queda por debajo de cajones y paleta sin tocar nada global. Un nodo solo cuenta
+si está antes que el lienzo en el DOM y nada lo tapa en su centro: así los
+cajones apagan los hilos sin que la entidad sepa qué es un cajón. Y los
+colores se guardan por su nombre en `theme.ts`, no como valores: Vitest no
+puede importar `react-native`, y de paso fuera de la paleta no se puede
+escribir ninguno.
+
+De paso apareció que la prueba contra `Math.random` que el handoff daba por
+hecha no existía. Ahora existe, y vigila todo `lib/` y `ui/`.
+
+Va en una rama porque se pidió así, y porque llevarla a `main` pide aprobar la
+cuarta excepción de `CLAUDE.md`.
 
 ### Lo que se aprendió comprobando la cola editorial
 
